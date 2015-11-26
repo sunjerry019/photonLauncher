@@ -1,0 +1,6 @@
+port=/dev/ttyUSB0
+baudrate=19200
+parity=N
+stopbits=1
+bytesize=8
+timeout=2
