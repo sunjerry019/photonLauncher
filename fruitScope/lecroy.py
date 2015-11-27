@@ -8,7 +8,7 @@ import json
 import random
 import argparse
 
-class _:
+class basicFuncs:
     def isInt(self, x):
         try:
             float(x)
@@ -16,8 +16,9 @@ class _:
         except ValueError:
             return False
 
-class lecroy():
-    def __init__(self):
+class Lecroy():
+    def __init__(self, savefile):
+        _ = basicFuncs()
         #default configuration
         cfg = {
             "port"      : "/dev/ttyUSB0",
@@ -49,6 +50,28 @@ class lecroy():
             else:
                 print("No configuration file found. Using default configuration...")
 
-        fp = 'rawdata'
         savetime = time.strftime('%Y%m%d_%H%M')
-        return self.start()
+
+        try:
+            self.scope = serial.Serial()
+            self.scope.port = cfg['port']
+            self.scope.baudrate = cfg['baudrate']
+            self.scope.parity = cfg['parity']
+            self.scope.stopbits = cfg['stopbits']
+            self.scope.bytesize = cfg['bytesize']
+            self.scope.timeout = cfg['timeout']
+            self.scope.open()
+            print("Initalised serial communication....")
+            try:
+                self.savef = open(savefile, 'w')
+                self.savef.write("Started {}\n".format(savetime))
+            except IOError:
+                print("Unable to open/write to {}".format(savefile))
+        except:
+            print("Unable to establish serial communication. Please check port settings and change configuration file accordingly. For more help, consult the documention.")
+            sys.exit(0)
+
+    def send(self, cmd):
+        self.scope.write(cmd + chr(13))
+        while True:
+            i = self.scope.readline()
