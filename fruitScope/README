@@ -1,0 +1,10 @@
+# Scopy
+
+This is a library for interacting with the Lecroy Oscilloscope via RS323 <> USB Serial.
+
+## Documentation
+
+import lecroy
+scope = lecroy.Lecroy()
+
+This would return you the whole lecroy scope object for you to use
