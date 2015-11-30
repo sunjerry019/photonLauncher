@@ -9,6 +9,7 @@ import random
 import argparse
 
 class basicFuncs:
+    @staticmethod
     def isInt(self, x):
         try:
             float(x)
@@ -72,6 +73,17 @@ class Lecroy():
             sys.exit(0)
 
     def send(self, cmd):
+        """ Writes cmd to the serial channel. Returns the data as a string, with \n characters to separate the lines"""
         self.scope.write(cmd + chr(13))
+        data = ''
         while True:
             i = self.scope.readline()
+            if len(i) == 0:
+                break
+            else:
+                data += i + '\n'
+        return data
+    def getHistogram(self):
+        """ Gets the histogram from the Lecroy, assumes that the channel for histogram is the first one (TA) """
+        hist = self.scope.send('TA:INSPECT? "SIMPLE"')
+        metadata = self.scope.send('TA:INSPECT? "WAVEDESC"')
