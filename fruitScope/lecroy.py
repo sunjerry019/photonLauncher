@@ -10,7 +10,7 @@ import argparse
 
 class basicFuncs:
     @staticmethod
-    def isInt(self, x):
+    def isInt(x):
         try:
             float(x)
             return True
@@ -87,3 +87,9 @@ class Lecroy():
         """ Gets the histogram from the Lecroy, assumes that the channel for histogram is the first one (TA) """
         hist = self.scope.send('TA:INSPECT? "SIMPLE"')
         metadata = self.scope.send('TA:INSPECT? "WAVEDESC"')
+    def _parseWaveDesc(self, metadata):
+        pass
+    def _parseHistogram(self, hist):
+        pass
+    def _parseWaveForm(self, waveform):
+        pass
