@@ -97,6 +97,8 @@ def main(kwargs):
 		'step_size':kwargs['step'],
 		'degrees_moved': kwargs['degree']
 	}
+	with open(os.path.join(timestamp, 'metadata.json'), 'w') as f:
+		f.write(json.dump(metadata))
 	if rank == 0:
 		print "on fruitcake0: apd control"
 		#a = apdControl(kwargs['binsize'])
