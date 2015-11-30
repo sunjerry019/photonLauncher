@@ -28,4 +28,23 @@ class getCounts():
       return data
     time.sleep(0.2)
     
+class logCounts():
+  """ Uses getCounts() to save the counts into a folder (./raw), into a ASCII file that is timestamped """
+  def check_dir(self, directory):
+    if not os.path.exists(directory):
+      os.makedirs(directory)
+  def __init__(self,t):
+    filepath = 'raw'
+    self.check_dir(filepath)
+    timestamp = time.strftime('%Y%m%d_%H%M')
+    if t < 0:
+      raise ValueError("Infinite stream not allowed for logging")
+    with open(os.path.join('raw', timestamp), 'w') as f:
+      gen = getCounts(t)
+      for i in gen:
+        f.write("{}\t{}\n".format(i[0], i[1]))
+    
+    
+    
+    
     
