@@ -8,7 +8,7 @@ import json
 import random
 import argparse
 
-class basicFuncs:
+class helper:
     @staticmethod
     def isInt(x):
         try:
@@ -19,7 +19,7 @@ class basicFuncs:
 
 class Lecroy():
     def __init__(self, savefile):
-        _ = basicFuncs()
+        _ = helper()
         #default configuration
         cfg = {
             "port"      : "/dev/ttyUSB0",
@@ -87,8 +87,23 @@ class Lecroy():
         """ Gets the histogram from the Lecroy, assumes that the channel for histogram is the first one (TA) """
         hist = self.scope.send('TA:INSPECT? "SIMPLE"')
         metadata = self.scope.send('TA:INSPECT? "WAVEDESC"')
-    def _parseWaveDesc(self, metadata):
-        pass
+    def _parseWaveDesc(self, raw_metadata):
+        """ metadata is the raw wavedesc, returns a parsed dictionary with relevant formatting""" 
+        m = raw_metadata.split('\n')
+        metadata = {}
+        m.pop() # the first line is always an echo of the command used. removing.
+        m.pop() # the second line is equally unhelpful
+        for i in m:
+            x = i.split(':')
+            if not len(x) == 2:
+                continue
+            x[0] = x.strip().lower()
+            try:
+                x[1] = float(x[1].strip())
+            except:
+                x[1] = x[1].strip()
+            metadata[x[0]] = x[1]
+        return metadata
     def _parseHistogram(self, hist):
         pass
     def _parseWaveForm(self, waveform):
