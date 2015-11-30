@@ -6,14 +6,14 @@ This is a library for interacting with the Lecroy Oscilloscope via RS323 <--> US
 
 ### Initialisation
 ```python
-> import lecroy
-> scope = lecroy.Lecroy()
+import lecroy
+scope = lecroy.Lecroy()
 ```
 
 ### Acquiring the Histogram
 
 ```python
-> (hist, metadata) = scope.getHistogram()
+(hist, metadata) = scope.getHistogram()
 ```
 
 This returns a tuple, ```(hist, metadata)```, both of which have been parsed. ```hist``` is a list of ```[x,y]``` values. The first math channel (```TA```) is implicit in the acquisition of the histogram.
@@ -27,6 +27,6 @@ The x-axis data is also scaled up by ```10 ** 9 ``` as in our use case, a histog
 ### Sending your own command
 
 ```python
-> scope.send(cmd)
+scope.send(cmd)
 ```
 where ```cmd``` is your own command. Refer to the [Lecroy Manual for 9300 Series devices](http://cdn.teledynelecroy.com/files/manuals/9300-rcm_reva.pdf) for additional information.
