@@ -173,7 +173,7 @@ class procPeak():
             'y0': arrPoints[min(arrPoints, key=arrPoints.get)],
             'w' : 1,
             'xc': centralWl,
-            'A' : 1
+            'A' : arrPoints[centralWl]
         }
 
         g = Gnuplot.Gnuplot()
