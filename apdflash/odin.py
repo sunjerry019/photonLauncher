@@ -87,10 +87,16 @@ class thorControl():
 		comm.send("terminated", dest = 0, tag = 0)
 		print "completed"
 
-def main(**kwargs):
+def main(kwargs):
 	comm = MPI.COMM_WORLD
 	rank = comm.Get_rank()
 	timestamp = time.strftime('%Y%m%d_%H%M')
+	metadata = {
+		'timestamp': timestamp,
+		'bin_size': kwargs['binsize'],
+		'step_size':kwargs['step'],
+		'degrees_moved': kwargs['degree']
+	}
 	if rank == 0:
 		print "on fruitcake0: apd control"
 		#a = apdControl(kwargs['binsize'])
