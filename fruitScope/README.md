@@ -30,7 +30,7 @@ scope.send(cmd)
 where ```cmd``` is your own command. Refer to the [Lecroy Manual for 9300 Series devices](http://cdn.teledynelecroy.com/files/manuals/9300-rcm_reva.pdf) for additional information.
 
 ## Troubleshooting
-The primary problem you'll come across is the serial port. The Lecroy's serial port is accessed at ```/dev/ttyUSBX' where X is a number.
+The primary problem you'll come across is the serial port. The Lecroy's serial port is accessed at ```/dev/ttyUSBX``` where X is a number.
 
 To verify that you're using the correct port:
 ```bash
