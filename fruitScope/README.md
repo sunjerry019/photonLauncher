@@ -13,7 +13,7 @@ This is a library for interacting with the Lecroy Oscilloscope via RS323 <--> US
 ### Acquiring the Histogram
 
 ```python
-> scope.getHistogram()
+> (hist, metadata) = scope.getHistogram()
 ```
 
 This returns a tuple, ```(hist, metadata)```, both of which have been parsed. ```hist``` is a list of ```[x,y]``` values. The first math channel (```TA```) is implicit in the acquisition of the histogram.
