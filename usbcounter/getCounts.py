@@ -1,3 +1,4 @@
+#!/bin/python3
 import serial
 import json
 import os, sys
@@ -11,7 +12,10 @@ class getCounts():
   def __init__(self, t):
     timestamp = time.strftime('%Y%m%d_%H%M')
     if t == -1:
-      generator = (self.talk() while True)
+      generator = (self.talk() for i in itertools.count(0, 1))
+    else:
+      generator = (self.talk() for i in range(t))
+    return generator
   def talk(self):
     proc = subprocess.Popen(['./getresponse', 'COUNTS?'], stdout = subprocess.PIPE)
     output = proc.stdout.read()
