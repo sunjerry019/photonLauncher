@@ -94,16 +94,16 @@ pack .actx
 # entry structure for x values
 frame .x -borderwidth 2 -relief ridge
 label .x.t1 -text "from:"
-label .x.t2 -text "°"
+label .x.t2 -text "Â°"
 label .x.t3 -text "   to:"
-label .x.t4 -text "°"
+label .x.t4 -text "Â°"
 label .x.t5 -text "in steps of:"
-label .x.t6 -text "°"
+label .x.t6 -text "Â°"
 label .x.t9 -text "maximal value in channel"
 label .x.t9a -textvariable dispcnter -relief raised -width 3
 label .x.t9b -text ":"
 label .x.t11 -text "at z="
-label .x.t15 -text "°"
+label .x.t15 -text "Â°"
 label .x.t10 -textvariable maxcounts -width 6 -anchor w
 label .x.t12 -textvariable mcntsx -width 6 -anchor w
 
@@ -166,11 +166,11 @@ pack .x
 # entry structure for x1 values
 frame .x1 -borderwidth 2 -relief ridge
 label .x1.t1 -text "from:"
-label .x1.t2 -text "°"
+label .x1.t2 -text "Â°"
 label .x1.t3 -text "   to:"
-label .x1.t4 -text "°"
+label .x1.t4 -text "Â°"
 label .x1.t5 -text "in steps of:"
-label .x1.t6 -text "°"
+label .x1.t6 -text "Â°"
 
 entry .x1.e1 -width 6 -relief sunken -bd 2 -textvariable xstart1
 bind .x1.e1 <Return> {
