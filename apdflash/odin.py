@@ -6,6 +6,7 @@ import argparse
 from mjolnir import Mjolnir
 import numpy
 import os
+import json
 
 def check_dir(directory):
 	if not os.path.exists(directory):
@@ -82,7 +83,7 @@ def main(kwargs):
 	'step_size':kwargs['step'],
 	'degrees_moved': kwargs['degree']}
 	with open(os.path.join(timestamp, 'metadata.json'), 'w') as f:
-		f.write(json.dump(metadata))
+		json.dump(metadata, f)
 	if rank == 0:
 		print "on fruitcake0: apd control"
 		#a = apdControl(kwargs['binsize'])
