@@ -1,3 +1,4 @@
+#!/bin/python2
 from mpi4py import MPI
 import time
 import subprocess
