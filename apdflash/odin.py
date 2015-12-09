@@ -105,9 +105,9 @@ def main(kwargs):
 
 def init():
 	parser = argparse.ArgumentParser(description = "Script to control motor for characterisation of APD flash breakdown")
-	parser.add_argument('degrees', metavar = 'd', type = int, nargs = '+', help = "Total degrees to rotate")
-	parser.add_argument('stepsize', metavar = 's', type = int, nargs = '+', help = "Encoder counts to move, every rotation. Rotate until total degrees. Each encoder count is 2.16 arcseconds.")
-	parser.add_argument('binsize', metavar = 'b', type = int, nargs = '+', help = "Number of readings the usbcounter device should record")
+	parser.add_argument('degrees', metavar = 'd', type = int, help = "Total degrees to rotate")
+	parser.add_argument('stepsize', metavar = 's', type = int, help = "Encoder counts to move, every rotation. Rotate until total degrees. Each encoder count is 2.16 arcseconds.")
+	parser.add_argument('binsize', metavar = 'b', type = int, help = "Number of readings the usbcounter device should record")
 	args = parser.parse_args()
 	main({'degree':args.degrees, 'step':args.stepsize, 'binsize': args.binsize})
 
