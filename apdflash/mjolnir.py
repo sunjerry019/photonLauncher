@@ -5,8 +5,6 @@ Meant as an interface. Import the file, and write a wrapper to access the functi
 
 This is currently under development and it is highly unlikely that further development / extensions will be implemented after the basic movement controls, as that's all I actually need. Mjolnir.talk should be sufficient, if you have access to the comunications protocol by Thorlabs on the APT software and a lot of time.
 
-On a sidenote, is it even possible to move backwards? This is very confusing.
-
 Cheers
 -zy
 20151107
@@ -81,14 +79,14 @@ class Mjolnir():
         self.talk(x)
     def moveLinMotor(self, distance):
         # distance in mm, converts to mm using pscale
-        d = struct.pack('<I', int(distance * self.const['LINSCALE']))
+        d = struct.pack('<l', int(distance * self.const['LINSCALE']))
         x = ['\x48', '\x04', '\x06', '\x00', '\xA2', '\x01', '\x01', '\x00']
         for i in d:
             x.append(i)
         self.talk(x)
     def moveRotMotor(self, distance):
         print "Moving {}".format(distance)
-        d = struct.pack('<I', int(distance * self.const['ROTSCALE']))
+        d = struct.pack('<l', int(distance * self.const['ROTSCALE']))
         x = ['\x48', '\x04', '\x06', '\x00', '\xA2', '\x01', '\x01', '\x00']
         for i in d:
             x.append(i)
