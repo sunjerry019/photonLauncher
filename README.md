@@ -14,6 +14,9 @@ Finished:
 Still in the pipeline:
 - OceanOptics Spectrometer, USB2000 and USB4000
 
+## Contact Us
+
+Feel free to add an issue or a pull request. Our emails are open. 
 
 ## Overview of Experiments
 
