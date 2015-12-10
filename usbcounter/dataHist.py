@@ -58,3 +58,5 @@ class dataHist():
     def fit(self):
         self.g("set boxwidth binwidth")
         self.g("set table 'hist.temp'")
+
+main()
