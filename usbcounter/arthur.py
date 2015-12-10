@@ -37,8 +37,8 @@ class Arthur():
         self.timestamp = time.strftime('%Y%m%d_%H%M')
         self.start_t = time.time()
         self.duration = t
-        self.raw_savefp = os.path.join('data', self.timestamp)
-        self.savefp = os.path.join('data', self.timestamp+'.json')
+        self.raw_savefp = os.path.join('.', self.timestamp)
+        self.savefp = os.path.join('jsondata', self.timestamp+'.json')
 
         self.d1 = deque([0] * 120)
         self.d2 = deque([0] * 120)
