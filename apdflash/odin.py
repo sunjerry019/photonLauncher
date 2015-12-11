@@ -17,7 +17,7 @@ class apdControl():
 		self.comm = MPI.COMM_WORLD
 		self.binsize = binsize
 		self.start_t = time.time()
-		self.c = int(binsize[0])
+		self.c = int(binsize)
 		self.data = []
 		#meta = self.comm.recv(source = 1, tag = 1)
 		self.id = None
@@ -63,13 +63,13 @@ class thorControl():
 
 		comm = MPI.COMM_WORLD
 		m = Mjolnir()
-		x = int(self.deg[0]) * 3600
+		x = int(self.deg) * 3600
 		x /= float(2.16)
-		s = int(self.step[0])
+		s = int(self.step)
 		x /= s
 		self.data = {}
 		for i in xrange(int(x)):
-			m.moveRotMotor(self.step[0])
+			m.moveRotMotor(self.step)
 			comm.send("next", dest = 0, tag = 0)
 			comm.send([self.timestamp, i], dest = 0, tag = 1)
 			#self.data[i] = comm.recv(source = 1, tag = 0)
