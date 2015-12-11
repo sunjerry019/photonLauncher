@@ -30,11 +30,12 @@ def check_dir(directory):
 
 def main():
     parser = argparse.ArgumentParser(description="arthur.py: Calls getresponse to obtain the photon counts for one second from the APDs.")
-    parser.add_argument('time', metavar='t', type=int, nargs='+', help="Duration in seconds for which to record photon counts from APDs. Set to -1 to keep running until Ctrl-C is pressed.")
+    #parser.add_argument('time', metavar='t', type=int, nargs='+', help="Duration in seconds for which to record photon counts from APDs. Set to -1 to keep running until Ctrl-C is pressed.")
+    parser.add_argument('total', metavar='n', type=int, help="Number of readings to record photon counts from APDs. Set to -1 to keep running until Ctrl-C is pressed.")
     parser.add_argument('-p', dest = 'plot', action = 'store_true', help = 'Use this flag to enable live plotting')
     args = parser.parse_args()
 
-    a = Arthur(args.time, args.plot)
+    a = Arthur(args.total, args.plot)
 
 class Arthur():
     def __init__(self, t, plot = False):
