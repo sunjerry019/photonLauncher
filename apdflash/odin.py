@@ -28,7 +28,7 @@ class apdControl():
 		while self.c > 0:
 			self.ping()
 			time.sleep(0.2)
-		with open(os.path.join('data', self.timestamp, str(self.id)), 'wb+') as f:
+		with open(os.path.join(self.timestamp, str(self.id)), 'wb+') as f: #removed 'data', 
 			for i in xrange(len(self.data)):
 				f.write("{}\t{}\t{}\n".format(i, self.data[i][1][0], self.data[i][1][1]))
 		self.comm.send("done", dest = 1, tag = 0)
