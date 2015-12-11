@@ -15,6 +15,7 @@ def check_dir(directory):
 class apdControl():
 	def __init__(self,binsize):
 		self.comm = MPI.COMM_WORLD
+		print comm.Get_size()
 		self.binsize = binsize
 		self.start_t = time.time()
 		self.c = int(binsize[0])
@@ -32,23 +33,28 @@ class apdControl():
 			for i in xrange(len(self.data)):
 				f.write("{}\t{}\t{}\n".format(i, self.data[i][1][0], self.data[i][1][1]))
 		self.comm.send("done", dest = 1, tag = 0)
-        def ping(self):
-                proc = subprocess.Popen(['./getresponse','COUNTS?'], stdout=subprocess.PIPE)
-    	        output = proc.stdout.read()
-                if output =="timeout while waiting for response":
-                        pass
-                else:
-                        t = time.time() - self.start_t
-                        data = output.rstrip().split(' ')
-                        data.pop(0)
-			print data
-                try:
-                        data = map(lambda x: float(x), data)
-                        _data = [t, data]
-                        self.c -= 1
-                        self.data.append(_data)
-                except ValueError:
-                        pass
+
+	def ping(self):
+		proc = subprocess.Popen(['./getresponse','COUNTS?'], stdout=subprocess.PIPE)
+		output = proc.stdout.read()
+
+		if output =="timeout while waiting for response":
+			pass
+		else:
+			t = time.time() - self.start_t
+			data = output.rstrip().split(' ')
+			data.pop(0)
+
+		print data
+
+		try:
+			data = map(lambda x: float(x), data)
+			_data = [t, data]
+			self.c -= 1
+			self.data.append(_data)
+		except ValueError:
+			pass
+
 class thorControl():
 	def __init__(self, step, deg):
 		self.step = step
