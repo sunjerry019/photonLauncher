@@ -22,7 +22,7 @@ class dataHist():
         self.xlabel = "Photon Counts"
         self.ylabel = "Frequency"
         try:
-            with open(datafile) as df:
+            with open(fname) as df:
                 for line in df:
                     l = line.split("\n")[0].split("\t")
                     self.data[0].append(int(l[1]))
