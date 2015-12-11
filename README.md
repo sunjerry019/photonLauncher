@@ -1,5 +1,7 @@
 # photonLauncher
 
+pew pew pew
+
 *Documentation for individual scripts / experiments can be found in their respective folders.*
 
 Scripts to extract, process and plot data from various equipment present in our photonics lab. Highly WIP.
