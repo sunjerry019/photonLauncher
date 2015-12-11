@@ -1,6 +1,7 @@
 import argparse
 import Gnuplot, Gnuplot.PlotItems, Gnuplot.funcutils
 import numpy as np
+import math
 
 def main():
     parser = argparse.ArgumentParser(description="dataHist.py: Processes the data from the 2 APDs and plots the histogram with Gnuplot")
@@ -12,6 +13,7 @@ def main():
 
 def iqr(x):
     # used to find box width.
+    # Freedman-Diaconis rule
     iqr = np.subtract(*np.percentile(x, [75, 25]))
     return 2 * iqr * len(x) ** (float(-1)/float(3))
 
@@ -30,14 +32,29 @@ class dataHist():
                     l = line.split("\n")[0].split("\t")
                     self.data[0].append(int(float(l[1])))
                     self.data[1].append(int(float(l[2])))
-
+            print "File read successfully."
         except IOError:
             print("Unable to read from file. Either file does not exist or I have no read permissions")
 
     def plot(self):
         self.initPlot()
-        self.plotDet0()
-        self.plotDet1()
+        self.generateHist()
+
+    def generateHist(self):
+        bin_n =  int(math.ceil(math.fabs(max(self.data[0]) - min(self.data[0]))/float(iqr(self.data[0]))))
+        hist0, binedges0 = np.histogram(self.data[0], bin_n)
+        plotHist0 = []
+        for i in xrange(len(hist0)):
+            plotHist0.append([binedges0[i], hist0[i]])
+
+        bin_n =  int(math.ceil(math.fabs(max(self.data[1]) - min(self.data[1]))/float(iqr(self.data[1]))))
+        hist1, binedges1 = np.histogram(self.data[1], bin_n)
+        plotHist1 = []
+        for i in xrange(len(hist1)):
+            plotHist1.append([binedges1[i], hist1[i]])
+
+        self.plotDet0(plotHist0)
+        self.plotDet1(plotHist1)
 
     def initPlot(self):
         # init gnuplot
@@ -45,21 +62,18 @@ class dataHist():
         self.g('set term {}'.format(self.formatt))
         self.g('set xlabel "{}"'.format(self.xlabel))
         self.g('set ylabel "{}"'.format(self.ylabel))
-        self.g('bin(x,width)=width*floor(x/width)')
+        self.g('set style data boxes')
+    # there are two detectors. hard coded. :)
 
-    # there are two detectors. hard coded.
-    
-    def plotDet0(self):
+    def plotDet0(self, hist0):
         self.g('set title "{}, detector 0"'.format(self.title))
         self.g('set output "{}_0.eps"'.format(self.fname))
-        self.g('binwidth = {}'.format(iqr(self.data[0])))
-        self.g('plot "{}" using (bin($2,binwidth)):(1.0) smooth freq with boxes'.format(self.fname))
+        self.g.plot(hist0)
 
-    def plotDet1(self):
+    def plotDet1(self, hist1):
         self.g('set title "{}, detector 1"'.format(self.title))
         self.g('set output "{}_1.eps"'.format(self.fname))
-        self.g('binwidth = {}'.format(iqr(self.data[1])))
-        self.g('plot "{}" using (bin($3,binwidth)):(1.0) smooth freq with boxes'.format(self.fname))
+        self.g.plot(hist1)
 
     def fit(self):
         self.g("set boxwidth binwidth")

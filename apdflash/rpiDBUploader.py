@@ -1,6 +1,7 @@
 import os, json, sys
 import paramiko
 import shutil
+import subprocess
 
 """
 project strings to pass to rpiDBUploader:
@@ -22,8 +23,8 @@ class rpiDBUploader():
         password = "freeasinfreedom"
 
         self.projects = {
-        "apdflash": "Hsin Yee [SRP]",
-        "ghosts": "GhostImaging"
+            "apdflash": "Hsin Yee [SRP]",
+            "ghosts": "GhostImaging"
         }
 
         self.ssh.connect(robinIP, username = username, password = password)
@@ -41,5 +42,5 @@ class rpiDBUploader():
                 time.sleep(1)
                 print "Waiting... "
                 c += 1
-                if c > 5:
-                    print "Timeout after 5 seconds. Attempt to upload failed. Quitting"
+                if c > 20:
+                    print "Timeout after 20 seconds. Attempt to upload failed. Quitting"
