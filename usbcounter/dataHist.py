@@ -48,13 +48,13 @@ class dataHist():
         self.g('set title "{}, detector 0"'.format(self.title))
         self.g('set output "{}_0.eps"'.format(self.fname))
         self.g('binwidth = {}'.format(iqr(self.data[0])))
-        self.g('plot "{}" using (bin($1,binwidth)):(1.0) smooth freq with boxes'.format(self.fname))
+        self.g('plot "{}" using (bin($2,binwidth)):(1.0) smooth freq with boxes'.format(self.fname))
 
     def plotDet1(self):
         self.g('set title "{}, detector 1"'.format(self.title))
         self.g('set output "{}_1.eps"'.format(self.fname))
         self.g('binwidth = {}'.format(iqr(self.data[1])))
-        self.g('plot "{}" using (bin($2,binwidth)):(1.0) smooth freq with boxes'.format(self.fname))
+        self.g('plot "{}" using (bin($3,binwidth)):(1.0) smooth freq with boxes'.format(self.fname))
 
     def fit(self):
         self.g("set boxwidth binwidth")
