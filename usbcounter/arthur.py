@@ -119,13 +119,24 @@ class Arthur():
         #print "data written"
         self.updatePlot()
     def saveManager(self):
-        with open(self.savefp, 'wb+') as f:
-            json.dump(self.data,f)
-        with open(self.raw_savefp, 'wb+') as f:
-            for i in xrange(len(self.data['counts'])):
-                dtpt = self.data['counts'][i]
-                f.write('{}\t{}\t{}\t{}\n'.format(dtpt[0], dtpt[1][0], dtpt[1][1], dtpt[1][2]))
-        print "Data saved!"
+        try:
+            with open(self.savefp, 'wb+') as f:
+                json.dump(self.data,f)
+            with open(self.raw_savefp, 'wb+') as f:
+                for i in xrange(len(self.data['counts'])):
+                    dtpt = self.data['counts'][i]
+                    f.write('{}\t{}\t{}\t{}\n'.format(dtpt[0], dtpt[1][0], dtpt[1][1], dtpt[1][2]))
+            print "Data saved!"
+        except:
+            fname = "~/arthur_{}.autosave".format(self.timestamp)
+            with open("{}.json".format(fname), 'wb+') as f:
+                json.dump(self.data,f)
+            with open(fname, 'wb+') as f:
+                for i in xrange(len(self.data['counts'])):
+                    dtpt = self.data['counts'][i]
+                    f.write('{}\t{}\t{}\t{}\n'.format(dtpt[0], dtpt[1][0], dtpt[1][1], dtpt[1][2]))
+            print "Unable to save to original file. Data auto dumped at {} and {}.json".format(fname,fname)
+
     def ping(self):
         proc = subprocess.Popen(['./getresponse','COUNTS?'], stdout=subprocess.PIPE)
     	output = proc.stdout.read()
@@ -148,4 +159,4 @@ class Arthur():
         print data
 
 main()
-print "== Operation Ended == "
+print "== Operation Ended =="
