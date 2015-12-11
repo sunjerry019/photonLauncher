@@ -15,7 +15,6 @@ def check_dir(directory):
 class apdControl():
 	def __init__(self,binsize):
 		self.comm = MPI.COMM_WORLD
-		print comm.Get_size()
 		self.binsize = binsize
 		self.start_t = time.time()
 		self.c = int(binsize[0])
@@ -82,6 +81,7 @@ class thorControl():
 
 def main(kwargs):
 	comm = MPI.COMM_WORLD
+	print "World size: {}".format(comm.Get_size())
 	rank = comm.Get_rank()
 	timestamp = time.strftime('%Y%m%d_%H%M')
 	metadata = {'timestamp': timestamp,
