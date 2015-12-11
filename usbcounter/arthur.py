@@ -40,7 +40,6 @@ def main():
 class Arthur():
     def __init__(self, t, plot = False):
         print "Initialising variables.."
-        t = t[0]
         self.togglePlot = plot
         self.timestamp = time.strftime('%Y%m%d_%H%M%S')
         self.start_t = time.time()
