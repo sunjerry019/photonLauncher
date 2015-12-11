@@ -1,4 +1,4 @@
-port=/dev/ttyUSB1
+port=/dev/ttyUSB0
 baudrate=115200
 parity=N
 stopbits=1
