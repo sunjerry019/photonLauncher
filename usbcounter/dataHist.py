@@ -13,9 +13,13 @@ def main():
 
 def iqr(x):
     # used to find box width.
-    # Freedman-Diaconis rule
+    # Freedman-Diaconis Thumb of Rule
     iqr = np.subtract(*np.percentile(x, [75, 25]))
     return 2 * iqr * len(x) ** (float(-1)/float(3))
+
+def gauss(x, *p):
+    A, mu, sigma = p
+    return A*numpy.exp(-(x-mu)**2/(2.*sigma**2))
 
 class dataHist():
     def __init__(self, fname, title):
