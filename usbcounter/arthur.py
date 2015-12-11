@@ -125,6 +125,7 @@ class Arthur():
             for i in xrange(len(self.data['counts'])):
                 dtpt = self.data['counts'][i]
                 f.write('{}\t{}\t{}\t{}\n'.format(dtpt[0], dtpt[1][0], dtpt[1][1], dtpt[1][2]))
+        print "Data saved!"
     def ping(self):
         proc = subprocess.Popen(['./getresponse','COUNTS?'], stdout=subprocess.PIPE)
     	output = proc.stdout.read()
@@ -147,3 +148,4 @@ class Arthur():
         print data
 
 main()
+print "== Operation Ended == "
