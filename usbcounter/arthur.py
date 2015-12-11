@@ -122,7 +122,9 @@ class Arthur():
         with open(self.savefp, 'wb+') as f:
             json.dump(self.data,f)
         with open(self.raw_savefp, 'wb+') as f:
+            print self.data
             for i in xrange(len(self.data['counts'])):
+                print len(self.data['counts'])
                 f.write('{}\t{}\t{}\t{}\n'.format(self.data[0], self.data[1][0], self.data[1][1], self.data[1][2]))
     def ping(self):
         proc = subprocess.Popen(['./getresponse','COUNTS?'], stdout=subprocess.PIPE)
