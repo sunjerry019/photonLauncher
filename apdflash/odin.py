@@ -85,10 +85,12 @@ def main(kwargs):
 	rank = comm.Get_rank()
 	timestamp = time.strftime('%Y%m%d_%H%M')
 	metadata = {'timestamp': timestamp,
-	'bin_size': kwargs['binsize'],
-	'step_size':kwargs['step'],
-	'degrees_moved': kwargs['degree']}
+				'bin_size': kwargs['binsize'],
+				'step_size':kwargs['step'],
+				'degrees_moved': kwargs['degree']}
 	check_dir(timestamp)
+	with open('copythis', 'w') as f:
+		f.write(timestamp)
 	with open(os.path.join(timestamp, 'metadata.json'), 'w') as f:
 		json.dump(metadata, f)
 	if rank == 0:
