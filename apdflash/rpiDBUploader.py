@@ -6,7 +6,7 @@ import shutil
 project strings to pass to rpiDBUploader:
 - apdflash
 - ghosts
-- FeelsBadMan
+- FeelsBadMan (no I'm joking)
 
 """
 

@@ -11,11 +11,13 @@ def main():
     h.plot()
 
 def iqr(x):
+    # used to find box width.
     iqr = np.subtract(*np.percentile(x, [75, 25]))
     return 2 * iqr * len(x) ** (float(-1)/float(3))
 
 class dataHist():
     def __init__(self, fname, title):
+        # init plotting stuff, get data from datafile
         self.data = [[],[]]
         self.title = title
         self.fname = fname
@@ -38,12 +40,15 @@ class dataHist():
         self.plotDet1()
 
     def initPlot(self):
+        # init gnuplot
         self.g = Gnuplot.Gnuplot()
         self.g('set term {}'.format(self.formatt))
         self.g('set xlabel "{}"'.format(self.xlabel))
         self.g('set ylabel "{}"'.format(self.ylabel))
         self.g('bin(x,width)=width*floor(x/width)')
 
+    # there are two detectors. hard coded.
+    
     def plotDet0(self):
         self.g('set title "{}, detector 0"'.format(self.title))
         self.g('set output "{}_0.eps"'.format(self.fname))
