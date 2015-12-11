@@ -2,6 +2,7 @@ import argparse
 import Gnuplot, Gnuplot.PlotItems, Gnuplot.funcutils
 import numpy as np
 import math
+from scipy.optimize import curve_fit
 
 def main():
     parser = argparse.ArgumentParser(description="dataHist.py: Processes the data from the 2 APDs and plots the histogram with Gnuplot")
@@ -19,7 +20,7 @@ def iqr(x):
 
 def gauss(x, *p):
     A, mu, sigma = p
-    return A*numpy.exp(-(x-mu)**2/(2.*sigma**2))
+    return A*np.exp(-(x-mu)**2/(2.*sigma**2))
 
 class dataHist():
     def __init__(self, fname, title):
@@ -41,24 +42,48 @@ class dataHist():
             print("Unable to read from file. Either file does not exist or I have no read permissions")
 
     def plot(self):
-        self.initPlot()
-        self.generateHist()
+        self.generateFittedHist()
 
-    def generateHist(self):
-        bin_n =  int(math.ceil(math.fabs(max(self.data[0]) - min(self.data[0]))/float(iqr(self.data[0]))))
-        hist0, binedges0 = np.histogram(self.data[0], bin_n)
+    def generateFittedHist(self):
+        self.initPlot()
+        bin_0 =  int(math.ceil(math.fabs(max(self.data[0]) - min(self.data[0]))/float(iqr(self.data[0]))))
+        hist0, binedges0 = np.histogram(self.data[0], bin_0)
         plotHist0 = []
+        f = open('temp', 'wb+')
         for i in xrange(len(hist0)):
             plotHist0.append([binedges0[i], hist0[i]])
+            f.write("{}\t{}\n".format(binedges0[i], hist0[i]))
 
-        bin_n =  int(math.ceil(math.fabs(max(self.data[1]) - min(self.data[1]))/float(iqr(self.data[1]))))
-        hist1, binedges1 = np.histogram(self.data[1], bin_n)
+
+        bin_1 =  int(math.ceil(math.fabs(max(self.data[1]) - min(self.data[1]))/float(iqr(self.data[1]))))
+        hist1, binedges1 = np.histogram(self.data[1], bin_1)
         plotHist1 = []
         for i in xrange(len(hist1)):
             plotHist1.append([binedges1[i], hist1[i]])
 
         self.plotDet0(plotHist0)
         self.plotDet1(plotHist1)
+
+        bin_c0 = (binedges0[:-1] + binedges0[1:])/2
+        bin_c1 = (binedges1[:-1] + binedges1[1:])/2
+
+        p0 = raw_input("Guesses for det 0 (look at the plot). A, mu and sigma. Space separated. \n >> ").strip().split(' ')
+        p1 = raw_input("Guesses for det 1 (look at the plot). A, mu and sigma. Space separated. \n >> ").strip().split(' ')
+        p0 = map(lambda x: int(x), p0)
+        p1 = map(lambda x: int(x), p1)
+
+        coeff_0, var_matrix_0 = curve_fit(gauss, bin_c0, hist0, p0 = p0)
+        coeff_1, var_matrix_1 = curve_fit(gauss, bin_c1, hist1, p0 = p1)
+
+        hist_fit_0 = gauss(bin_c0, *coeff_0)
+        hist_fit_1 = gauss(bin_c1, *coeff_1)
+
+        self.g('set title "{}, Fitted Gaussian for detector 0"'.format(self.title))
+        self.g('set output "{}_fitted_0.eps"'.format(self.fname))
+        self.g.plot(Gnuplot.Func('{0}*exp(-((x - {1})**2 )/(2 * {2}**2))'.format(coeff_0[0], coeff_0[1], coeff_0[2]),title = 'Fitted curve'), plotHist0)
+        self.g('set title "{}, Fitted Gaussian for detector 1"'.format(self.title))
+        self.g('set output "{}_fitted_1.eps"'.format(self.fname))
+        self.g.plot(Gnuplot.Func('{0}*exp(-((x - {1})**2 )/(2 * {2}**2))'.format(coeff_1[0], coeff_1[1], coeff_1[2]),title = 'Fitted curve'), plotHist1)
 
     def initPlot(self):
         # init gnuplot
