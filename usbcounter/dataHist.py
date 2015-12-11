@@ -7,7 +7,7 @@ def main():
     parser.add_argument('datafile', metavar='f', help="The data file to read from ")
     parser.add_argument('title', metavar = 'title', help = "Title to be included in plot.")
     args = parser.parse_args()
-    h = dataHist(args.datafile. args.title)
+    h = dataHist(args.datafile, args.title)
 
 def iqr(x):
     iqr = np.subtract(*np.percentile(x, [75, 25]))
