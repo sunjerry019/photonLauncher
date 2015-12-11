@@ -41,7 +41,7 @@ class Arthur():
         print "Initialising variables.."
         t = t[0]
         self.togglePlot = plot
-        self.timestamp = time.strftime('%Y%m%d_%H%M')
+        self.timestamp = time.strftime('%Y%m%d_%H%M%S')
         self.start_t = time.time()
         self.duration = t
         self.raw_savefp = os.path.join('data', self.timestamp)
