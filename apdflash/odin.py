@@ -7,6 +7,7 @@ from mjolnir import Mjolnir
 import numpy
 import os
 import json
+import tarfile
 
 def check_dir(directory):
 	if not os.path.exists(directory):
@@ -28,7 +29,7 @@ class apdControl():
 		while self.c > 0:
 			self.ping()
 			time.sleep(0.2)
-		with open(os.path.join(self.timestamp, str(self.id)), 'wb+') as f: #removed 'data', 
+		with open(os.path.join(self.timestamp, str(self.id)), 'wb+') as f: #removed 'data',
 			for i in xrange(len(self.data)):
 				f.write("{}\t{}\t{}\n".format(i, self.data[i][1][0], self.data[i][1][1]))
 		self.comm.send("done", dest = 1, tag = 0)
@@ -106,6 +107,17 @@ def main(kwargs):
 				c.grabData()
 			else:
 				break
+		print "cleaning up... zipping files, so we don't have 12000 files in hsinyee's folder every day :)"
+		tar = tarfile.open("{}.tar.gz".format(timesetamp), "w:gz")
+		tar.add(timestamp, arcname = timestamp)
+		tar.close()
+
+		for i in os.listdir(timestamp):
+			os.remove(i)
+		os.rmdir(timestamp)
+
+		print "complete."
+
 
 	elif rank == 1:
 		print "on fruitcake1: motorised stage control"
