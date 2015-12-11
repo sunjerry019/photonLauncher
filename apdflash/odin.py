@@ -82,8 +82,8 @@ def main(kwargs):
 	'bin_size': kwargs['binsize'],
 	'step_size':kwargs['step'],
 	'degrees_moved': kwargs['degree']}
-	check_dir(self.timestamp)
-	with open(os.path.join(self.timestamp, 'metadata.json'), 'w') as f:
+	check_dir(timestamp)
+	with open(os.path.join(timestamp, 'metadata.json'), 'w') as f:
 		json.dump(metadata, f)
 	if rank == 0:
 		print "on fruitcake0: apd control"
