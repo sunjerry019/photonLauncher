@@ -159,4 +159,4 @@ class Arthur():
         print data
 
 main()
-print "== Operation Ended =="
+print "== Operation Ended ==\a"
