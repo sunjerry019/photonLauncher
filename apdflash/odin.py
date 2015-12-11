@@ -61,7 +61,6 @@ class thorControl():
 		self.deg = deg
 		self.timestamp = None
 	def start(self):
-
 		comm = MPI.COMM_WORLD
 		m = Mjolnir()
 		x = int(self.deg) * 3600
@@ -107,8 +106,7 @@ def main(kwargs):
 				c.grabData()
 			else:
 				break
-		print "cleaning up... zipping files, so we don't have 12000 files in hsinyee's folder every day :)"
-		tar = tarfile.open("{}.tar.gz".format(timesetamp), "w:gz")
+		tar = tarfile.open("apdflash{}.tar.gz".format(timesetamp), "w:gz")
 		tar.add(timestamp, arcname = timestamp)
 		tar.close()
 
@@ -116,15 +114,14 @@ def main(kwargs):
 			os.remove(i)
 		os.rmdir(timestamp)
 
-		print "complete."
-
-
+		ssh = rpiDBUploader("{}.tar.gz".format(timestamp), "apdflash")
+		ssh.upload()
+		
 	elif rank == 1:
 		print "on fruitcake1: motorised stage control"
 		b = thorControl(kwargs['step'], kwargs['degree'])
 		b.timestamp = timestamp
 		b.start()
-
 
 def init():
 	parser = argparse.ArgumentParser(description = "Script to control motor for characterisation of APD flash breakdown")

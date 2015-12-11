@@ -9,6 +9,7 @@ import Gnuplot, Gnuplot.PlotItems, Gnuplot.funcutils
 import json
 import random
 from collections import deque
+from rpiDBUploader import rpiDBUploader
 
 def _genName():
     def _genWord(fp):
