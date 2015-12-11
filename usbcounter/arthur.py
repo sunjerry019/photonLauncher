@@ -8,7 +8,7 @@ import numpy
 import Gnuplot, Gnuplot.PlotItems, Gnuplot.funcutils
 import json
 import random
-from  collections import deque
+from collections import deque
 
 def _genName():
     def _genWord(fp):
@@ -22,6 +22,12 @@ def _genName():
     x += _genWord('./cfg/adjectives').capitalize()
     x += _genWord('./cfg/animals')
     return x
+
+def check_dir(directory):
+	if not os.path.exists(directory):
+	    os.makedirs(directory)
+        print "Directory 'data' does not exist...creating..."
+
 def main():
     parser = argparse.ArgumentParser(description="arthur.py: Calls getresponse to obtain the photon counts for one second from the APDs.")
     parser.add_argument('time', metavar='t', type=int, nargs='+', help="Duration in seconds for which to record photon counts from APDs. Set to -1 to keep running until Ctrl-C is pressed.")
@@ -29,6 +35,7 @@ def main():
     args = parser.parse_args()
 
     a = Arthur(args.time, args.plot)
+
 class Arthur():
     def __init__(self, t, plot = False):
         print "Initialising variables.."
@@ -37,8 +44,8 @@ class Arthur():
         self.timestamp = time.strftime('%Y%m%d_%H%M')
         self.start_t = time.time()
         self.duration = t
-        self.raw_savefp = os.path.join('.', self.timestamp)
-        self.savefp = os.path.join('jsondata', self.timestamp+'.json')
+        self.raw_savefp = os.path.join('data', self.timestamp)
+        self.savefp = os.path.join('data', self.timestamp+'.json')
 
         self.d1 = deque([0] * 120)
         self.d2 = deque([0] * 120)
@@ -50,6 +57,7 @@ class Arthur():
         if self.c == -1:
             self.monitor = True
         else:
+            check_dir("data")
             print "Saving JSON to: {}".format(self.savefp)
             print "Saving raw ASCII file to: {}".format(self.raw_savefp)
         self.dt = 0.2
