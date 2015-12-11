@@ -3,6 +3,7 @@ import Gnuplot, Gnuplot.PlotItems, Gnuplot.funcutils
 import numpy as np
 import math
 from scipy.optimize import curve_fit
+from scipy.optimize import leastsq
 
 def main():
     parser = argparse.ArgumentParser(description="dataHist.py: Processes the data from the 2 APDs and plots the histogram with Gnuplot")
@@ -49,11 +50,8 @@ class dataHist():
         bin_0 =  int(math.ceil(math.fabs(max(self.data[0]) - min(self.data[0]))/float(iqr(self.data[0]))))
         hist0, binedges0 = np.histogram(self.data[0], bin_0)
         plotHist0 = []
-        f = open('temp', 'wb+')
         for i in xrange(len(hist0)):
             plotHist0.append([binedges0[i], hist0[i]])
-            f.write("{}\t{}\n".format(binedges0[i], hist0[i]))
-
 
         bin_1 =  int(math.ceil(math.fabs(max(self.data[1]) - min(self.data[1]))/float(iqr(self.data[1]))))
         hist1, binedges1 = np.histogram(self.data[1], bin_1)
@@ -84,6 +82,24 @@ class dataHist():
         self.g('set title "{}, Fitted Gaussian for detector 1"'.format(self.title))
         self.g('set output "{}_fitted_1.eps"'.format(self.fname))
         self.g.plot(Gnuplot.Func('{0}*exp(-((x - {1})**2 )/(2 * {2}**2))'.format(coeff_1[0], coeff_1[1], coeff_1[2]),title = 'Fitted curve'), plotHist1)
+
+        def residuals(a,x,y):
+            return y - gauss(x, *a)
+        p, cov, infodict, mesg, ier = leastsq(residuals, p0, full_output = True, args = (bin_c0, hist0))
+        ssErr = (infodict['fvec']**2).sum()
+        ssTot = ((hist0-hist0.mean())**2).sum()
+        rsquared0 = 1-(ssErr/ssTot )
+
+        p, cov, infodict, mesg, ier = leastsq(residuals, p1, full_output = True, args = (bin_c1, hist1))
+        ssErr = (infodict['fvec']**2).sum()
+        ssTot = ((hist0-hist0.mean())**2).sum()
+        rsquared1 = 1-(ssErr/ssTot )
+
+        with open(self.fname + '_fitlog', 'wb') as f:
+            f.write("detector 0: \n")
+            f.write("A: {} \nmu: {}\nsigma: {}\nR^2: {} \n\n".format(coeff_0[0], coeff_0[1], coeff_0[2], rsquared0))
+            f.write("detector 1: \n")
+            f.write("A: {} \nmu: {}\nsigma: {} \nR^2: {} ".format(coeff_1[0], coeff_1[1], coeff_1[2], rsquared1))
 
     def initPlot(self):
         # init gnuplot
