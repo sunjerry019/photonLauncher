@@ -85,15 +85,16 @@ class dataHist():
 
         def residuals(a,x,y):
             return y - gauss(x, *a)
+
         p, cov, infodict, mesg, ier = leastsq(residuals, p0, full_output = True, args = (bin_c0, hist0))
         ssErr = (infodict['fvec']**2).sum()
-        ssTot = ((hist0-hist0.mean())**2).sum()
-        rsquared0 = 1-(ssErr/ssTot )
+        ssTot = ((hist0 - hist0.mean())**2).sum()
+        rsquared0 = 1 - (ssErr/ssTot)
 
         p, cov, infodict, mesg, ier = leastsq(residuals, p1, full_output = True, args = (bin_c1, hist1))
         ssErr = (infodict['fvec']**2).sum()
-        ssTot = ((hist0-hist0.mean())**2).sum()
-        rsquared1 = 1-(ssErr/ssTot )
+        ssTot = ((hist0 - hist0.mean())**2).sum()
+        rsquared1 = 1 - (ssErr/ssTot)
 
         with open(self.fname + '_fitlog', 'wb') as f:
             f.write("detector 0: \n")
@@ -108,8 +109,8 @@ class dataHist():
         self.g('set xlabel "{}"'.format(self.xlabel))
         self.g('set ylabel "{}"'.format(self.ylabel))
         self.g('set style data boxes')
-    # there are two detectors. hard coded. :)
 
+    # there are two detectors. hard coded. :)
     def plotDet0(self, hist0):
         self.g('set title "{}, detector 0"'.format(self.title))
         self.g('set output "{}_0.eps"'.format(self.fname))
@@ -119,9 +120,5 @@ class dataHist():
         self.g('set title "{}, detector 1"'.format(self.title))
         self.g('set output "{}_1.eps"'.format(self.fname))
         self.g.plot(hist1)
-
-    def fit(self):
-        self.g("set boxwidth binwidth")
-        self.g("set table 'hist.temp'")
 
 main()
