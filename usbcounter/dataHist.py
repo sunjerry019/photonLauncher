@@ -100,7 +100,7 @@ class dataHist():
             f.write("detector 0: \n")
             f.write("A: {} \nmu: {}\nsigma: {}\nR^2: {} \n\n".format(coeff_0[0], coeff_0[1], coeff_0[2], rsquared0))
             f.write("detector 1: \n")
-            f.write("A: {} \nmu: {}\nsigma: {} \nR^2: {} ".format(coeff_1[0], coeff_1[1], coeff_1[2], rsquared1))
+            f.write("A: {} \nmu: {}\nsigma: {}\nR^2: {} ".format(coeff_1[0], coeff_1[1], coeff_1[2], rsquared1))
 
     def initPlot(self):
         # init gnuplot
