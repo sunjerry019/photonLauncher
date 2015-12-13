@@ -20,8 +20,19 @@ def iqr(x):
     return 2 * iqr * len(x) ** (float(-1)/float(3))
 
 def gauss(x, *p):
-    A, mu, sigma = p
-    return A*np.exp(-(x-mu)**2/(2.*sigma**2))
+    A, mu, sigma, y0 = p
+    #return (1./(sigma * math.sqrt(2 * math.pi))) * A *np.exp(-(x-mu)**2/(2.*sigma**2)) + y0
+    return A *np.exp(-(x-mu)**2/(2.*sigma**2)) + y0
+    
+def genGauss(x, *p):
+    A, mu, sigma, y0, zeta, alpha, kappa = p
+    _x = (x - mu)/sigma
+
+    if not kappa == 0:
+        y = -1 * (kappa)**-1 * np.log(1 - (kappa * (_x - zeta)/(alpha)))
+    else:
+        y = (x - zeta)/(alpha)
+    return (gauss(y, A, mu, sigma, y0)) / (alpha - kappa * (_x - zeta))
 
 class dataHist():
     def __init__(self, fname, title):
@@ -64,17 +75,39 @@ class dataHist():
 
         bin_c0 = (binedges0[:-1] + binedges0[1:])/2
         bin_c1 = (binedges1[:-1] + binedges1[1:])/2
+        try:
+            with open('.tempGuesses', 'rb+') as f:
+                guesses = f.read().split('\n')
 
-        p0 = raw_input("Guesses for det 0 (look at the plot). A, mu and sigma. Space separated. \n >> ").strip().split(' ')
-        p1 = raw_input("Guesses for det 1 (look at the plot). A, mu and sigma. Space separated. \n >> ").strip().split(' ')
-        p0 = map(lambda x: int(x), p0)
-        p1 = map(lambda x: int(x), p1)
+                g0 = raw_input("Use previous guesses for det 0: {} ? [Y/n]".format(guesses[0]))
+                if not g0.lower() == 'n':
+                    p0 = guesses[0]
+                else:
+                    p0 = raw_input("Guesses for det 0 (look at the plot). A, mu and sigma. Space separated. \n> ")
 
-        coeff_0, var_matrix_0 = curve_fit(gauss, bin_c0, hist0, p0 = p0)
-        coeff_1, var_matrix_1 = curve_fit(gauss, bin_c1, hist1, p0 = p1)
+                g1 = raw_input("Use previous guesses for det 1: {} ? [Y/n]".format(guesses[1]))
+                if not g1.lower() == 'n':
+                    p1 = guesses[1]
+                else:
+                    p1 = raw_input("Guesses for det 1 (look at the plot). A, mu and sigma. Space separated. \n> ")
 
-        hist_fit_0 = gauss(bin_c0, *coeff_0)
-        hist_fit_1 = gauss(bin_c1, *coeff_1)
+        except IOError:
+            print "No prior guesses.. creating a new one."
+            p0 = raw_input("Guesses for det 0 (look at the plot). A, mu and sigma. Space separated. \n> ")
+            p1 = raw_input("Guesses for det 1 (look at the plot). A, mu and sigma. Space separated. \n> ")
+
+        f = open('.tempGuesses', 'wb+')
+        f.write("{}\n{}".format(p0, p1))
+        f.close()
+
+        p0 = map(lambda x: int(x), p0.strip().split(' '))
+        p1 = map(lambda x: int(x), p1.strip().split(' '))
+
+        coeff_0, var_matrix_0 = curve_fit(genGauss, bin_c0, hist0, p0 = p0)
+        coeff_1, var_matrix_1 = curve_fit(genGauss, bin_c1, hist1, p0 = p1)
+
+        hist_fit_0 = genGauss(bin_c0, *coeff_0)
+        hist_fit_1 = genGauss(bin_c1, *coeff_1)
 
         self.g('set title "{}, Fitted Gaussian for detector 0"'.format(self.title))
         self.g('set output "{}_fitted_0.eps"'.format(self.fname))
@@ -84,7 +117,7 @@ class dataHist():
         self.g.plot(Gnuplot.Func('{0}*exp(-((x - {1})**2 )/(2 * {2}**2))'.format(coeff_1[0], coeff_1[1], coeff_1[2]),title = 'Fitted curve'), plotHist1)
 
         def residuals(a,x,y):
-            return y - gauss(x, *a)
+            return y - genGauss(x, *a)
 
         p, cov, infodict, mesg, ier = leastsq(residuals, p0, full_output = True, args = (bin_c0, hist0))
         ssErr = (infodict['fvec']**2).sum()
@@ -98,9 +131,9 @@ class dataHist():
 
         with open(self.fname + '_fitlog', 'wb') as f:
             f.write("detector 0: \n")
-            f.write("A: {} \nmu: {}\nsigma: {}\nR^2: {} \n\n".format(coeff_0[0], coeff_0[1], coeff_0[2], rsquared0))
+            f.write("A: {} \nmu: {}\nsigma: {}\ny0: {}\nR^2: {} \n\n".format(coeff_0[0], coeff_0[1], coeff_0[2], coeff_0[3], rsquared0))
             f.write("detector 1: \n")
-            f.write("A: {} \nmu: {}\nsigma: {}\nR^2: {} ".format(coeff_1[0], coeff_1[1], coeff_1[2], rsquared1))
+            f.write("A: {} \nmu: {}\nsigma: {}\ny0: {}\nR^2: {} ".format(coeff_1[0], coeff_1[1], coeff_1[2], coeff_1[3],rsquared1))
 
     def initPlot(self):
         # init gnuplot
