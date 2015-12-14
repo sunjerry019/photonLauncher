@@ -9,6 +9,7 @@ import os
 import json
 import tarfile
 import paramiko
+from rpiDBUploader import rpiDBUploader
 
 def check_dir(directory):
 	if not os.path.exists(directory):
@@ -64,7 +65,7 @@ class thorControl():
 	def start(self):
 		comm = MPI.COMM_WORLD
 		m = Mjolnir()
-		x = int(self.deg) * 3600
+		x = self.deg * 3600
 		x /= float(2.16)
 		s = int(self.step)
 		x /= s
