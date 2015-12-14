@@ -8,6 +8,7 @@ import numpy
 import os
 import json
 import tarfile
+import paramiko
 
 def check_dir(directory):
 	if not os.path.exists(directory):
@@ -106,7 +107,7 @@ def main(kwargs):
 				c.grabData()
 			else:
 				break
-		tar = tarfile.open("apdflash{}.tar.gz".format(timesetamp), "w:gz")
+		tar = tarfile.open("apdflash{}.tar.gz".format(timestamp), "w:gz")
 		tar.add(timestamp, arcname = timestamp)
 		tar.close()
 
@@ -116,7 +117,7 @@ def main(kwargs):
 
 		ssh = rpiDBUploader("{}.tar.gz".format(timestamp), "apdflash")
 		ssh.upload()
-		
+
 	elif rank == 1:
 		print "on fruitcake1: motorised stage control"
 		b = thorControl(kwargs['step'], kwargs['degree'])
@@ -125,7 +126,7 @@ def main(kwargs):
 
 def init():
 	parser = argparse.ArgumentParser(description = "Script to control motor for characterisation of APD flash breakdown")
-	parser.add_argument('degrees', metavar = 'd', type = int, help = "Total degrees to rotate")
+	parser.add_argument('degrees', metavar = 'd', type = float, help = "Total degrees to rotate")
 	parser.add_argument('stepsize', metavar = 's', type = int, help = "Encoder counts to move, every rotation. Rotate until total degrees. Each encoder count is 2.16 arcseconds.")
 	parser.add_argument('binsize', metavar = 'b', type = int, help = "Number of readings the usbcounter device should record")
 	args = parser.parse_args()
