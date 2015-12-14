@@ -144,7 +144,7 @@ class Arthur():
     def ping(self):
         proc = subprocess.Popen(['./getresponse','COUNTS?'], stdout=subprocess.PIPE)
     	output = proc.stdout.read()
-        if output =="timeout while waiting for response":
+        if output == "timeout while waiting for response":
             pass
         else:
             t = time.time() - self.start_t
