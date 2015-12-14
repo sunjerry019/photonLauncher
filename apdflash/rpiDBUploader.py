@@ -47,3 +47,6 @@ class rpiDBUploader():
                 c += 1
                 if c > 20:
                     print "Timeout after 20 seconds. Attempt to upload failed. Quitting"
+
+c = rpiDBUploader("apdflash20151214_1004.tar.gz", "apdflash")
+c.upload()
