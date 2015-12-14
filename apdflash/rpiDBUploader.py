@@ -22,7 +22,7 @@ class rpiDBUploader():
         robinIP = "192.168.2.188"
         username = "robin"
         password = "freeasinfreedom"
-
+        self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.projects = {
             "apdflash": "Hsin Yee [SRP]",
             "ghosts": "GhostImaging"
