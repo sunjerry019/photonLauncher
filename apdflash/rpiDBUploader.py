@@ -35,9 +35,10 @@ class rpiDBUploader():
         c = 0
         while 1:
             ssh_stdin, ssh_stdout, ssh_stderr = self.ssh.exec_command("ls /mnt/photonics | grep {}".format(self.filepath))
-            print ssh_stdout
-            if ssh_stdout == self.filepath:
+            stdout = ssh_stdout.readlines()[0].strip()
+            if stdout == self.filepath:
                 ssh_stdin, ssh_stdout, ssh_stderr = self.ssh.exec_command("cp /mnt/photonics/{0} /home/robin/Dropbox/hbar/{1}/{0}".format(self.filepath, self.projects[self.project]))
+                print ssh_stdout.readline()
                 print "Uploaded successfully. Quitting."
                 break
             else:
