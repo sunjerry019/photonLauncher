@@ -24,7 +24,7 @@ class rpiDBUploader():
         password = "freeasinfreedom"
         self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.projects = {
-            "apdflash": "Hsin Yee [SRP]",
+            "apdflash": "Hsin\ Yee\ [SRP]",
             "ghosts": "GhostImaging"
         }
 
@@ -39,6 +39,7 @@ class rpiDBUploader():
             if stdout == self.filepath:
                 ssh_stdin, ssh_stdout, ssh_stderr = self.ssh.exec_command("cp /mnt/photonics/{0} /home/robin/Dropbox/hbar/{1}/{0}".format(self.filepath, self.projects[self.project]))
                 print ssh_stdout.readline()
+                print ssh_stderr.readline()
                 print "Uploaded successfully. Quitting."
                 break
             else:
