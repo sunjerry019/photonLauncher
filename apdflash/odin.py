@@ -116,7 +116,7 @@ def main(kwargs):
 			os.remove(os.path.join(timestamp,i))
 		os.rmdir(timestamp)
 
-		ssh = rpiDBUploader("{}.tar.gz".format(timestamp), "apdflash")
+		ssh = rpiDBUploader("apdflash{}.tar.gz".format(timestamp), "apdflash")
 		ssh.upload()
 
 	elif rank == 1:
