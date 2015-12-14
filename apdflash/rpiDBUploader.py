@@ -25,7 +25,7 @@ class rpiDBUploader():
         self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.projects = {
             "apdflash": "Hsin\ Yee\ [SRP]",
-            "ghosts": "GhostImaging"
+            "ghosts": "GhostImaging",
             "common": "Common"
         }
 
