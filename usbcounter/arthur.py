@@ -130,7 +130,7 @@ class Arthur():
             print "Data saved!"
             print "Uploading to Dropbox..."
             ssh = rpiDBUploader("apddata", "common")
-    		ssh.uploadFromNFS()
+            ssh.uploadFromNFS()
         except:
             fname = "~/arthur_{}.autosave".format(self.timestamp)
             with open("{}.json".format(fname), 'wb+') as f:
