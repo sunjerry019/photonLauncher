@@ -28,7 +28,7 @@ def _genName():
     return x
 
 def check_dir(directory):
-	if not os.path.exists(directory):
+    if not os.path.exists(directory):
         print "Directory {} does not exist...creating...".format(directory)
         os.makedirs(directory)
 
