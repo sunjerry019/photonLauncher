@@ -30,7 +30,7 @@ def _genName():
 def check_dir(directory):
 	if not os.path.exists(directory):
         print "Directory {} does not exist...creating...".format(directory)
-	    os.makedirs(directory)
+        os.makedirs(directory)
 
 def main():
     parser = argparse.ArgumentParser(description="arthur.py: Calls getresponse to obtain the photon counts for one second from the APDs.")
