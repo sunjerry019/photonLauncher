@@ -42,7 +42,8 @@ class rpiDBUploader():
             ssh_stdin, ssh_stdout, ssh_stderr = self.ssh.exec_command("ls /mnt/photonics | grep {}".format(self.filepath))
             stdout = ssh_stdout.readlines()[0].strip()
             if stdout == self.filepath:
-                ssh_stdin, ssh_stdout, ssh_stderr = self.ssh.exec_command("cp -r /mnt/photonics/{0} /home/robin/Dropbox/hbar/{1}/{0}".format(self.filepath, self.projects[self.project]))
+                print "running cp -r -v /mnt/photonics/{0} /home/robin/Dropbox/hbar/{1}/".format(self.filepath, self.projects[self.project])
+                ssh_stdin, ssh_stdout, ssh_stderr = self.ssh.exec_command("cp -r -v /mnt/photonics/{0} /home/robin/Dropbox/hbar/{1}/".format(self.filepath, self.projects[self.project]))
                 print ssh_stdout.readline()
                 print ssh_stderr.readline()
                 print "Uploaded successfully! Exiting..."
