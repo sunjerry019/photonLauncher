@@ -128,6 +128,9 @@ class Arthur():
                     dtpt = self.data['counts'][i]
                     f.write('{}\t{}\t{}\t{}\n'.format(dtpt[0], dtpt[1][0], dtpt[1][1], dtpt[1][2]))
             print "Data saved!"
+            print "Uploading to Dropbox..."
+            ssh = rpiDBUploader("apddata", "common")
+    		ssh.uploadFromNFS()
         except:
             fname = "~/arthur_{}.autosave".format(self.timestamp)
             with open("{}.json".format(fname), 'wb+') as f:
