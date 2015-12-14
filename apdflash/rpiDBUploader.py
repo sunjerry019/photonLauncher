@@ -26,21 +26,26 @@ class rpiDBUploader():
         self.projects = {
             "apdflash": "Hsin\ Yee\ [SRP]",
             "ghosts": "GhostImaging"
+            "common": "Common"
         }
 
         self.ssh.connect(robinIP, username = username, password = password)
+
     def upload(self):
         # hard coded lmao
         shutil.copy(self.filepath, os.path.join("/mnt/photonics", self.filepath))
+        self.uploadFromNFS()
+
+    def uploadFromNFS(self):
         c = 0
         while 1:
             ssh_stdin, ssh_stdout, ssh_stderr = self.ssh.exec_command("ls /mnt/photonics | grep {}".format(self.filepath))
             stdout = ssh_stdout.readlines()[0].strip()
             if stdout == self.filepath:
-                ssh_stdin, ssh_stdout, ssh_stderr = self.ssh.exec_command("cp /mnt/photonics/{0} /home/robin/Dropbox/hbar/{1}/{0}".format(self.filepath, self.projects[self.project]))
+                ssh_stdin, ssh_stdout, ssh_stderr = self.ssh.exec_command("cp -r /mnt/photonics/{0} /home/robin/Dropbox/hbar/{1}/{0}".format(self.filepath, self.projects[self.project]))
                 print ssh_stdout.readline()
                 print ssh_stderr.readline()
-                print "Uploaded successfully. Quitting."
+                print "Uploaded successfully! Exiting..."
                 break
             else:
                 time.sleep(1)
