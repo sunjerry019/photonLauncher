@@ -11,8 +11,9 @@ import Gnuplot, Gnuplot.PlotItems, Gnuplot.funcutils
 class getCounts():
   """ Returns a generator function that outputs the counts from the usbcounter device.
   t is the no. of data points to acquire. -1 for endless stream """
-  def __init__(self, t):
+  def __init__(self):
     timestamp = time.strftime('%Y%m%d_%H%M')
+  def start(self,t):
     if t == -1:
       generator = (self.talk() for i in itertools.count(0, 1))
     else:
@@ -75,7 +76,7 @@ class plotCounts():
         self.g("set xrange [0:120]")
 
 if __name__ == '__main__':
-    z = getCounts(5)
-    print z
-    for i in z:
+    z = getCounts()
+    d = z.start(5)
+    for i in d:
         print i
