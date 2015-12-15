@@ -7,7 +7,7 @@ import subprocess
 import argparse
 from mjolnir import Mjolnir
 import numpy
-import os
+import os, sys
 import json
 import tarfile
 import paramiko
