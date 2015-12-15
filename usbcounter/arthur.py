@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, '../apdflash/')
+sys.path.insert(0, '../helpers/')
 
 import Gnuplot
 import subprocess

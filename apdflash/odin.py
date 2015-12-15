@@ -1,4 +1,6 @@
 #!/bin/python2
+sys.path.insert(0, '../helpers/')
+
 from mpi4py import MPI
 import time
 import subprocess
