@@ -8,7 +8,7 @@ import time
 project strings to pass to rpiDBUploader:
 - apdflash
 - ghosts
-- FeelsBadMan (no I'm joking)
+- common
 
 """
 

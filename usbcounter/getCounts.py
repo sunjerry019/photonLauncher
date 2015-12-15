@@ -27,7 +27,7 @@ class getCounts():
       data = output.rstrip().split(' ')
       data.pop(0)
       data = [float(i) for i in data]
-      return data
+      yield data
     time.sleep(0.2)
 
 class logCounts():
@@ -73,3 +73,8 @@ class plotCounts():
         self.g = Gnuplot.Gnuplot()
         self.g("set title 'apd counts'")
         self.g("set xrange [0:120]")
+
+def test():
+    z = getCounts(5)
+    for i in z:
+        print i
