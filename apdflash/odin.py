@@ -5,7 +5,7 @@ from mpi4py import MPI
 import time
 import subprocess
 import argparse
-from mjolnir import Mjolnir
+
 import numpy
 import os, sys
 import json
@@ -14,7 +14,7 @@ import paramiko
 from rpiDBUploader import rpiDBUploader
 
 sys.path.insert(0, '../helpers/')
-
+from mjolnir import Mjolnir
 def check_dir(directory):
 	if not os.path.exists(directory):
 	    os.makedirs(directory)
