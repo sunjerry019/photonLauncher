@@ -4,6 +4,8 @@ import numpy as np
 import math
 from scipy.optimize import curve_fit
 from scipy.optimize import leastsq
+from lmfit.models import SkewedGaussianModel
+import matplotlib.pyplot as plt
 
 def main():
     parser = argparse.ArgumentParser(description="dataHist.py: Processes the data from the 2 APDs and plots the histogram with Gnuplot")
@@ -23,7 +25,7 @@ def gauss(x, *p):
     A, mu, sigma, y0 = p
     #return (1./(sigma * math.sqrt(2 * math.pi))) * A *np.exp(-(x-mu)**2/(2.*sigma**2)) + y0
     return A *np.exp(-(x-mu)**2/(2.*sigma**2)) + y0
-    
+
 def genGauss(x, *p):
     A, mu, sigma, y0, zeta, alpha, kappa = p
     _x = (x - mu)/sigma
@@ -70,11 +72,33 @@ class dataHist():
         for i in xrange(len(hist1)):
             plotHist1.append([binedges1[i], hist1[i]])
 
+        f = open('.temp', 'wb+')
+        for i in xrange(len(hist0)):
+            f.write('{}\t{}\n'.format(bin_c0[i], hist0[i]))
         self.plotDet0(plotHist0)
         self.plotDet1(plotHist1)
 
         bin_c0 = (binedges0[:-1] + binedges0[1:])/2
         bin_c1 = (binedges1[:-1] + binedges1[1:])/2
+
+        model = SkewedGaussianModel()
+        params = model.make_params(amplitude=100, center=2800, sigma=100, gamma=0)
+        result = model.fit(hist0, params, x=bin_c0)
+        print result.best_values
+        print result.fit_report()
+
+        plt.plot(bin_c0, hist0)
+        plt.plot(bin_c0, result.best_fit)
+        plt.show()
+
+        a = 0
+
+        for i in xrange(60):
+            b = ((hist0[i] - result.best_fit[i]) ** 2) / (93.3)**2
+            a += b
+
+        print a
+        """
         try:
             with open('.tempGuesses', 'rb+') as f:
                 guesses = f.read().split('\n')
@@ -134,7 +158,7 @@ class dataHist():
             f.write("A: {} \nmu: {}\nsigma: {}\ny0: {}\nR^2: {} \n\n".format(coeff_0[0], coeff_0[1], coeff_0[2], coeff_0[3], rsquared0))
             f.write("detector 1: \n")
             f.write("A: {} \nmu: {}\nsigma: {}\ny0: {}\nR^2: {} ".format(coeff_1[0], coeff_1[1], coeff_1[2], coeff_1[3],rsquared1))
-
+        """
     def initPlot(self):
         # init gnuplot
         self.g = Gnuplot.Gnuplot()
