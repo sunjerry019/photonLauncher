@@ -28,7 +28,7 @@ class getCounts():
       data = output.rstrip().split(' ')
       data.pop(0)
       data = [float(i) for i in data]
-      yield data
+      return data
     time.sleep(0.2)
 
 class logCounts():
@@ -43,13 +43,15 @@ class logCounts():
     if t < 1:
       raise ValueError("Infinite stream not allowed for logging")
     with open(os.path.join(filepath, timestamp), 'w') as f:
-      gen = getCounts(t)
+      gen = getCounts()
+      gen = gen.start(t)
       for i in gen:
         f.write("{}\t{}\n".format(i[0], i[1]))
 class plotCounts():
     """ Uses getCounts() to plot the counts. Uses a temp file. """
     def __init__(self):
-        gen = getCounts(-1)
+        gen = getCounts()
+        gen = gen.start(-1)
         det0 = deque([0] * 120)
         det1 = deque([0] * 120)
 
@@ -74,9 +76,3 @@ class plotCounts():
         self.g = Gnuplot.Gnuplot()
         self.g("set title 'apd counts'")
         self.g("set xrange [0:120]")
-
-if __name__ == '__main__':
-    z = getCounts()
-    d = z.start(5)
-    for i in d:
-        print i
