@@ -1,3 +1,4 @@
+sys.path.insert(0, '../helpers/')
 from mjolnir import Mjolnir
 import argparse
 import time
