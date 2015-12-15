@@ -74,7 +74,8 @@ class plotCounts():
         self.g("set title 'apd counts'")
         self.g("set xrange [0:120]")
 
-def test():
+if __name__ == '__main__':
     z = getCounts(5)
+    print z
     for i in z:
         print i
