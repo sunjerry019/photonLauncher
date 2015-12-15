@@ -1,5 +1,5 @@
 #!/bin/python2
-sys.path.insert(0, '../helpers/')
+
 
 from mpi4py import MPI
 import time
@@ -12,6 +12,8 @@ import json
 import tarfile
 import paramiko
 from rpiDBUploader import rpiDBUploader
+
+sys.path.insert(0, '../helpers/')
 
 def check_dir(directory):
 	if not os.path.exists(directory):
