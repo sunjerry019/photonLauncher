@@ -61,7 +61,7 @@ class dataHist():
         for i in xrange(len(hist1)):
             plotHist1.append([binedges1[i], hist1[i]])
 
-        f = open('.temp', 'wb+')
+            f = open('.temp', 'wb+')
 
         self.plotDet0(plotHist0)
         self.plotDet1(plotHist1)
@@ -87,6 +87,9 @@ class dataHist():
         params = model.make_params(amplitude=params1[0], center=params1[1], sigma=params1[2], gamma=params1[3])
         result = model.fit(hist1, params, x=bin_c1)
         print result.fit_report()
+        f = open(os.path.join(self.fname, '..', "{}fitreport".format(self.fname)), 'wb+')
+
+    def saveStuff(self):
 
 
     def initPlot(self):

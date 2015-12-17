@@ -44,8 +44,11 @@ class rpiDBUploader():
             if stdout == self.filepath:
                 print "running cp -r -v /mnt/photonics/{0} /home/robin/Dropbox/hbar/{1}/".format(self.filepath, self.projects[self.project])
                 ssh_stdin, ssh_stdout, ssh_stderr = self.ssh.exec_command("cp -r -v /mnt/photonics/{0} /home/robin/Dropbox/hbar/{1}/ > /home/robin/Dropbox/hbar/{1}/rpiDBUploader.log".format(self.filepath, self.projects[self.project]))
-                print ssh_stdout.readline()
-                print ssh_stderr.readline()
+                try:
+                    print ssh_stdout.readline()
+                    print ssh_stderr.readline()
+                except:
+                    pass
                 print "Uploaded successfully! Exiting..."
                 break
             else:
