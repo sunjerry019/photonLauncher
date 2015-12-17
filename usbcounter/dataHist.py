@@ -77,20 +77,25 @@ class dataHist():
         params0 = raw_input("Guess for fitting parameters (amplitutde, center, sigma, gamma) separated by spaces. \n>>").strip().split(' ')
         model = SkewedGaussianModel()
         params = model.make_params(amplitude=params0[0], center=params0[1], sigma=params0[2], gamma=params0[3])
-        result = model.fit(hist0, params, x=bin_c0)
-        print result.best_values
-        print result.fit_report()
+        result0 = model.fit(hist0, params, x=bin_c0)
+        print result0.best_values
+        print result0.fit_report()
         plt.plot(bin_c1, hist1)
         plt.show()
         params1 = raw_input("Guess for fitting parameters (amplitutde, center, sigma, gamma) separated by spaces. \n>>").strip().split(' ')
         model = SkewedGaussianModel()
         params = model.make_params(amplitude=params1[0], center=params1[1], sigma=params1[2], gamma=params1[3])
-        result = model.fit(hist1, params, x=bin_c1)
-        print result.fit_report()
-        f = open(os.path.join(self.fname, '..', "{}fitreport".format(self.fname)), 'wb+')
-
-    def saveStuff(self):
-
+        result1 = model.fit(hist1, params, x=bin_c1)
+        print result1.fit_report()
+        f = open(os.path.join(self.fname, '..', "{}fitreport".format(self.fname)), 'w b+')
+        f.write("det 0")
+        for k,v in result0:
+            f.write("{}:{}\n".format(k,v))
+        f.write(result0.fit_report())
+        f.write("det 1")
+        for k,v in result1:
+            f.write("{}:{}\n".format(k,v))
+        f.write(result1.fit_report())
 
     def initPlot(self):
         # init gnuplot
