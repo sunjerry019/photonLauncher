@@ -2,8 +2,6 @@ import argparse
 import Gnuplot, Gnuplot.PlotItems, Gnuplot.funcutils
 import numpy as np
 import math
-from scipy.optimize import curve_fit
-from scipy.optimize import leastsq
 from lmfit.models import SkewedGaussianModel
 import matplotlib.pyplot as plt
 
@@ -71,24 +69,25 @@ class dataHist():
         bin_c0 = (binedges0[:-1] + binedges0[1:])/2
         bin_c1 = (binedges1[:-1] + binedges1[1:])/2
 
+        for i in xrange(len(hist0)):
+            f.write('{}\t{}\n'.format(bin_c0[i], hist0[i]))
+
+        plt.plot(bin_c0, hist0)
+        plt.show()
+        params0 = raw_input("Guess for fitting parameters (amplitutde, center, sigma, gamma) separated by spaces. \n>>").strip().split(' ')
         model = SkewedGaussianModel()
-        params = model.make_params(amplitude=10000, center=2900, sigma=100, gamma=0)
+        params = model.make_params(amplitude=params0[0], center=params0[1], sigma=params0[2], gamma=params0[3])
         result = model.fit(hist0, params, x=bin_c0)
         print result.best_values
         print result.fit_report()
+        plt.plot(bin_c1, hist1)
+        plt.show()
+        params1 = raw_input("Guess for fitting parameters (amplitutde, center, sigma, gamma) separated by spaces. \n>>").strip().split(' ')
+        model = SkewedGaussianModel()
+        params = model.make_params(amplitude=params1[0], center=params1[1], sigma=params1[2], gamma=params1[3])
+        result = model.fit(hist1, params, x=bin_c1)
+        print result.fit_report()
 
-        #plt.plot(bin_c0, hist0)
-        #plt.plot(bin_c0, result.best_fit)
-        #plt.show()
-        a = 0
-
-        for i in xrange(60):
-            b = ((hist0[i] - result.best_fit[i]) ** 2) / (93.3)**2
-            a += b
-
-        print a
-        for i in xrange(len(hist0)):
-            f.write('{}\t{}\n'.format(bin_c0[i], hist0[i]))
 
     def initPlot(self):
         # init gnuplot
