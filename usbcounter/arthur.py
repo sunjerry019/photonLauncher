@@ -36,13 +36,15 @@ def main():
     parser = argparse.ArgumentParser(description="arthur.py: Calls getresponse to obtain the photon counts for one second from the APDs.")
     #parser.add_argument('time', metavar='t', type=int, nargs='+', help="Duration in seconds for which to record photon counts from APDs. Set to -1 to keep running until Ctrl-C is pressed.")
     parser.add_argument('total', metavar='n', type=int, help="Number of readings to record photon counts from APDs. Set to -1 to keep running until Ctrl-C is pressed.")
+    parser.add_argument('intTime', metavar='t', type=int, help="Integration time of the APD in ms")
+    parser.set_defaults(intTime=1000)
     parser.add_argument('-p', dest = 'plot', action = 'store_true', help = 'Use this flag to enable live plotting')
     args = parser.parse_args()
 
-    a = Arthur(args.total, args.plot)
+    a = Arthur(args.intTime, args.total, args.plot)
 
 class Arthur():
-    def __init__(self, t, plot = False):
+    def __init__(self, intTime, t, plot = False):
         print "Initialising variables.."
         self.togglePlot = plot
         self.timestamp = time.strftime('%Y%m%d_%H%M%S')
@@ -50,6 +52,10 @@ class Arthur():
         self.duration = t
         self.raw_savefp = os.path.join('data', self.timestamp)
         self.savefp = os.path.join('data', self.timestamp+'.json')
+        self.intTime = intTime
+
+        p = subprocess.Popen(['./getresponse', '-n', 'TIME{}'.format(self.intTime)], stdout = subprocess.PIPE)
+        print "Integration time set to {} ms".format(self.intTime)
 
         self.d1 = deque([0] * 120)
         self.d2 = deque([0] * 120)
@@ -66,6 +72,7 @@ class Arthur():
             print "Saving raw ASCII file to: {}".format(self.raw_savefp)
         self.dt = 0.2
         self.initSaveFile()
+
         if self.togglePlot:
             self.initPlot()
         try:

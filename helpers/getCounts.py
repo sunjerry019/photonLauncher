@@ -11,8 +11,11 @@ import Gnuplot, Gnuplot.PlotItems, Gnuplot.funcutils
 class getCounts():
     """ Returns a generator function that outputs the counts from the usbcounter device.
     t is the no. of data points to acquire. -1 for endless stream """
-    def __init__(self):
+    def __init__(self, it):
+        intTime = it if it else 1000
         timestamp = time.strftime('%Y%m%d_%H%M')
+        p = subprocess.Popen(['./getresponse', '-n', 'TIME{}'.format(intTime)], stdout = subprocess.PIPE)
+        print "Integration time set to {} ms".format(intTime)
     def start(self,t):
         if t == -1:
             generator = (self.talk() for i in itertools.count(0, 1))
@@ -47,6 +50,7 @@ class logCounts():
             gen = gen.start(t)
             for i in gen:
                 f.write("{}\t{}\n".format(i[0], i[1]))
+
 class plotCounts():
     """ Uses getCounts() to plot the counts. Uses a temp file. """
     def __init__(self):
