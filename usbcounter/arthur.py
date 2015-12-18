@@ -36,12 +36,11 @@ def main():
     parser = argparse.ArgumentParser(description="arthur.py: Calls getresponse to obtain the photon counts for one second from the APDs.")
     #parser.add_argument('time', metavar='t', type=int, nargs='+', help="Duration in seconds for which to record photon counts from APDs. Set to -1 to keep running until Ctrl-C is pressed.")
     parser.add_argument('total', metavar='n', type=int, help="Number of readings to record photon counts from APDs. Set to -1 to keep running until Ctrl-C is pressed.")
-    parser.add_argument('intTime', metavar='t', type=int, help="Integration time of the APD in ms")
-    parser.set_defaults(intTime=1000)
+    parser.add_argument('--t', metavar='intTime', type=int, default=1000, help='Integration time of the APD in ms')
     parser.add_argument('-p', dest = 'plot', action = 'store_true', help = 'Use this flag to enable live plotting')
     args = parser.parse_args()
 
-    a = Arthur(args.intTime, args.total, args.plot)
+    a = Arthur(args.t, args.total, args.plot)
 
 class Arthur():
     def __init__(self, intTime, t, plot = False):
