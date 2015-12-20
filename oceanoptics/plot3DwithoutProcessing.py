@@ -12,14 +12,14 @@ def main():
 
 def plot(filename, title):
     g = Gnuplot.Gnuplot()
+    g("set term epscairo size 10, 7.5")
     g("set dgrid3d 30,30")
     g("set hidden3d")
-    g("set term epscairo size 10, 7.5")
     g('set output "{}.eps"'.format(filename))
     g('set title "{}"'.format(title))
     g('set xlabel "Wavelength (nm)"')
     g('set ylabel "Time (s)"')
     g('set zlabel "Intensity (Arbitrary Units)"')
-    g('plot "{}" u 1:2:3 with lines'.format(filename))
+    g('splot "{}" u 1:2:3 with lines'.format(filename))
 
 main()

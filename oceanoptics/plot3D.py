@@ -66,9 +66,9 @@ class plot3D():
                     start_read = True
     def plot(self):
         g = Gnuplot.Gnuplot()
+        g("set term epscairo size 10, 7.5")
         g("set dgrid3d 30,30")
         g("set hidden3d")
-        g("set term epscairo size 10, 7.5")
         g('set output "{}.eps"'.format(self.outFilename[:-4]))
         g('set xlabel "Wavelength (nm)"')
         g('set ylabel "Time (s)"')
