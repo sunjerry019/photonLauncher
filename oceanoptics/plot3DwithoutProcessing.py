@@ -10,7 +10,7 @@ def main():
 
     plot(args.filename, args.title)
 
-def plot(self, filename, title):
+def plot(filename, title):
     g = Gnuplot.Gnuplot()
     g("set dgrid3d 30,30")
     g("set hidden3d")
