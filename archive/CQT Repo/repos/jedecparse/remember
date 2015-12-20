@@ -1,1 +1,0 @@
-./jedecprog -f ~/vm/cplds/tmst4/test1_impl1.jed -C XO2-1200HC -j /dev/ioboards/usbtmst0 -vv

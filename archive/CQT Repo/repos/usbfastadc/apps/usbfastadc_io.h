@@ -1,1 +1,0 @@
-link ../2.6/usbfastadc_io.h

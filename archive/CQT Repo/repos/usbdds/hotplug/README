@@ -1,3 +1,0 @@
-We only have a udev hotplugger version.
-
-61-usbdds.rules goes into /etc/udev/rules.d

@@ -1,9 +1,0 @@
-#This is to unbind specified FTDI usb device from ftdi_sio (usb to serial converter) to allow communication by using FTDI released D2XXX driver
-
-ATTRS{serial}=="AH009VCX", MODE="0666"
-
-ATTRS{interface}=="FT245R USB FIFO", RUN+="/bin/sh -c 'echo $kernel > /sys/bus/usb/drivers/ftdi_sio/unbind'"
-
-
-
-

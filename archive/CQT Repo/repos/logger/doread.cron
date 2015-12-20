@@ -1,2 +1,0 @@
-# file that reads out the ohmmeter every minute
-* * * * * /home/qitlab/programs/logger/doread
