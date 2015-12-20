@@ -1,0 +1,3 @@
+To clone CQT Repo run:
+	wget -r --no-parent --reject "index.html*" http://137.132.69.206/repos/
+
