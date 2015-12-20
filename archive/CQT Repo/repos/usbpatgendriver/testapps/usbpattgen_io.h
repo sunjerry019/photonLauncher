@@ -1,0 +1,1 @@
+link ../2.6/usbpattgen_io.h

@@ -1,0 +1,59 @@
+Buglist:
+
+0010: (pending)
+      Kernel issues on 12.3 with remapping??
+
+0009: (pending)
+      Udev rules seem not to work on opensuse 12.3 (symlink cannot be created)
+
+
+-----------------------------------------------------
+0008: (sortof fixed) 
+      The memory pieces for DMA transfer are too short for fast transfer. They
+      should be at least of the page size, or the size of a buffer piece. Not
+      clear how system reacts on short packages, though.
+      Using 4k transfer sizes now, seems to work fine. Larger ones also
+      seemed to work, keeping potentially the latency lower. However, this led
+      to a number of un-understood short reads.
+
+0007: (resolved) returns an odd number of samples - is related to waveform
+      test of end-of-transfer. Will not change this because it guarentees
+      at least one more read than requested.
+
+0006: (understood) received packet length and Terminal count register seems to
+      contain a mismatch - too many bytes sampled. Need to check if it still
+      persists with fix for 0005.
+      This was part of the larger issue related to latency problems on the
+      host side. Part of the problem was a running GPIF after an overflow.
+      Now ok-ish, but still not ideal. Perhaps this can be better dealt with
+      with a different waveform.
+
+0005: (Fixed) On fresh bootup, the device reads back only 0, and cpld write
+      commands seem not to work. related to 0002? This is related to a reading
+      of RDY0 line; sometimes GPIF gets stuck in this waiting loop?
+      Problem was waveform code and CPLD routing of DCA to RDY. OK for single
+      channel samples for now.
+
+0004: (fixed w firmware svn-10) number of returned bytes not complete. Missing
+short packages. Problem was Int4clr before underlying source test in handler
+code.
+
+0003: (obsolete?) sending serial packets too fast fails the device with an
+      error. Seems not too a problem anymore, maybe this was fixed with
+      another fix.
+
+0002: (Resolved)
+not every time the device is connected the readout seems to work. Isolate
+  problem to driver, FXfirmware, CPLD. still there as of firmware svn-10. It
+  seems to help to re-upload the firmware. Got much less of a problem with
+  use of Abort option for GPIF. Need to verify if this helps, and eventually
+  integrate in normal code flow. Seems to be gone with fix for 0005.
+
+
+0001: (fixed w firmware svn-8)
+jtag programming works only for combination firmware4, driver3, and not for
+versions that implemented the EP2 machinery.
+Observation: firmware4 works with driver7 (mod to read firmware) and
+firmware4. Problem was wrong EXIF clearing by single bit operation.
+
+

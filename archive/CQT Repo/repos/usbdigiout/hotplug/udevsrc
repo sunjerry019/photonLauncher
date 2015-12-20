@@ -1,0 +1,11 @@
+#set of udev rules to cope with a new device driver
+# rudimentary rules to work with one device. Still dirty. chk040207
+
+SUBSYSTEM=="usb", ACTION=="add", ENV{PRODUCT}=="4b4/1240/*", RUN+="/sbin/insmod DRIVERPATH/usbdigiout.ko"
+
+SUBSYSTEM=="usb", ACTION=="remove", ENV{PRODUCT}=="4b4/1240/*", RUN+="/sbin/rmmod usbdigiout"
+
+# create a symbolic link to the device ina ioboards directory with the correct
+# owner set to the original device.
+
+SUBSYSTEM=="usb", ACTION=="add", KERNEL=="*digiout*", GROUP="users", SYMLINK="ioboards/%k"

@@ -1,0 +1,12 @@
+Feature requests for this unit
+
+0003: (pending)
+      allow for different frequencies other than the 40Mbit/s selection
+
+0002 (fixed)
+Add proper power-down mode for ADC and Clock chip
+
+0001 (pending)
+Add macro definitions for different CPLD modes
+
+---------------------------------

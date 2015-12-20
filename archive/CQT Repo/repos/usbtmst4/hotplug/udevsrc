@@ -1,0 +1,12 @@
+#set of udev rules to cope with a new device driver
+
+SUBSYSTEM=="usb", ACTION=="add", ENV{PRODUCT}=="4b4/123a/*", RUN+="/sbin/insmod DRIVERPATH/usbtmst4.ko"
+
+# create a symbolic link to the device in an ioboards directory with the correct
+# owner set to the original device.
+
+ACTION=="add", KERNEL=="*usbtmst*", GROUP="users", SYMLINK+="ioboards/%k"
+
+# Following rule that generates a link to the device containing the serial no.
+
+ACTION=="add", KERNEL=="*usbtmst*", ATTRS{serial}=="[A-Z]*", GROUP="users", SYMLINK+="ioboards/%s{serial}"

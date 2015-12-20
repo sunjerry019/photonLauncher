@@ -1,0 +1,11 @@
+# This is a script to generate a DDS control sequence with the dds_encode
+# program. Pipe this into the dds_encode, and have the sequence either
+# stored into a binary command file, or to the DDS chip directly.
+# The latter can be done with cat example1.script | dds_encode
+# Don't forget the full stop at the end ...
+
+Levels 2 ; Mode singletone
+frequency 1 125 MHz ; frequency 0 1134.77 kHz
+amplitude 2 1 Vrms
+.
+

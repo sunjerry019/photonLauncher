@@ -1,0 +1,5 @@
+We only have a udev hotplugger version:
+
+for SuSE 10.0 and above, probably for the other stuff we have in the lab
+
+61-usbdigiout.rules goes into /etc/udev/rules.d

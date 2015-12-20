@@ -1,0 +1,7 @@
+First install d2xx library from the tar file (refer enclosed instructions. Compiling the examples are optional...)
+
+Makefile is for compiling the main program synthusb.c
+
+Add exception for usb synthesizer to unbind from ftdi_sio and gives writing permission with the following steps (needs sudo):
+cp d2xx.rules /etc/udev/rules.d/
+/etc/init.d/udev restart

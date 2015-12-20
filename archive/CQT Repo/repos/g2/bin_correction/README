@@ -1,0 +1,17 @@
+Exact details of how the timestamp card works can be found on the wiki. Here we just have a short summary of the problem:
+
+To get the nominal 125ps resolution, the timestamp card takes in a 10MHz reference clock, multiplies it to a 500MHz clock signal, then 'subdivides' the 2ns period into 16 bins (4 bits). Ideally, each of these 16 bins are of equal length [125ps each], but in practice it's not quite exact. This will vary between devices, but on the same device it should be the same across all the channels.
+
+This can show up in our results, eg in a g2 curve, small ripples/oscillations can occur where you might actually expect a straight line or a nice curve. This became an issue because we want to look at the g2 histograms from the timereversal expt in close detail.
+
+In the past, PK has tried to characterize this, but not to fix it.
+
+| IDEA |
+--------
+
+To characterize the timestamp, have it measure a random source (eg APD measuring ambient light). The g2 should be totally flat if we look at the distribution of the last 4 bits of each timestamp entry. Any structure/fluctuations (above poisonnian error) we measure will be due to this unequal binning. From this, we can infer the "true" length of each of these 16 bins.
+
+We want to measure this properly, then correct for it.
+
+timestamp_last4bits_histo.c : for measuring the last 4 bits and determining the bin lengths
+g2_ts_bincorrection.c : corrects for the bin lengths, and produces corrected and uncorrected g2 histograms for comparison

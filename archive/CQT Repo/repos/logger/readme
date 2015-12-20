@@ -1,0 +1,17 @@
+This is some program collection for temperature logging. The thing is
+yet not self-configuring, and it has still hardcoded paths in it. A few
+things  to remember when setting it up:
+
+- choose the correct device address. This is hardcoded in the doread script in
+  this directory.
+- make sure that a log directory exists. Its location is hardcoded in the
+  doread script, and there should be a link from the htdocs directory.
+- make sure that there is a getresponse program. Path is hardcoded into doread
+  scrpt
+- install the logger program with crontab -i doread.cron
+- enable apache2 as a web server
+- copy the files from htdoc in this install directory into the server document
+  root (usually /srv/www/htdocs)
+- copy the cgi scripts into the cgi directory root (usually /srv/www/cgi-bin)
+- make sure the server has a image directory that is wriable by the user
+  wwww:wwwrun

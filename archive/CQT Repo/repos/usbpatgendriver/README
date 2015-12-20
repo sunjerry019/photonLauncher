@@ -1,0 +1,74 @@
+This directory contains the usb pattern generator driver, some
+installation scripts and testing software for that driver. Docu as usual in
+preliminary stage.
+
+History: This version of driver (usbpattgen2) works with kernels 2.6.11,
+         2.6.13 and 2.6.18 in SuSE  distributions 9.3, 10.0, 10.2 
+         chk, 11.3.07
+
+         minor code cleanup and group management. Removed old hotplug
+	 mechanism. usbrfsrc cleanup. Migration to svn. Tested on kernel
+	 2.6.22.19 x86_64 on SuSE 10.3, but should work on debian as well
+	 15.11.2009 chk
+
+	 minor code cleanup to match kernel 2.6.34 in SuSEd distro 11.3,
+	 permission adjustment for make udev 17.9.2010 chk
+
+directory content
+
+2.6/      directory containing the kernel driver and corresponding support
+	  files. In particular, the usbpattgen_io.h contains the ioctl
+	  definitions needed for any application talking to the device.
+	  current (as in 11.3.07) version is usbtimetag2.c
+
+hotplug/  directory containing the sources for the udev hotplugging method.
+
+desginstuff/ contains some random thoughts which came up during the driver
+	     design. more in the firmware directory of the card in
+	     programs/sdcc/patterngen/....
+
+testapps/ stuff used to test various firmeware and driver evolution stages
+
+oldstuff/ previous development stages. Should not be necessary to look into.
+
+Makefile  Script to do what you most likely want to do with these files
+
+
+Installation:
+
+Before you start to install or compile anything, make sure the directory is
+located in a reasonably stable place, and that this directory is not very
+likely to removed to any other place as the driver will be loaded from
+hotplugging out of this directory structure. In CQT, we have this directory
+typically in ~/programs/.
+
+Then, you have to compile the driver itself. Remember that for the moment,
+there is only a port for a 2.6 kernel, and no backport for the 2.4 machines
+(not sure I want to do this anyway). The compilation is done from the main
+driver directory by saying
+
+        make
+
+This compiles kernel, apps and prepares the device group permissions in the
+hotplugging scripts according to the distro you are using (tested on SuSE,
+presumably works now also for debian and derivatives).
+By now, only the udev device hotplugging mechanism is implemented, the older
+hotplugging scheme is apparently not used anymore. Refer to an older version
+if you need that (suse 9.3 or so). Explanation of the details see further down. 
+
+You install the hotplugging stuff with the command
+
+    make udev
+
+This installs a udev rule file and a device driver loader into the directory
+/etc/udev/rules.d/ of a unified hotplugging mechanism.
+
+By now, everything should be done. You can check the success of the endeavour
+by plugging in a device and looking for a newly created device file
+/dev/ioboards/pattgen_generic. The entry in /dev/ioboards is actually only a
+link to an entry in the parent directory for historical reasons. If the link
+creation went wrong, check /dev/ directly.
+
+// Here some structural docu should reside, although in this early stage the
+// file programs/sdcc/patterngen/readme in the firmware tree should contain
+// more information.

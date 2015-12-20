@@ -1,0 +1,511 @@
+#!/usr/bin/wish
+
+# updated to work with new usb drivers (getresponse)
+# some cleanup to remove obsolete programs.
+# More cleanup needed: 
+# - find various usb counters in system
+# - allow processing lines in gnuplot
+# - allow for nim/ttl counting
+
+# variable definitions and default values:
+set nru 0
+set RUNNING 0
+cd
+set wd [pwd]
+set sd [pwd] ; set sdl $sd ; # saving directory
+set COMMENT ""
+set tipeb 100 ; set TIMEPERBIN $tipeb ; # time per bin in millisec
+set binu 40 ; set BINNUM $binu ; # initial bin number
+set tmpfile "[pwd]/.emil.dat"
+set TAXMIN "0" ; set TAXMAX $binu ; set YAXMIN "0" ; set YAXMAX ""
+
+set DEVICE "/dev/ttyACM0"; # device file for USB unit
+
+set stretchval 1.0
+set stretchv $stretchval ; # stretch factor for coincidences
+set gpcnt 0 ; # counter fuer gnuplot-aufrufe
+set cv1 0 ; set cv2 0 ; set cv3 0 ; set cv4 0 ; # for display
+#set cmd(7) "0:(\$1/\$2)" ;
+#set cmd(8) "0:0"
+#set cmd(9) "0:0"
+
+
+for {set i 1} {$i < 5} {incr i 1} {
+    set co($i) 0
+    set dispvar($i) 1
+}
+#for {set i 8} {$i < 10} {incr i 1} {
+#    set co($i) 0
+#    set dispvar($i) 0
+#}
+
+set farbe(1) 1; set fa2(1) "red"
+set farbe(2) 3; set fa2(2) "blue"
+set farbe(3) 4; set fa2(3) "magenta"
+set farbe(4) 2; set fa2(4) "dark green"
+set farbe(5) 6; set fa2(5) "brown"
+set farbe(6) -1; set fa2(6) "black"
+set farbe(7) 5; set fa2(7) "cyan"
+set farbe(8) 8; set fa2(8) "orange"
+set farbe(9) 7; set fa2(9) "yellow"
+set farbe(10) 9; set fa2(10) "orangered"
+set farbe(11) 0; set fa2(11) "snow3"
+
+
+# main button tree
+frame .mainknobs
+button .mainknobs.start -text "start" -command runproc
+bind .mainknobs.start <Return> {.mainknobs.start invoke}
+pack .mainknobs.start -side left
+button .mainknobs.stop -text "stop" -command haltbutton
+bind .mainknobs.stop <Return> {.mainknobs.stop invoke}
+pack .mainknobs.stop -side left
+button .mainknobs.clear -text "clear" -command clearbutt
+bind .mainknobs.clear <Return> {.mainknobs.clear invoke}
+pack .mainknobs.clear -side left
+pack .mainknobs
+
+
+
+# entry for bin number
+frame .binnum
+label .binnum.txt -text "number of time bins:"
+entry .binnum.entry -width 10 -relief sunken -bd 2 -textvariable binu
+bind .binnum.entry <Return> {
+    if {$binu > 0 && $binu<10000} {
+	set BINNUM [expr int($binu)]
+    }
+    set binu $BINNUM
+}
+pack .binnum.txt .binnum.entry -side left
+pack .binnum
+
+# entry for time per bin
+frame .tiperbin
+label .tiperbin.txt -text "time per bin in msec:"
+entry .tiperbin.entry -width 10 -relief sunken -bd 2 -textvariable tipeb
+bind .tiperbin.entry <Return> {
+    if {$tipeb >= 1 } {
+	set TIMEPERBIN [expr int($tipeb)]
+    }
+    set tipeb $TIMEPERBIN
+}
+pack .tiperbin.txt .tiperbin.entry -side left
+pack .tiperbin;			       
+
+# stretch factor entry
+frame .stf
+label .stf.t -text "coincidence stretch factor:"
+entry .stf.e -width 5 -relief sunken -bd 2 -textvariable stretchv
+bind .stf.e <Return> {
+    if {$stretchv >= 1.0} {
+	set stretchval [expr int(10*$stretchv)/10.0]
+    }
+    set stretchv $stretchval
+}
+pack .stf.t .stf.e -side left
+#pack .stf
+
+# diagnosis widgets:
+frame .diag
+label .diag.l1 -text "number of gnuplot calls: "
+label .diag.l2 -width 6 -textvariable gpcnt
+pack .diag.l1 .diag.l2 -side left
+# pack .diag
+
+# readout
+set FNT "-*-courier-*-r-*-*-36-180-*-*-*-*-*-*"
+frame .cnts -borderwidth 2 -relief ridge
+# label .cnts.l -text "offset:"
+for {set i 1} {$i < 5} {incr i 1} {
+    checkbutton .cnts.check$i -variable dispvar($i) -selectcolor $fa2($i)
+#    entry .cnts.o$i -width 5 -relief sunken -textvariable co($i)
+#    bind .cnts.o$i <Return>
+    label .cnts.t$i -text "counter $i: " -font $FNT 
+    label .cnts.c$i -width 6 -textvariable cv$i -font $FNT -anchor e -fg $fa2($i)
+grid .cnts.check$i .cnts.t$i .cnts.c$i
+}
+#if {0} {checkbutton .cnts.check2 -variable dispvar(2) -selectcolor $fa2(2)
+#entry .cnts.o2 -width 5 -relief sunken -textvariable co(2)
+#bind .cnts.o2 <Return>
+#label .cnts.t2 -text "counter 2: " -font $FNT
+#label .cnts.c2 -width 8 -textvariable cv2 -font $FNT -anchor e -fg $fa2(2)
+#checkbutton .cnts.check3 -variable dispvar(3) -selectcolor $fa2(3)
+#entry .cnts.o3 -width 5 -relief sunken  -textvariable co(3)
+#bind .cnts.o3 <Return>
+#label .cnts.t3 -text "counter 3: " -font $FNT
+#label .cnts.c3 -width 8 -textvariable cv3 -font $FNT -anchor e -fg $fa2(3)
+#checkbutton .cnts.check4 -variable dispvar(4) -selectcolor $fa2(4)
+#entry .cnts.o4 -width 5 -relief sunken  -textvariable co(4)
+#bind .cnts.o4 <Return>
+#label .cnts.t4 -text "counter 4: " -font $FNT
+#label .cnts.c4 -width 8 -textvariable cv4 -font $FNT -anchor e -fg $fa2(4)
+#}
+
+#label .cnts.cmd -width 10
+
+#for {set i 7} {$i < 10} {incr i 1} {
+#    checkbutton .cnts.check$i -variable dispvar($i) -selectcolor $fa2($i)
+#    entry .cnts.o$i -width 5 -relief sunken -textvariable co($i)
+#    label .cnts.t$i -text "index $i: " -font $FNT
+#    entry .cnts.cmd$i -relief sunken -width 15 -textvariable cmd($i)
+#    label .cnts.c$i -width 8 -fg $fa2($i); #-textvariable cv$i -font $FNT -anchor e -fg orange
+#}
+#grid .cnts.l .cnts.o4 .cnts.t4 .cnts.c4
+#grid .cnts.l .cnts.o1 .cnts.t1 .cnts.c1
+#grid .cnts.l .cnts.o2 .cnts.t2 .cnts.c2
+#grid .cnts.l .cnts.o3 .cnts.t3 .cnts.c3
+#for {set i 1} {$i < 7} {incr i 1} {
+
+#	grid .cnts.check$i .cnts.l .cnts.o$i .cnts.t$i .cnts.cmd  .cnts.c$i 
+
+#}
+#for {set i 7} {$i < 10} {incr i 1} {
+#	grid .cnts.check$i .cnts.o$i .cnts.t$i .cnts.cmd$i .cnts.c$i 
+#	grid .cnts.check$i .cnts.l .cnts.o4  .cnts.t$i .cnts.cmd$i; # .cnts.c$i 
+#}
+pack .cnts
+
+# file operation buttons
+frame .fops
+button .fops.save -text "save" -command savebutton
+button .fops.exit -text "exit" -command exitbutton
+button .fops.print -text "print" -command printbutton
+bind .fops.save <Return> {.fops.save invoke}
+bind .fops.exit <Return> {.fops.exit invoke}
+bind .fops.print <Return> {.fops.pint invoke}
+pack .fops.save .fops.exit .fops.print -side left
+pack .fops
+
+# axis options
+frame .axops
+button .axops.taxis -text "time axis" -command taxisbutton
+button .axops.yaxis -text "y axis" -command yaxisbutton
+#button .axops.more -text "more commands" -command morebutton
+bind .axops.taxis <Return> {.axops.taxis invoke}
+bind .axops.yaxis <Return> {.axops.yaxis invoke}
+#bind .axops.more <Return> {.axops.more invoke}
+#pack .axops.taxis .axops.yaxis axops.more -side left
+pack .axops.taxis .axops.yaxis -side left
+pack .axops
+
+# -------------------------------------------------------------
+# working procedures 
+
+#procedure to open gnuplot
+set gnu 1      ;# file handle
+proc gnuopen {} {
+    global gnu
+    set gnu [open {| gnuplot -title  counters 2>/dev/null} w]
+    puts $gnu "set terminal x11";
+}
+gnuopen
+
+# procedure to refresh gnuplot
+proc regnu {} {
+    global gnu wd TAXMIN TAXMAX YAXMIN YAXMAX tmpfile stretchval gpcnt co dispvar cmd farbe binu
+   # puts $gnu "plot \[$TAXMIN\:$TAXMAX\] \[$YAXMIN\:$YAXMAX\] '$tmpfile' using 0:(\$1-$co0) notitle with  lines lt 1 lw 3, '$tmpfile' using 0:(\$2-$co1)  notitle with lines lt 3 lw 3,  '$tmpfile' using 0:($stretchval*\$3 - $co2)  notitle with lines lt 4 lw 3,  '$tmpfile' using 0:(\$4 - $co3)  notitle with lines lw 3"
+    set TAXMAX $binu
+    set pltcmd "plot \[$TAXMIN\:$TAXMAX\] \[$YAXMIN\:$YAXMAX\]"
+    for {set i 1} {$i < 5} {incr i 1} {
+	if { $dispvar($i) == 1} {
+	    lappend pltcmd " '$tmpfile' using 0:(\$$i - $co($i)) notitle w lines lt $farbe($i) lw 3, "
+	}
+    }
+#    for {set i 7} {$i < 10} {incr i 1} {
+#	if {$dispvar($i) == 1} {
+#	    lappend pltcmd " '$tmpfile' using $cmd($i) notitle w lines lt $farbe($i) lw 3,"
+#	}
+ #   }
+#only print if there is something to print
+    if {[llength $pltcmd] > 1} {
+	puts $gnu [string trimright [join $pltcmd] ", "]
+
+	flush $gnu
+	incr gpcnt
+    }
+}
+# procedure to close gnuplot
+proc gnuclose {} {
+    global gnu
+    # puts $gnu "exit"
+    catch {close $gnu}
+}
+
+# procedure for lin scale 
+proc gnulin {} {
+    global gnu
+    puts $gnu "set nologscale y"
+    flush $gnu
+}
+proc gnulog {} {
+    global gnu
+    puts $gnu "set logscale y"
+    flush $gnu
+}
+# gnu printing utilities
+proc gnups {printer} {
+    global gnu
+    puts $gnu "set terminal postscript eps color solid \"Helvetica\" 24 "
+    puts $gnu "set size 1.5,1.5"
+    puts $gnu "set output \"|lpr -P$printer \""
+    regnu ; puts $gnu "set terminal x11"; puts $gnu "set output" ; puts $gnu "set size 1,1"; regnu
+}
+proc gnueps {file} {
+    global gnu sd
+    puts $gnu "set terminal postscript eps color solid \"Helvetica\" 24"
+    puts $gnu "set output \"$sd/$file\""
+    regnu ; puts $gnu "set terminal x11"; puts $gnu "set output" ; regnu
+}
+
+
+
+
+# procedures for axis control
+proc taxisbutton {} {
+    global TAXMIN TAXMAX
+    set tmi $TAXMIN ; set tma $TAXMAX
+    if {[winfo exists .tax]} {destroy .tax ; return}
+    frame .tax -relief ridge -borderwidth 2
+    button .tax.auto -text "auto" -command {
+	set tmi [set TAXMIN ""] ; set tma [set TAXMAX ""] ; regnu }
+    label .tax.l1 -text "t start: "
+    entry .tax.e1  -width 10 -relief sunken -bd 2 -textvariable tmi
+    bind  .tax.e1 <Return> { if {$tmi < $TAXMAX } {
+	set TAXMIN $tmi ; regnu } else { set tmi $TAXMIN } }
+    label .tax.l2 -text "t end: "
+    entry .tax.e2  -width 10 -relief sunken -bd 2 -textvariable tma
+    bind  .tax.e2 <Return> { if {$tma > $TAXMIN } {
+	set TAXMAX $tma ; regnu } else { set tma $TAXMAX } }
+    button .tax.ok -text "ok" -command {destroy .tax}
+    pack .tax.auto .tax.l1 .tax.e1 .tax.l2 .tax.e2 .tax.ok -side left
+    pack .tax
+}
+
+proc yaxisbutton {} {
+    global YAXMIN YAXMAX
+    set ymi $YAXMIN ; set yma $YAXMAX
+    if {[winfo exists .yax]} {destroy .yax ; return}
+    frame .yax -relief ridge -borderwidth 2 ; frame .yax.1 ; frame .yax.2
+    button .yax.1.auto -text "auto" -command {
+	set ymi [set YAXMIN ""] ; set yma [set YAXMAX ""] ; regnu }
+    label .yax.1.l1 -text "y start: "
+    entry .yax.1.e1  -width 10 -relief sunken -bd 2 -textvariable ymi
+    bind  .yax.1.e1 <Return> { if {$ymi < $YAXMAX } {
+	set YAXMIN $ymi ; regnu } else { set ymi $YAXMIN } }
+    label .yax.1.l2 -text "y end: "
+    entry .yax.1.e2  -width 10 -relief sunken -bd 2 -textvariable yma
+    bind  .yax.1.e2 <Return> { if {$yma > $YAXMIN } {
+	set YAXMAX $yma ; regnu } else { set yma $YAXMAX } }
+    button .yax.1.ok -text "ok" -command {destroy .yax}
+    set YSCALE 1
+    radiobutton .yax.2.lin -text "lin scale" -variable YSCALE -value 1 \
+	    -command { gnulin ; regnu }
+    radiobutton .yax.2.log -text "log scale" -variable YSCALE -value 2 \
+	    -command { gnulog ; regnu }
+    pack .yax.1.auto .yax.1.l1 .yax.1.e1 .yax.1.l2 .yax.1.e2 .yax.1.ok \
+	    -side left
+    pack .yax.2.lin .yax.2.log -side left
+    pack .yax.1 .yax.2 ; pack .yax
+}
+# procedure for more commands
+
+proc morebutton {} {
+    global COMMANDE
+    set commande $COMMANDE
+    if {[winfo exists .mb]} {destroy .mb ; return}
+    frame .mb -relief ridge -borderwidth 2;
+    checkbutton .mb.b4 -text "gnuplot command" -variable b4
+    entry .mb.e4 -width 30 -relief sunken -bd 2 -textvariable COMMANDE
+    pack .mb.b4 .mb.e4 -side left
+    pack .mb
+}
+# procedure to kill time (wait for n seconds), only for debug!!!
+proc killtime {tim} {
+    for {set i 0} {$i < [expr $tim*6000]} {incr i 1} {set u 2}
+}
+
+# procedure for halt button
+proc haltbutton {} {
+    global RUNNING
+    set RUNNING 0
+}
+
+
+proc clearbutt {} {
+    global nru SAVED
+    .tiperbin.entry configure -state normal
+    .binnum.entry configure -state normal
+    set nru 0
+}
+
+# procedure to loop during run - start button
+proc runproc {} {
+    global RUNNING nru BINNUM TIMEPERBIN tmpfile
+    global DEVICE serialhandle READRESULT GOTSTRING
+    global cv1 cv2 cv3 cv4
+    if {$RUNNING != 0} return
+    set RUNNING 1
+#    .tiperbin.entry configure -state disabled
+#    .binnum.entry configure -state disabled
+    .mainknobs.start configure -relief sunken
+
+    # try to open file
+    set serialhandle [open $DEVICE r+]
+
+    # establish the reading procedure
+    fileevent $serialhandle readable { 
+	gets $serialhandle READRESULT
+	set GOTSTRING 1
+    } 
+
+    if {0 < 1} {
+	# eventually clear some nonsense in the pipe
+	puts $serialhandle "time $TIMEPERBIN" ; flush $serialhandle
+	set GOTSTRING 0
+	if {$nru == 0} {
+	    set GOTSTRING 0
+	    puts $serialhandle "time $TIMEPERBIN" ; flush $serialhandle
+	    puts $serialhandle  "COUNTS?" ; flush $serialhandle
+	    while {$GOTSTRING == 0 } { update }
+	    set tmp $READRESULT
+	    exec echo $tmp >> $tmpfile
+	    exec tail -n $BINNUM $tmpfile >$tmpfile.2
+	    exec mv $tmpfile.2 $tmpfile
+	    set cv1 [lindex $tmp 0]
+	    set cv2 [lindex $tmp 1]
+	    set cv3 [lindex $tmp 2]
+	    set cv4 [lindex $tmp 3]
+	}
+    } else {regnu; .mainknobs.start configure -relief raised ; set RUNNING 0 ; return }
+    regnu
+    update
+    
+    while {[expr ($RUNNING != 0) ]} {
+	set GOTSTRING 0
+	# set timing for every scan new ; it may have changed from the GUI
+	puts $serialhandle "time $TIMEPERBIN" ; flush $serialhandle
+	# request the counts
+	puts $serialhandle "counts?" ; flush $serialhandle
+	while {$GOTSTRING == 0} { update }; # wait until we get a response
+	set tmp $READRESULT
+	exec echo $tmp >> $tmpfile
+	exec tail -n $BINNUM $tmpfile >$tmpfile.2
+	exec mv $tmpfile.2 $tmpfile
+
+	set cv1 [lindex $tmp 0]
+	set cv2 [lindex $tmp 1]
+	set cv3 [lindex $tmp 2]
+	set cv4 [lindex $tmp 3]
+	
+	regnu
+	update
+	set nru [expr $nru+1]
+	update
+    }
+    close $serialhandle
+    .mainknobs.start configure -relief raised
+    set RUNNING 0
+}
+
+
+# procedure save button
+proc savebutton {} {
+    global sd tmpfile
+    if {[winfo exists .fsel]} return
+    global fname COMMENT SAVED TIMEPERBIN BINNUM nru
+    if {[getfilename] == ""} return
+    exec cat $tmpfile >$sd/$fname
+    set outfile [open $sd/$fname a+ ]
+    puts $outfile "# output of counter program. Parameters:"
+    puts $outfile "# time per bin: $TIMEPERBIN Milliseconds"
+    puts $outfile "# current date: [exec date]"
+    puts $outfile "# comment on this run: $COMMENT"
+    close $outfile
+    set SAVED 1
+}
+proc getfilename {} {
+    global fname COMMENT sd sdl
+    frame .fsel -relief ridge -borderwidth 2
+    frame .fsel.dir
+    frame .fsel.one
+    frame .fsel.three
+    frame .fsel.two
+    label .fsel.dir.t -text "current directory: "
+    entry .fsel.dir.e -relief sunken -width 20 -bd 2 -textvariable sdl
+    .fsel.dir.e xview moveto 1
+    bind .fsel.dir.e <Return> {
+	if {[file isdirectory $sdl]} {set sd $sdl } else {set sdl $sd}
+    }
+    label .fsel.one.t -text "Enter file name: "
+    entry .fsel.one.e -relief sunken -width 20 -bd 2 -textvariable fname
+    label .fsel.three.t -text "current comment: "
+    entry .fsel.three.e -relief sunken -width 20 -bd 2 -textvariable COMMENT
+    bind .fsel.one.e <Return> {
+	if {[file exists $fname]} {
+	    pack .fsel.two.w .fsel.two.t .fsel.two.b -side left	    
+	} else { destroy .fsel }
+    }
+    label .fsel.two.w -bitmap warning
+    label .fsel.two.t -text " File exists "
+    button .fsel.two.b -text "Overwrite" -command { destroy .fsel }
+    button .fsel.two.c -text "Cancel" -command { set fname "" ; destroy .fsel }
+    bind .fsel.two.c <Return> {.fsel.two.c invoke}
+    pack .fsel.dir.t .fsel.dir.e -side left
+    pack .fsel.two.c -side right
+    pack .fsel.one.t .fsel.one.e -side left
+    pack .fsel.three.t .fsel.three.e -side left
+    pack .fsel.dir .fsel.one .fsel.three .fsel.two
+    pack .fsel
+    tkwait window .fsel
+    return $fname
+}
+
+
+
+# printer button
+set LP "lp"
+proc printbutton {} {
+    global LP
+    if {[winfo exists .pri]} return
+    frame .pri -relief ridge -borderwidth 2
+    frame .pri.one ; frame .pri.two ; frame .pri.three
+    label .pri.one.t -text "PostScript printer: "
+    entry .pri.one.e -width 5 -relief sunken -bd 2 -textvariable LP
+    button .pri.one.b -text "Print" -command {
+	gnups $LP ; destroy .pri ; return
+    }
+    label .pri.two.t -text "eps file : "
+    entry .pri.two.e -width 5 -relief sunken -bd 2 -textvariable efna
+    button .pri.two.b -text "save to" -command {
+	gnueps $efna ; destroy .pri ; return 
+    }
+    button .pri.three.b -text "cancel" -command {destroy .pri ; return }
+    pack .pri.one.t .pri.one.e .pri.one.b -side left
+    pack .pri.two.t .pri.two.e .pri.two.b -side left
+    pack .pri.three.b -side left
+    pack .pri.one .pri.two .pri.three -side top
+    pack .pri
+}  
+
+# procedure exit button
+proc exitbutton {} {
+    global tmpfile
+    gnuclose
+    if {[file exists $tmpfile]} {	
+	exec rm $tmpfile
+    }
+    exit
+}
+bind .fops.exit <Return> exit
+
+
+
+
+
+
+
+
+
+
+

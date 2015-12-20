@@ -1,0 +1,49 @@
+the usbco16 adapter framework is to replace the nudaq card and associated
+drivers.
+
+The driver here is intended to be used with the usb/co16 adapter card, but
+should be easily changable to meet the needs for other large bandwidth digital
+IO needs.
+
+For the co16 adapter card, the following line assignments are used for the FX2
+chip:
+
+PA port: 
+
+PA0-6: via a 573 buffer stage to pins 1-7, meant for digital output
+
+FD0-FD15: input pins 9-24 terminated to 0v/3.3V with 220 ohm each, then
+followed by a lcx573 buffer stage, feeding into the FD0-15 lines of the FX.
+
+CTL0: via a lcx573 buffer to pin 33 of the SCSI output; will be IACK
+
+RDY0: input pin, pin 34 terminated with 220 ohm into 0V/3.3V each, wil be ireq
+
+Basic firmware requirements:
+
+EP1 codes for controlling flow:
+- switching on EP2 flow (with waveform select parameter)
+- switching off EP2 flow
+- setting port A data
+- readback of port a data
+- some code which returns the card configuration if not provided by the core
+usb parameters.
+- program disable timer and start unit (special treatment of driver for PA pin
+xx
+- bit set/reset command for port A bits
+- readback timer status
+- readback transferred bytes or buffer state
+- commit packet
+
+
+EP2 is input bulk port for data transfer
+
+the current data transfer scheme uses an asynchronous transfer mechanism; we
+shoud allow for simpler codes with no ack phase as well
+
+Perhaps we can recycle the timestamp card firmware
+
+
+
+
+

@@ -1,0 +1,30 @@
+This is the device driver plus applications directory for the 
+fast adc unit, together with some jtag programming code. Initially based on
+the code for the serial programmer.
+
+Currently, this directory provides:
+- a kernel driver to talk to the USB device and passes it the commands for
+  programming, together with a hotplug script
+
+- an application to generate a jtag pattern from a SVN file. This was
+  successfully used to program a Lattice semiconductor CPLD, but a few
+  features of the SVN specification are not implemented.
+
+FILES:
+
+2.6/	Directory containing the kernel driver for the "usbfastadc" module and
+	a header file shared with the FX2 firmware.
+
+hotplug/ Directory which contains the udev rule set for loading the module on
+         plugin.
+
+apps/   Directory with programming application. So far there is:
+
+ jtagprog.c    A program that eats a SVN file and generates a JTAG pattern
+                out of it.
+
+TO DO:
+
+- make programming driver work
+- implement SPI transfer commands plus apps
+- implement wide bandwidth part of driver

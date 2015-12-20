@@ -1,0 +1,5 @@
+#set of udev rules to cope with a new device driver
+
+SUBSYSTEM=="usb", ACTION=="add", ENV{PRODUCT}=="4b4/1233/*", RUN+="/sbin/insmod DRIVERPATH/usbtmst3.ko"
+
+ACTION=="add", KERNEL=="*usbtmst3*", GROUP="users", SYMLINK+="ioboards/%k"

@@ -1,0 +1,18 @@
+#set of udev rules to cope with a new device driver
+
+SUBSYSTEM=="usb", ACTION=="add", ENV{PRODUCT}=="4b4/1235/*", RUN+="/sbin/modprobe usbpattgen2.ko"
+
+# new pattern generator
+SUBSYSTEM=="usb", ACTION=="add", ENV{PRODUCT}=="4b4/1238/*", RUN+="/sbin/modprobe usbpattgen2.ko"
+
+# create a symbolic link to the device in an ioboards directory with the correct
+# owner set to the original device.
+
+ACTION=="add", KERNEL=="*pattgen*", GROUP="users", SYMLINK+="ioboards/%k"
+ACTION=="change", KERNEL=="*pattgen*", GROUP="users", SYMLINK+="ioboards/%k"
+
+# Following rule adds an additional link to the generic device with a name that
+# contains the serial number
+
+ACTION=="add", KERNEL=="*pattgen*", ATTRS{serial}=="[0-9A-Z]*", GROUP="users", SYMLINK+="ioboards/pattgen_serial_$attr{serial}"
+ACTION=="change", KERNEL=="*pattgen*", ATTRS{serial}=="[0-9A-Z]*", GROUP="users", SYMLINK+="ioboards/pattgen_serial_$attr{serial}"
