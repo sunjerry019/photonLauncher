@@ -36,7 +36,7 @@ def main():
     parser = argparse.ArgumentParser(description="arthur.py: Calls getresponse to obtain the photon counts for one second from the APDs.")
     #parser.add_argument('time', metavar='t', type=int, nargs='+', help="Duration in seconds for which to record photon counts from APDs. Set to -1 to keep running until Ctrl-C is pressed.")
     parser.add_argument('total', metavar='n', type=int, help="Number of readings to record photon counts from APDs. Set to -1 to keep running until Ctrl-C is pressed.")
-    parser.add_argument('--t', metavar='intTime', type=int, default=1000, help='Integration time of the APD in ms')
+    parser.add_argument('--t', metavar='intTime', type=int, default=1000, help='Time per bin in ms')
     parser.add_argument('-p', dest = 'plot', action = 'store_true', help = 'Use this flag to enable live plotting')
     args = parser.parse_args()
 
@@ -54,7 +54,7 @@ class Arthur():
         self.intTime = intTime
 
         p = subprocess.Popen(['./getresponse', '-n', 'TIME{}'.format(self.intTime)], stdout = subprocess.PIPE)
-        print "Integration time set to {} ms".format(self.intTime)
+        print "ime per bin set to {} ms".format(self.intTime)
 
         self.d1 = deque([0] * 120)
         self.d2 = deque([0] * 120)

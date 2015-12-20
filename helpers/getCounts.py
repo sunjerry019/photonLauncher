@@ -15,7 +15,7 @@ class getCounts():
         intTime = it if it else 1000
         timestamp = time.strftime('%Y%m%d_%H%M')
         p = subprocess.Popen(['./getresponse', '-n', 'TIME{}'.format(intTime)], stdout = subprocess.PIPE)
-        print "Integration time set to {} ms".format(intTime)
+        print "Time per bin set to {} ms".format(intTime)
     def start(self,t):
         if t == -1:
             generator = (self.talk() for i in itertools.count(0, 1))
