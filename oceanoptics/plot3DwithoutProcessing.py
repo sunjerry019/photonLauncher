@@ -21,3 +21,5 @@ def plot(self, filename, title):
     g('set ylabel "Time (s)"')
     g('set zlabel "Intensity (Arbitrary Units)"')
     g('plot "{}" u 1:2:3 with lines'.format(filename))
+
+main()
