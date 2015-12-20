@@ -73,5 +73,6 @@ class plot3D():
         g('set xlabel "Wavelength (nm)"')
         g('set ylabel "Time (s)"')
         g('set zlabel "Intensity (Arbitrary Units)"')
-        g("splot "{}" u 1:2:3 with lines".format(self.outFilename))
+        g('set title "{}"'.format(self.title))
+        g('splot "{}" u 1:2:3 with lines'.format(self.outFilename))
 main()
