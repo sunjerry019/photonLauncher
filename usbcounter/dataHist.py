@@ -9,8 +9,14 @@ def main():
     parser = argparse.ArgumentParser(description="dataHist.py: Processes the data from the 2 APDs and plots the histogram with Gnuplot")
     parser.add_argument('datafile', metavar='f', help="The data file to read from ")
     parser.add_argument('title', metavar = 'title', help = "Title to be included in plot.")
+    arser.add_argument('--d', metavar='detector', type=int, default=-1, help='Only plot one of the detectors (Takes values 0 or 1, enter -1 for both)')
     args = parser.parse_args()
-    h = dataHist(args.datafile, args.title)
+
+    if args.d < -1 or args.d > 1:
+        print("Error: Invalid detector number");
+        sys.exit(1)
+
+    h = dataHist(args.datafile, args.title, args.d)
     h.plot()
 
 def iqr(x):
@@ -26,10 +32,11 @@ def gauss(x, *p):
 
 
 class dataHist():
-    def __init__(self, fname, title):
+    def __init__(self, fname, title, detector):
         # init plotting stuff, get data from datafile
         self.data = [[],[]]
         self.title = title
+        self.detector = detector
         self.fname = fname
         self.formatt = "eps enhanced color"
         self.xlabel = "Photon Counts"
@@ -50,53 +57,64 @@ class dataHist():
 
     def generateFittedHist(self):
         self.initPlot()
-        bin_0 =  int(math.ceil(math.fabs(max(self.data[0]) - min(self.data[0]))/float(iqr(self.data[0]))))
-        hist0, binedges0 = np.histogram(self.data[0], bin_0)
-        plotHist0 = []
-        for i in xrange(len(hist0)):
-            plotHist0.append([binedges0[i], hist0[i]])
 
-        bin_1 =  int(math.ceil(math.fabs(max(self.data[1]) - min(self.data[1]))/float(iqr(self.data[1]))))
-        hist1, binedges1 = np.histogram(self.data[1], bin_1)
-        plotHist1 = []
-        for i in xrange(len(hist1)):
-            plotHist1.append([binedges1[i], hist1[i]])
+        if self.detector == -1 or self.detector == 0:
+            bin_0 =  int(math.ceil(math.fabs(max(self.data[0]) - min(self.data[0]))/float(iqr(self.data[0]))))
+            hist0, binedges0 = np.histogram(self.data[0], bin_0)
+            plotHist0 = []
+            for i in xrange(len(hist0)):
+                plotHist0.append([binedges0[i], hist0[i]])
 
-            f = open('.temp', 'wb+')
+            self.plotDet0(plotHist0)
+            bin_c0 = (binedges0[:-1] + binedges0[1:])/2
 
-        self.plotDet0(plotHist0)
-        self.plotDet1(plotHist1)
+        if self.detector == -1 or self.detector == 1:
+            bin_1 =  int(math.ceil(math.fabs(max(self.data[1]) - min(self.data[1]))/float(iqr(self.data[1]))))
+            hist1, binedges1 = np.histogram(self.data[1], bin_1)
+            plotHist1 = []
+            for i in xrange(len(hist1)):
+                plotHist1.append([binedges1[i], hist1[i]])
 
-        bin_c0 = (binedges0[:-1] + binedges0[1:])/2
-        bin_c1 = (binedges1[:-1] + binedges1[1:])/2
+            self.plotDet1(plotHist1)
+            bin_c1 = (binedges1[:-1] + binedges1[1:])/2
 
+        f = open('.temp', 'wb+')
         for i in xrange(len(hist0)):
             f.write('{}\t{}\n'.format(bin_c0[i], hist0[i]))
+        f.close()
 
-        plt.plot(bin_c0, hist0)
-        plt.show()
-        params0 = raw_input("Guess for fitting parameters (amplitutde, center, sigma, gamma) separated by spaces. \n>>").strip().split(' ')
-        model = SkewedGaussianModel()
-        params = model.make_params(amplitude=params0[0], center=params0[1], sigma=params0[2], gamma=params0[3])
-        result0 = model.fit(hist0, params, x=bin_c0)
-        print result0.best_values
-        print result0.fit_report()
-        plt.plot(bin_c1, hist1)
-        plt.show()
-        params1 = raw_input("Guess for fitting parameters (amplitutde, center, sigma, gamma) separated by spaces. \n>>").strip().split(' ')
-        model = SkewedGaussianModel()
-        params = model.make_params(amplitude=params1[0], center=params1[1], sigma=params1[2], gamma=params1[3])
-        result1 = model.fit(hist1, params, x=bin_c1)
-        print result1.fit_report()
         f = open(os.path.join(self.fname, '..', "{}fitreport".format(self.fname)), 'w b+')
-        f.write("det 0")
-        for k,v in result0:
-            f.write("{}:{}\n".format(k,v))
-        f.write(result0.fit_report())
-        f.write("det 1")
-        for k,v in result1:
-            f.write("{}:{}\n".format(k,v))
-        f.write(result1.fit_report())
+
+        if self.detector == -1 or self.detector == 0:
+            plt.plot(bin_c0, hist0)
+            plt.show()
+            params0 = raw_input("Guess for fitting parameters (amplitude, center, sigma, gamma) separated by spaces. \n>>").strip().split(' ')
+            model = SkewedGaussianModel()
+            params = model.make_params(amplitude=params0[0], center=params0[1], sigma=params0[2], gamma=params0[3])
+            result0 = model.fit(hist0, params, x=bin_c0)
+            print result0.best_values
+            print result0.fit_report()
+
+            f.write("det 0")
+            for k,v in result0:
+                f.write("{}:{}\n".format(k,v))
+            f.write(result0.fit_report())
+
+        if self.detector == -1 or self.detector == 1:
+            plt.plot(bin_c1, hist1)
+            plt.show()
+            params1 = raw_input("Guess for fitting parameters (amplitude, center, sigma, gamma) separated by spaces. \n>>").strip().split(' ')
+            model = SkewedGaussianModel()
+            params = model.make_params(amplitude=params1[0], center=params1[1], sigma=params1[2], gamma=params1[3])
+            result1 = model.fit(hist1, params, x=bin_c1)
+            print result1.fit_report()
+
+            f.write("det 1")
+            for k,v in result1:
+                f.write("{}:{}\n".format(k,v))
+            f.write(result1.fit_report())
+
+        f.close()
 
     def initPlot(self):
         # init gnuplot
