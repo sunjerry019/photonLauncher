@@ -4,6 +4,7 @@ import numpy as np
 import math
 from lmfit.models import SkewedGaussianModel
 import matplotlib.pyplot as plt
+import os
 
 def main():
     parser = argparse.ArgumentParser(description="dataHist.py: Processes the data from the 2 APDs and plots the histogram with Gnuplot")
