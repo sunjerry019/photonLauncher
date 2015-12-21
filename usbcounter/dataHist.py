@@ -50,13 +50,10 @@ class dataHist():
                 for line in df:
                     if line.strip()[0] != "#":
                         l = line.rstrip().split("\t")
-
                         if self.detector == -1 or self.detector == 0:
                             self.data[0].append(int(float(l[1])))
-
                         if self.detector == -1 or self.detector == 1:
                             self.data[1].append(int(float(l[2])))
-
             print("File read successfully")
         except IOError:
             print("Unable to read from file. Either file does not exist or I have no read permissions")
@@ -81,7 +78,6 @@ class dataHist():
                 for i in range(len(hist0)):
                     plotHist0.append([binedges0[i], hist0[i]])
 
-            self.plotDet0(plotHist0)
             bin_c0 = (binedges0[:-1] + binedges0[1:])/2
 
             plt.plot(bin_c0, hist0)
@@ -100,6 +96,8 @@ class dataHist():
             f.write('\n')
             f.write(result0.fit_report())
 
+            self.plotDet(0, plotHist0, result0.best_values)
+
         if self.detector == -1 or self.detector == 1:
             bin_1 =  int(math.ceil(math.fabs(max(self.data[1]) - min(self.data[1]))/float(iqr(self.data[1]))))
             hist1, binedges1 = np.histogram(self.data[1], bin_1)
@@ -111,7 +109,6 @@ class dataHist():
                 for i in range(len(hist1)):
                     plotHist1.append([binedges1[i], hist1[i]])
 
-            self.plotDet1(plotHist1)
             bin_c1 = (binedges1[:-1] + binedges1[1:])/2
 
             plt.plot(bin_c1, hist1)
@@ -130,6 +127,8 @@ class dataHist():
             f.write('\n')
             f.write(result1.fit_report())
 
+            self.plotDet(1, plotHist1, result1.best_values)
+
         f.close()
 
     def initPlot(self):
@@ -140,15 +139,9 @@ class dataHist():
         self.g('set ylabel "{}"'.format(self.ylabel))
         self.g('set style data boxes')
 
-    # there are two detectors. hard coded. :)
-    def plotDet0(self, hist0):
-        self.g('set title "{}, detector 0"'.format(self.title))
-        self.g('set output "{}_0.eps"'.format(self.fname))
-        self.g.plot(hist0)
-
-    def plotDet1(self, hist1):
-        self.g('set title "{}, detector 1"'.format(self.title))
-        self.g('set output "{}_1.eps"'.format(self.fname))
-        self.g.plot(hist1)
+    def plotDet(self, detector, hist, fitresults):
+        self.g('set title "{}, detector {}"'.format(self.title, detector))
+        self.g('set output "{}_{}.eps"'.format(self.fname, detector))
+        self.g.plot(hist)
 
 main()
