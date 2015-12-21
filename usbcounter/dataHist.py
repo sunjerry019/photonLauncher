@@ -87,10 +87,12 @@ class dataHist():
             model = SkewedGaussianModel()
             params = model.make_params(amplitude=params0[0], center=params0[1], sigma=params0[2], gamma=params0[3])
             result0 = model.fit(hist0, params, x=bin_c0)
+            print("Bin size for histogram: {}\n\n".format(bin_0))
             print(result0.best_values)
             print(result0.fit_report())
 
             f.write("== det 0 ==\n\n")
+            f.write("Bin size for histogram: {}\n\n".format(bin_0))
             for k in result0.best_values:
                 f.write("{}:\t{}\n".format(k, result0.best_values[k]))
             f.write('\n')
@@ -118,10 +120,12 @@ class dataHist():
             model = SkewedGaussianModel()
             params = model.make_params(amplitude=params1[0], center=params1[1], sigma=params1[2], gamma=params1[3])
             result1 = model.fit(hist1, params, x=bin_c1)
+            print("Bin size for histogram: {}\n\n".format(bin_1))
             print(result1.best_values)
             print(result1.fit_report())
 
             f.write("== det 1 ==\n\n")
+            f.write("Bin size for histogram: {}\n\n".format(bin_1))
             for k in result1.best_values:
                 f.write("{}:\t{}\n".format(k, result1.best_values[k]))
             f.write('\n')
