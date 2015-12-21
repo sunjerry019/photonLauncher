@@ -90,6 +90,7 @@ class Arthur():
         self.data['timeperbin'] = self.intTime
         self.data['duration'] = self.duration
         json.dump(self.data, self.jsonoutput)
+        self.rawoutput.write("# {} \n".format(json.dumps(self.data)))
 
     def initPlot(self):
         self.p = Gnuplot.Gnuplot(debug=0)
