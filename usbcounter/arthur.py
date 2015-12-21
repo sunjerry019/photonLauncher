@@ -167,9 +167,10 @@ class Arthur():
             except ValueError:
                 print data
                 pass
+
         if self.togglePlot:
             self.plotManager(data)
-        print data
+        print "{}:\t{}".format(self.c + 1, data)
 
 main()
 print "== Operation Ended ==\a"
