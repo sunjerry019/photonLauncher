@@ -58,7 +58,7 @@ class dataHist():
     def generateFittedHist(self):
         self.initPlot()
 
-        f = open(os.path.join(self.fname, '..', "{}fitreport".format(self.fname)), 'w b+')
+        f = open(os.path.join(self.fname, '..', "{}_fitreport".format(self.fname)), 'w b+')
 
         if self.detector == -1 or self.detector == 0:
             bin_0 =  int(math.ceil(math.fabs(max(self.data[0]) - min(self.data[0]))/float(iqr(self.data[0]))))
