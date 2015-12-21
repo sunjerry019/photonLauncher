@@ -81,8 +81,8 @@ class dataHist():
             model = SkewedGaussianModel()
             params = model.make_params(amplitude=params0[0], center=params0[1], sigma=params0[2], gamma=params0[3])
             result0 = model.fit(hist0, params, x=bin_c0)
-            print result0.best_values
-            print result0.fit_report()
+            print(result0.best_values)
+            print(result0.fit_report())
 
             f.write("det 0")
             for k,v in result0:
@@ -105,7 +105,8 @@ class dataHist():
             model = SkewedGaussianModel()
             params = model.make_params(amplitude=params1[0], center=params1[1], sigma=params1[2], gamma=params1[3])
             result1 = model.fit(hist1, params, x=bin_c1)
-            print result1.fit_report()
+            print(result1.best_values)
+            print(result1.fit_report())
 
             f.write("det 1")
             for k,v in result1:
