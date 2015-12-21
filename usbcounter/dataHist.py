@@ -78,11 +78,6 @@ class dataHist():
             self.plotDet1(plotHist1)
             bin_c1 = (binedges1[:-1] + binedges1[1:])/2
 
-        f = open('.temp', 'wb+')
-        for i in xrange(len(hist0)):
-            f.write('{}\t{}\n'.format(bin_c0[i], hist0[i]))
-        f.close()
-
         f = open(os.path.join(self.fname, '..', "{}fitreport".format(self.fname)), 'w b+')
 
         if self.detector == -1 or self.detector == 0:
