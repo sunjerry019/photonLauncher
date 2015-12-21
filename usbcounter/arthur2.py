@@ -52,8 +52,6 @@ class Arthur():
         self.raw_savefp = os.path.join('data', self.timestamp)
         self.savefp = os.path.join('data', self.timestamp+'.json')
         self.intTime = intTime
-        self.jsonoutput = open(self.savefp, 'w')
-        self.rawoutput = open(self.raw_savefp, 'w')
 
         p = subprocess.Popen(['./getresponse', '-n', 'TIME{}'.format(self.intTime)], stdout = subprocess.PIPE)
         print "Time per bin set to {} ms".format(self.intTime)
@@ -71,6 +69,10 @@ class Arthur():
             check_dir("data")
             print "Saving JSON to: {}".format(self.savefp)
             print "Saving raw ASCII file to: {}".format(self.raw_savefp)
+
+        if not self.monitor:
+            self.jsonoutput = open(self.savefp, 'w')
+            self.rawoutput = open(self.raw_savefp, 'w')
         self.dt = 0.2
         self.initSaveFile()
 
@@ -89,8 +91,9 @@ class Arthur():
         self.data['timebinsize'] = self.dt
         self.data['timeperbin'] = self.intTime
         self.data['totaltargetcounts'] = self.duration
-        json.dump(self.data, self.jsonoutput)
-        self.rawoutput.write("# {} \n".format(json.dumps(self.data)))
+        if not self.monitor:
+            json.dump(self.data, self.jsonoutput)
+            self.rawoutput.write("# {} \n".format(json.dumps(self.data)))
 
     def initPlot(self):
         self.p = Gnuplot.Gnuplot(debug=0)
@@ -156,7 +159,8 @@ class Arthur():
                 _data = [t, data]
                 self.c -= 1
                 dtpt = _data
-                self.rawoutput.write('{}\t{}\t{}\t{}\n'.format(dtpt[0], dtpt[1][0], dtpt[1][1], dtpt[1][2]))
+                if not self.monitor:
+                    self.rawoutput.write('{}\t{}\t{}\t{}\n'.format(dtpt[0], dtpt[1][0], dtpt[1][1], dtpt[1][2]))
                 #self.data['counts'].append(_data)
             except ValueError:
                 print data
