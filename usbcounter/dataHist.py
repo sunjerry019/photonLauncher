@@ -13,7 +13,7 @@ def main():
     parser = argparse.ArgumentParser(description="dataHist.py: Processes the data from the 2 APDs and plots the histogram with Gnuplot")
     parser.add_argument('datafile', metavar='f', help="The data file to read from ")
     parser.add_argument('title', metavar = 'title', help = "Title to be included in plot.")
-    parser.add_argument('--d', metavar='detector', type=int, default=-1, help='Only plot one of the detectors (Takes values 0 or 1, enter -1 for both)')
+    parser.add_argument('--d', metavar='detector', type=int, default=-1, help='Only plot one of the detectors (Takes values 0 or 1, defaults to -1 for both)')
     args = parser.parse_args()
 
     if args.d < -1 or args.d > 1:
