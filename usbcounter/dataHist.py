@@ -58,6 +58,8 @@ class dataHist():
     def generateFittedHist(self):
         self.initPlot()
 
+        f = open(os.path.join(self.fname, '..', "{}fitreport".format(self.fname)), 'w b+')
+
         if self.detector == -1 or self.detector == 0:
             bin_0 =  int(math.ceil(math.fabs(max(self.data[0]) - min(self.data[0]))/float(iqr(self.data[0]))))
             hist0, binedges0 = np.histogram(self.data[0], bin_0)
@@ -68,19 +70,6 @@ class dataHist():
             self.plotDet0(plotHist0)
             bin_c0 = (binedges0[:-1] + binedges0[1:])/2
 
-        if self.detector == -1 or self.detector == 1:
-            bin_1 =  int(math.ceil(math.fabs(max(self.data[1]) - min(self.data[1]))/float(iqr(self.data[1]))))
-            hist1, binedges1 = np.histogram(self.data[1], bin_1)
-            plotHist1 = []
-            for i in xrange(len(hist1)):
-                plotHist1.append([binedges1[i], hist1[i]])
-
-            self.plotDet1(plotHist1)
-            bin_c1 = (binedges1[:-1] + binedges1[1:])/2
-
-        f = open(os.path.join(self.fname, '..', "{}fitreport".format(self.fname)), 'w b+')
-
-        if self.detector == -1 or self.detector == 0:
             plt.plot(bin_c0, hist0)
             plt.show()
             params0 = raw_input("Guess for fitting parameters (amplitude, center, sigma, gamma) separated by spaces. \n>>").strip().split(' ')
@@ -96,6 +85,15 @@ class dataHist():
             f.write(result0.fit_report())
 
         if self.detector == -1 or self.detector == 1:
+            bin_1 =  int(math.ceil(math.fabs(max(self.data[1]) - min(self.data[1]))/float(iqr(self.data[1]))))
+            hist1, binedges1 = np.histogram(self.data[1], bin_1)
+            plotHist1 = []
+            for i in xrange(len(hist1)):
+                plotHist1.append([binedges1[i], hist1[i]])
+
+            self.plotDet1(plotHist1)
+            bin_c1 = (binedges1[:-1] + binedges1[1:])/2
+
             plt.plot(bin_c1, hist1)
             plt.show()
             params1 = raw_input("Guess for fitting parameters (amplitude, center, sigma, gamma) separated by spaces. \n>>").strip().split(' ')
