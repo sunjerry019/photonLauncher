@@ -46,8 +46,13 @@ class dataHist():
                 for line in df:
                     if line.strip()[0] != "#":
                         l = line.rstrip().split("\t")
-                        self.data[0].append(int(float(l[1])))
-                        self.data[1].append(int(float(l[2])))
+
+                        if self.detector == -1 or self.detector == 0:
+                            self.data[0].append(int(float(l[1])))
+
+                        if self.detector == -1 or self.detector == 1:
+                            self.data[1].append(int(float(l[2])))
+
             print("File read successfully")
         except IOError:
             print("Unable to read from file. Either file does not exist or I have no read permissions")
