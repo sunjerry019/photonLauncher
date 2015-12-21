@@ -88,7 +88,7 @@ class Arthur():
         self.data['counts'] = []
         self.data['timebinsize'] = self.dt
         self.data['timeperbin'] = self.intTime
-        self.data['duration'] = self.duration
+        self.data['totaltargetcounts'] = self.duration
         json.dump(self.data, self.jsonoutput)
         self.rawoutput.write("# {} \n".format(json.dumps(self.data)))
 
