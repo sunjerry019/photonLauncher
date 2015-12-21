@@ -54,7 +54,7 @@ class Arthur():
         self.intTime = intTime
 
         p = subprocess.Popen(['./getresponse', '-n', 'TIME{}'.format(self.intTime)], stdout = subprocess.PIPE)
-        print "ime per bin set to {} ms".format(self.intTime)
+        print "Time per bin set to {} ms".format(self.intTime)
 
         self.d1 = deque([0] * 120)
         self.d2 = deque([0] * 120)
