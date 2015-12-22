@@ -153,6 +153,12 @@ class dataHist():
 
             print("Bin size for histogram: {}\n\n".format(bin_1))
             print(lmfit.fit_report(result1))
+            print(results1.success)
+            print(results1.var_names)
+            print(results1.covar)
+            print(results1.errorbars)
+            print(results1.redchi)
+            print(results1.params)
 
             f.write("== det 1 ==\n\n")
             f.write("Bin size for histogram: {}\n\n".format(bin_1))
