@@ -3,9 +3,10 @@ import argparse
 import Gnuplot, Gnuplot.PlotItems, Gnuplot.funcutils
 import numpy as np
 import math
-from lmfit.models import SkewedGaussianModel
+import lmfit
 import matplotlib.pyplot as plt
 import os
+import scipy as sp
 
 try: input = raw_input
 except NameError: pass
@@ -55,6 +56,23 @@ class dataHist():
 
     def plot(self):
         self.generateFittedHist()
+
+    def residual(self, pars, x, data=None):
+        vals = pars.valuesdict()
+        amp =  vals['amplitude']
+        mu =  vals['center']
+        sigma = vals['sigma']
+        gamma = vals['gamma']
+
+        model = ((amp/(sigma*np.sqrt(2*np.pi))) * np.exp((-((x-mu)**2))/(2*(sigma**2)))) * (1 + sp.special.erf((gamma*(x-mu))/(sigma*np.sqrt(2))))
+
+        if data is None:
+            return model
+        else:
+            resids = model - data
+            error = np.sqrt(data)
+            weighted = np.sqrt(resids ** 2 / error ** 2)
+            return weighted
 
     def generateFittedHist(self):
         self.initPlot()
@@ -121,21 +139,27 @@ class dataHist():
             plt.show()
             params1 = input("Guess for fitting parameters (amplitude, center, sigma, gamma) separated by spaces. \n>>").strip().split(' ')
             params1 = [float(i) for i in params1]
-            model = SkewedGaussianModel()
-            params = model.make_params(amplitude=params1[0], center=params1[1], sigma=params1[2], gamma=params1[3])
-            result1 = model.fit(hist1, params, x=bin_c1)
+
+            fit_params = lmfit.Parameters()
+            fit_params.add('amplitude', value=params1[0])
+            fit_params.add('center', value=params1[1])
+            fit_params.add('sigma', value=params1[2])
+            fit_params.add('gamma', value=params1[3])
+            x = bin_c1
+
+            result1 = lmfit.minimize(self.residual, fit_params, args=(x,), kws={'data': hist1})
+
             print("Bin size for histogram: {}\n\n".format(bin_1))
-            print(result1.best_values)
-            print(result1.fit_report())
+            print(lmfit.fit_report(result1))
 
             f.write("== det 1 ==\n\n")
             f.write("Bin size for histogram: {}\n\n".format(bin_1))
-            for k in result1.best_values:
-                f.write("{}:\t{}\n".format(k, result1.best_values[k]))
+            for k in result1.params:
+                f.write("{}:\t{}\n".format(k, result1.params[k].value))
             f.write('\n')
-            f.write(result1.fit_report())
+            f.write(lmfit.fit_report(result1))
 
-            self.plotDet(1, plotHist1, result1.best_values)
+            self.plotDet(1, plotHist1, result1.params)
 
         f.close()
 
@@ -149,7 +173,7 @@ class dataHist():
 
     def plotDet(self, detector, hist, fitresults):
         self.g('set title "{}, detector {}"'.format(self.title, detector))
-        self.g('fit_skewedgauss(x) = (({0}/({1}*sqrt(2*pi)))*exp((-((x-{2})**2))/(2*({1}**2))))*(1+erf(({3}*(x-{2}))/({1}*sqrt(2))))'.format(fitresults['amplitude'], fitresults['sigma'], fitresults['center'], fitresults['gamma']))
+        self.g('fit_skewedgauss(x) = (({0}/({1}*sqrt(2*pi)))*exp((-((x-{2})**2))/(2*({1}**2))))*(1+erf(({3}*(x-{2}))/({1}*sqrt(2))))'.format(fitresults['amplitude'].value, fitresults['sigma'].value, fitresults['center'].value, fitresults['gamma'].value))
         self.g('set output "{}_{}.eps"'.format(self.fname, detector))
         self.g.plot(hist, "fit_skewedgauss(x)")
 
