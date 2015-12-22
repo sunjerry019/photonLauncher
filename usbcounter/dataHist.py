@@ -116,6 +116,7 @@ class dataHist():
             print mi.covar
             print mi.errorbars
             print mi.redchi
+            print mi.params
 
             #params = model.make_params(amplitude=params0[0], center=params0[1], sigma=params0[2], gamma=params0[3])
             #result0 = model.fit(hist0, params, x=bin_c0)
