@@ -88,8 +88,8 @@ class dataHist():
 
             bin_c0 = (binedges0[:-1] + binedges0[1:])/2
 
-            plt.plot(bin_c0, hist0)
-            plt.show()
+            #plt.plot(bin_c0, hist0)
+            #plt.show()
             params0 = input("Guess for fitting parameters (amplitude, center, sigma, gamma) separated by spaces. \n>>").strip().split(' ')
             params0 = [float(i) for i in params0]
             #model = SkewedGaussianModel()
