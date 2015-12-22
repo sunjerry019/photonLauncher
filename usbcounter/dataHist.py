@@ -29,12 +29,6 @@ def iqr(x):
     iqr = np.subtract(*np.percentile(x, [75, 25]))
     return 2 * iqr * len(x) ** (float(-1)/float(3))
 
-def gauss(x, *p):
-    A, mu, sigma, y0 = p
-    #return (1./(sigma * math.sqrt(2 * math.pi))) * A *np.exp(-(x-mu)**2/(2.*sigma**2)) + y0
-    return A *np.exp(-(x-mu)**2/(2.*sigma**2)) + y0
-
-
 class dataHist():
     def __init__(self, fname, title, detector):
         # init plotting stuff, get data from datafile
