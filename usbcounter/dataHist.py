@@ -64,14 +64,14 @@ class dataHist():
         sigma = vals['sigma']
         gamma = vals['gamma']
 
-        model = ((amp/(sigma*np.sqrt(2*np.pi))) * np.exp((-((x-mu)**2))/(2*(sigma**2)))) * (1 + sp.special.erf((gamma*(x-mu))/(sigma*np.sqrt(2))))
+        model = ((amp/(sigma*sp.sqrt(2*np.pi))) * sp.exp((-((x-mu)**2))/(2*(sigma**2)))) * (1 + sp.special.erf((gamma*(x-mu))/(sigma*sp.sqrt(2))))
 
         if data is None:
             return model
         else:
             resids = model - data
-            error = np.sqrt(data)
-            weighted = np.sqrt(resids ** 2 / error ** 2)
+            error = sp.sqrt(data)
+            weighted = sp.sqrt(resids ** 2 / error ** 2)
             return weighted
 
     def generateFittedHist(self):
@@ -149,7 +149,8 @@ class dataHist():
             fit_params.add('gamma', value=params1[3])
             x = bin_c1
 
-            result1 = lmfit.minimize(self.residual, fit_params, args=(x,), kws={'data': hist1})
+            #result1 = lmfit.minimize(self.residual, fit_params, args=(x,), kws={'data': hist1})
+            result1 = lmfit.minimize(self.residual, fit_params, args = (bin_c0,hist0))
 
             print("Bin size for histogram: {}\n\n".format(bin_1))
             print(lmfit.fit_report(result1))
