@@ -147,10 +147,9 @@ class dataHist():
             fit_params.add('center', value=params1[1])
             fit_params.add('sigma', value=params1[2])
             fit_params.add('gamma', value=params1[3])
-            x = bin_c1
-
+            #x = bin_c1
             #result1 = lmfit.minimize(self.residual, fit_params, args=(x,), kws={'data': hist1})
-            result1 = lmfit.minimize(self.residual, fit_params, args = (bin_c0,hist0))
+            result1 = lmfit.minimize(self.residual, fit_params, args = (bin_c1, hist1))
 
             print("Bin size for histogram: {}\n\n".format(bin_1))
             print(lmfit.fit_report(result1))
