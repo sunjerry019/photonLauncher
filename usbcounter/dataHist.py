@@ -111,7 +111,7 @@ class dataHist():
             params.add('sigma', params0[2])
             params.add('gamma', params0[3])
             mi=minimize(residual, params, args = (bin_c0,hist0))
-            print mi
+            print mi.success
 
             #params = model.make_params(amplitude=params0[0], center=params0[1], sigma=params0[2], gamma=params0[3])
             #result0 = model.fit(hist0, params, x=bin_c0)
