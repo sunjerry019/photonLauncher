@@ -93,7 +93,7 @@ class dataHist():
             params0 = input("Guess for fitting parameters (amplitude, center, sigma, gamma) separated by spaces. \n>>").strip().split(' ')
             params0 = [float(i) for i in params0]
             #model = SkewedGaussianModel()
-            sig = [sp.sqrt(i) for i in hist0]
+            sig = np.array([sp.sqrt(i) for i in hist0])
             def residual(pars, x, data = None):
                 a = pars['a'].value
                 mu = pars['mu'].value
