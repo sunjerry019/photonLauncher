@@ -3,12 +3,10 @@ import argparse
 import Gnuplot, Gnuplot.PlotItems, Gnuplot.funcutils
 import numpy as np
 import math
-from lmfit.models import SkewedGaussianModel
-from lmfit import Parameters, Minimizer, conf_interval, conf_interval2d, minimize, printfuncs
+import lmfit
 import matplotlib.pyplot as plt
 import os
 import scipy as sp
-from scipy import special
 
 try: input = raw_input
 except NameError: pass
@@ -59,6 +57,22 @@ class dataHist():
     def plot(self):
         self.generateFittedHist()
 
+    def residual(pars, x, data = None):
+        a = pars['amplitude'].value
+        mu = pars['center'].value
+        sigma = pars['sigma'].value
+        gamma = pars['gamma'].value
+
+        model = (a/(sigma * sp.sqrt(2 * sp.pi))) * sp.exp(-((x - mu))**2 / (2 * sigma**2)) * (1 + special.erf(gamma * (x - mu) /(sp.sqrt(2) * sigma) ))
+
+        if data is None:
+            return model
+        else:
+            resids = model - data
+            sig = sp.sqrt(data)
+            weighted = sp.sqrt(resids ** 2 / sig**2)
+            return weighted
+
     def generateFittedHist(self):
         self.initPlot()
 
@@ -75,6 +89,7 @@ class dataHist():
 
         Just to clarify, the standard deviation for a Poissonian distribution (Photon counting statistics uses Poissonian statistics) is the square root of the mean value for a bin.
         """
+
         if self.detector == -1 or self.detector == 0:
             bin_0 =  int(math.ceil(math.fabs(max(self.data[0]) - min(self.data[0]))/float(iqr(self.data[0]))))
             hist0, binedges0 = np.histogram(self.data[0], bin_0)
@@ -88,35 +103,18 @@ class dataHist():
 
             bin_c0 = (binedges0[:-1] + binedges0[1:])/2
 
-            #plt.plot(bin_c0, hist0)
-            #plt.show()
+            plt.plot(bin_c0, hist0)
+            plt.show()
             params0 = input("Guess for fitting parameters (amplitude, center, sigma, gamma) separated by spaces. \n>>").strip().split(' ')
             params0 = [float(i) for i in params0]
-            #model = SkewedGaussianModel()
-            sig = np.array([sp.sqrt(i) for i in hist0])
-            def residual(pars, x, data = None):
-                a = pars['a'].value
-                mu = pars['mu'].value
-                sigma = pars['sigma'].value
-                gamma = pars['gamma'].value
-                model = a/(sigma * sp.sqrt(2 * sp.pi)) * sp.exp(-((x - mu))**2 / (2 * sigma**2)) * (1 + special.erf(gamma * (x - mu) /(sp.sqrt(2) * sigma) ))
-                if data is None:
-                    return model
-                resids = model - data
-                weighted = sp.sqrt(resids ** 2 / sig**2)
-                return weighted
-            params = Parameters()
-            params.add('a', params0[0])
-            params.add('mu', params0[1])
+
+            params = lmfit.Parameters()
+            params.add('amplitude', params0[0])
+            params.add('center', params0[1])
             params.add('sigma', params0[2])
             params.add('gamma', params0[3])
-            mi=minimize(residual, params, args = (bin_c0,hist0))
-            print mi.success
-            print mi.var_names
-            print mi.covar
-            print mi.errorbars
-            print mi.redchi
-            print mi.params
+            report0 = lmfit.minimize(self.residual, params, args = (bin_c0,hist0))
+            print(lmfit.fit_report(report0))
 
             #params = model.make_params(amplitude=params0[0], center=params0[1], sigma=params0[2], gamma=params0[3])
             #result0 = model.fit(hist0, params, x=bin_c0)
@@ -150,21 +148,32 @@ class dataHist():
             plt.show()
             params1 = input("Guess for fitting parameters (amplitude, center, sigma, gamma) separated by spaces. \n>>").strip().split(' ')
             params1 = [float(i) for i in params1]
-            model = SkewedGaussianModel()
-            params = model.make_params(amplitude=params1[0], center=params1[1], sigma=params1[2], gamma=params1[3])
-            result1 = model.fit(hist1, params, x=bin_c1)
-            print("Bin size for histogram: {}\n\n".format(bin_1))
-            print(result1.best_values)
-            print(result1.fit_report())
 
-            f.write("== det 1 ==\n\n")
-            f.write("Bin size for histogram: {}\n\n".format(bin_1))
-            for k in result1.best_values:
-                f.write("{}:\t{}\n".format(k, result1.best_values[k]))
-            f.write('\n')
-            f.write(result1.fit_report())
+            params = lmfit.Parameters()
+            params.add('amplitude', params1[0])
+            params.add('center', params1[1])
+            params.add('sigma', params1[2])
+            params.add('gamma', params1[3])
+            report1 = lmfit.minimize(self.residual, params, args = (bin_c1), kws={'data': hist1})
+            print(lmfit.fit_report(report1))
 
-            self.plotDet(1, plotHist1, result1.best_values)
+
+            #model = SkewedGaussianModel()
+            #params = model.make_params(amplitude=params1[0], center=params1[1], sigma=params1[2], gamma=params1[3])
+
+            #result1 = model.fit(hist1, params, x=bin_c1)
+            #print("Bin size for histogram: {}\n\n".format(bin_1))
+            #print(result1.best_values)
+            #print(result1.fit_report())
+
+            #f.write("== det 1 ==\n\n")
+            #f.write("Bin size for histogram: {}\n\n".format(bin_1))
+            #for k in result1.best_values:
+            #    f.write("{}:\t{}\n".format(k, result1.best_values[k]))
+            #f.write('\n')
+            #f.write(result1.fit_report())
+
+            #self.plotDet(1, plotHist1, result1.best_values)
 
         f.close()
 
