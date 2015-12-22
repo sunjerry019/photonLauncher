@@ -1,3 +1,4 @@
+#This can be run in python 2 or 3
 import argparse
 import Gnuplot, Gnuplot.PlotItems, Gnuplot.funcutils
 import numpy as np
@@ -59,7 +60,16 @@ class dataHist():
         self.initPlot()
 
         #f = open(os.path.join(self.fname, '..', "{}_fitreport".format(self.fname)), 'w b+')
-        f = open("{}_fitreport".format(self.fname), 'w')
+        f = open("{}.fitreport".format(self.fname), 'w')
+
+        """
+        Useful links about error bars of histogram
+         - http://suchideas.com/articles/maths/applied/histogram-errors/
+         - http://www.science20.com/quantum_diaries_survivor/those_deceiving_error_bars-85735
+         - http://arxiv.org/pdf/1112.2593v3.pdf
+
+        These suggests that the error is sqrt(Nk) where Nk is the number of counts in the kth bin
+        """
 
         if self.detector == -1 or self.detector == 0:
             bin_0 =  int(math.ceil(math.fabs(max(self.data[0]) - min(self.data[0]))/float(iqr(self.data[0]))))
