@@ -99,7 +99,7 @@ class dataHist():
                 mu = pars['mu'].value
                 sigma = pars['sigma'].value
                 gamma = pars['gamma'].value
-                model = a/(sigma * sp.sqrt(2 * sp.pi)) * sp.exp(-((x - mu))**2 / (2 * sigma**2)) * (1 + special.erf(gamma * (x - mu) /(sqrt(2) * sigma) ))
+                model = a/(sigma * sp.sqrt(2 * sp.pi)) * sp.exp(-((x - mu))**2 / (2 * sigma**2)) * (1 + special.erf(gamma * (x - mu) /(sp.sqrt(2) * sigma) ))
                 if data is None:
                     return model
                 resids = model - data
