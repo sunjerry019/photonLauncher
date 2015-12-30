@@ -14,7 +14,11 @@ The following are generally not pasted in:
 - Links
 - Salutations (meows and other non-usual signoffs are however kept)
 - Lines with just names of people (e.g. ```zy:```)
-- "Thanks"s one liners
+- "Thanks"s oneliners
+- Random one-word-liners that don't make sense
+
+Generally if lines are concatenated, ```;```(s) was/were used.
+Context info might be added, but flanked with ```[[...]]```.
 
 Lists might be irritating but I'm just gonna include
 
