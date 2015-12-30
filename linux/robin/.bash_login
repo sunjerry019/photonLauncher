@@ -11,7 +11,7 @@ fi
 function pk
 {
     echo "Quotes to inspire:"
-    wget -q "https://raw.githubusercontent.com/sunjerry019/photonLauncher/master/linux/quotes.txt" -O quotes.txt > /dev/null 2 >&1
+    wget -q "https://raw.githubusercontent.com/sunjerry019/photonLauncher/master/linux/quotes.txt" -O quotes.txt
     shuf -n 1 quotes.txt
     echo "Run 'shuf -n 1 quotes.txt' for more"
 }
