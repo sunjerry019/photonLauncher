@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+    SESSION_TYPE=remote/ssh
+else
+    case $(ps -o comm= -p $PPID) in
+        sshd|*/sshd) SESSION_TYPE=remote/ssh;;
+    esac
+fi
+
+function pk
+{
+    echo "Quotes to inspire:\n"
+    wget 
+    shuf -n 1 quotes.txt
+    echo "Run `shuf -n 1 quotes.txt` for more\n"
+}
+
+if [ $SESSION_TYPE == "remote/ssh" ]; then
+    echo "\n"
+    pk
+fi

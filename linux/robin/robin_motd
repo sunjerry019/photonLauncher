@@ -1,0 +1,25 @@
+This is robin 192.168.2.188 in the HC Photonics Lab.
+
+			       ( ( (     
+			     '. ___ .'   
+			    '  (> <) '   
+			   ooO--(_)--Ooo-
+
+Useful commands:
+
+     ┌───────────────────────────┬──────────────────────────────────┐
+     │          Command          │              Purpose             │
+     ├───────────────────────────┼──────────────────────────────────┤
+     │ nmap -sn 192.168.2.0/24	 │                                  │
+     │ arp -a			 │ see who is on the network        │
+     │ ip neigh			 │                                  │
+     ├───────────────────────────┼──────────────────────────────────┤
+     │ ps aux			 │ show all running processes       │
+     │                           │ > other usage: 		    │
+     │                           │     ps aux | grep [processname]  │
+     ├───────────────────────────┼──────────────────────────────────┤
+     │ killproc [processname]	 │ kill said process 		    │
+     │                           │    *Homemade script 		    │
+     └───────────────────────────┴──────────────────────────────────┘
+
+
