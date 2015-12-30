@@ -18,3 +18,5 @@ The following are generally not pasted in:
 Lists might be irritating but I'm just gonna include
 
 To be used by .bash_login on robin (or anywhere else should you wish)
+
+Feel free to filter as you wish. Nobody's gonna bite you because you removed a few lines from that file.
