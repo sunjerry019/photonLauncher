@@ -411,3 +411,346 @@ and perhaps more meaningful for a school like ours
 might not be a bad idea to get the cheapest model
 to tear/strip apart to see whats inside...
 then reproduce/improve/play with it
+i will be leaving for taipei/seoul tml,
+and i think you guys, at least for now, stil operate more efficiently with direct instructions than a liberal space to explore
+so i am giving you instructions now
+1) all 3 of you, u know what you designed for the workstation table, and the materials are in src.
+assemble them and make the worktable happen this week.
+2) zhengyang: read up on
+-michelson interferometry (fringes, interference, lasers...etc)
+-hooke's law = F=-kx
+-simple classical newtonian gravity: F=GMm/r^2
+-browse through the thorlabs catalog to have a feeling what are the equipment we have
+i doubt the technicians will allow you to use/play with the stuff on your own at the moment
+specifically, your lack of confidence to do so on your own, is precisely the proof and reason why you will not be allowed yea
+-given the fact that none of you are interested in the photon detectors, i have cancelled the budget allotted to it, and the resources in nus will forget about the request
+therefore a problem arise, i do not know how to make the moon detector thingie anymore (like seriously. what/how are we going to measure the interference fringes with? by eye?)
+this will present difficulty, as it will require actually real research to adapt and create new things that doesnt previously exist, in order to work, with no certainty of success whatsoever
+which extended, when spending a day in nus to build a detector is too much stress/effort to even start talking about, we know researching to invent new ways of detector techniques, is not going to happen
+so yea.
+im. not entirely sure what to do next (:
+likewise, all the quantum optics, photonics, optics, computing etc experiments previously i might have talked about
+cant be done i think
+since all we have are the mirrors/lenses/lasers, but nothing to measure them with, so no way to align or use or experiment with
+bahs
+the lab has soomeee kinds of detectors (photomultiplier tubes, light gates, ccd cameras etc.... we can try to salvage/modify those to boost its precision n accuracy.....)
+-i think we have talked about about the sound cancelling thingie,
+if you want, you can actually just start on your own
+oscilloscopes, signal generators, speakers, pieces of acrylic.... are all in src. just take them out from the cupboard or what, and press buttons and see what happens
+-raspberry pi will arrive soon, and pdf instructions link have been given to u, if and when they arrive, consider just linking up two and see if you can do it
+if you can / willing / able, then we can if you like, proceed to order say, 10, 20 pi and make a 1TB ram supercomputer or something
+wireless charging: the instructions have also been shared somewhere (Whatsapp?)
+but this involves electricity and relatively higher voltages
+but try to read up a bit more, and discuss what equipment you might need/want to start with, and it can be started already
+is this ok/doable
+or too much already
+p.s. the text i write here is shorter for yudong and lor becos the tasks are things that have instructions from the internet and known to work by many people around the world
+the moon detector by zhengyang, is something that doesnt exist, hence warrants more problems and original thinking to foresee and resolve them
+thanks for the prompt response
+but do try to read and consider/reply the actual email as well yea...
+thanks for response
+although as and when you read/think, please feel free to update/ask/etc
+cos i realise your response is super... generic
+it applies to anything (relationships, homework, exams, dota, etc.....)
+yeps. Just read abit,  share any findings or queries or discussion.  Don't aim to 'know' the 'solution', just a way to start,  what you need to start with n lets gooo
+when have things n equipment in your hands,  easier to feel fun n understand,  rather than reading which will either feel stressed or dull nia
+I agree many silly mistakes n misunderstandings can be avoided fairly easily.  might feel hard.  But if you really think about it,  it's not.
+Enjoy your hols. am in seoul.  talk more when I return xmas eve.
+and happy birthday; so smmaaalll~~~; ah gu gu :D
+all updates, discussions, questions, interesting urls or patents, equations, *anything*
+just spam/add here, at this point satying/texting anything is better than nothing, and rather than my scary expectation of too much too fast
+please do at least start a bit (per day? per two days? per week? per anything really... just... start... then we work on having efficiency in the future yea)
+so two tasks which i think is well within your abilities if you just focus, like say google for an hour, read the instructions pdf for an hour, tinkle with equipment for 4 hours. repeat for a second day
+i believe you can complete the instructions within one weekend, no creativity or novelty, science, intuition involved yet at this point... so yea... please dun carry any psychological fear/burden as if its something difficult
+if u youtube/google, im sure u would figure out that many of these tasks are primary sch kids with toys, youtubing themselves online yea
+1) network two raspberry pi, if successful, then perhaps 10 to 20 pi to create a one terrabyte ram computer or something, so we can start processing some real scientific data or solve some realistic equations
+2) investigate sound/noise cancellation or selection (oscilloscopes, signal generators, motor, wires, piezos.... all are gathering dust in src lab, just need you to walk to the lab and take them from the cabinet and connect them... dun really need a few months of worry)
+if you do have concerns or what, please, just say
+dun keep quiet and pretend and hope things will go away or solve themselves
+this is life and reality
+face it, and you will do fine
+i really really hope things will not come to the point whereby i have to go down to the src say this friday afternoon, find all the equipment, plan, design, solve the equations, align, make the whole sound cancelling thingie start working somewhat, and i report to you my findings, and you just say interesting...
+make no mistake, knowledge has no value in our world, not the ability to compute fast, though exams rewarding you for memory and computation might have trained you to believe otherwise
+the world cares if you can create new knowledge, new value, network people, impress people, make things happen
+spending money is.... the solution of children
+anyways, do spend some time to discuss
+like i know you said u read thru the patents or various websites...
+but you stop there
+why?
+why not spend an addition 3 to 5min and just *say* what you think or feel or understand or not understand or wonder from the readings?
+is 5min of thought that precious to take away from your daily life? (note that i dun even expect you to reply within minutes or hours, now its already stretched to days and weeks and you still find it too 'fast') and 2,3 sentences elaborating what you think about sono or raspberry pi.... is not too much effort/stress right? im not asking for 'the correct answer', im asking you to chat and discuss
+are you really that busy?
+if not, learn to focus, and not burn so much time doing so little, feeling so stressed while accomplishing very little
+yeps
+sorry for pushing but yea
+you guys have the intelligence and curiosity
+but lack the confidence and clarity to use them happily and efficiently, so far it seems you spend more of your attention on why things wont work or why things are not worth doing, instead of just. doing. so.
+like you would rather spend the time to argue against not replying emails, than just. replying. the original. question. and start discussing.
+ive lost track how many times im trying to beg you to start discussing/talking... please dont imagine it to be a sudden one hour email/discussion followed by two weeks silence
+please please please let it be slow and steady, a few minutes a day, then you will grow and be better
+fatal mistake to do/think nothing..... last minute panic and rush and feel stress and churn out nothing but empty gestures to show teachers blah blah yea
+ok. thanks! dun worry about today ba, xmas, go enjoy yourself;
+just a reminder for the general attitude
+as long you start and maintain a certain level of communication can le, im not unreasonable person yea, i also playing/nuaing today
+in case you case wonder/emos why the discussion/things i ask/share/do so far might seem too mundane and not 'real' science or 'real' physics
+one reason is maths
+your skills in both maths and experiments need to brush up before anything 'real' can be perceived or understood or appreciated or created by you
+right now, its easier to brush up your experimental skills because we are cheating by money
+i.e. using school money to buy equipment, rather than you to develop your own equipment, so we are getting a headstart
+im doing the physics/math behind the scenes, to research the theory and experiment in order to know what to buy
+therefore to you, it seems as if nothing is happening. because much is happening behind the scenes by me and colleagues
+been trying to engage you in the behind the scenes, but you are content not to, so... yea
+some of you seem awed/impressed by seniors/strangers/others doing lagrangian mechanics or something
+not sure if u realise that what they are doing often have errors and will not pass in scientific community
+suspect you are impressed simply by the jargon and terms they say, and by the symbols/algebra they write on the whiteboard
+to give you a hint of an idea what maths is needed to do the physics experiments im asking you to start discussing, things like quantum computing, teleportation, entanglement, photon detection,
+i have attached one textbook pdf for u
+keep in mind that
+i on average take 5 modules per semester. with each semester lasting 13 weeks from the first intro lecture to the finals exams
+this pdf attached, is just a textbook for a module (modules tend to have multiple books by the way)
+also keeping in mind that textbooks are easier than research papers, because they are old and established maths, whereas research papers are cutting edge knowledge still
+presently, i think the least time and effort can be used if
+i do the physics/maths, by discussing with you verbally, so i can translate your thoughts and opinions into maths
+you do the experiments, and i do the data analysis
+school spend the money
+then things might still happen within 2~3 years
+otherwise if presently u do not start discussing even your opinions, me not being psychic, cannot do the physics/math (unless you want me to teach you which i doubt; becos if you do not have time to reply emails, you certainly do not have the time and discipline to learn 9 years of physics compressed into a few weeks/months), i also then cannot budget properly, so end up no equipment nor theory..... and end up your concept of 'research' = googling
+which by the way, is not
+i find it very funny when teenagers say things like "i researched last night on the internet"
+thats just reading websites created by nonscientists talking about science, treat it as interesting gossip perhaps, dun take it too seriously yea
+interesting summary/simplification but generally agreeable
+recall some long ago test during high school days, my iq supposed to be 146 or something D:
+still lower than my height. meows.
+i 146 not 164 D:
+if you guys start soon, like a couple of hours per week, might still have a chance/hope of joining/presenting in this...http://www.ipsmeeting.org/
+if its ok, yudong will go to sim square this weekend to buy some stuff from the project, and claim from you/it dept later in the week, is it okay?
+stuff are
+2 x hdmi-vga adaptor (for the usb computers to talk to lcd screens in src)
+2 x wireless keyboard/mouse for the computers (less messy than wired versions, which i think is better for a workstation)
+and take a look at
+2 x brackets, to hold the screens to the aluminum profiles
+this one see first but dun buy, becos unless certain of the profile and lcd dimension, might not be sure which brackets to get
+should we do a quick meetup sometime next week, perhaps before the new year?
+briefly talk and show u how to start getting the ball rolling
+so that each of you have your own corner of the lab to accumulate stuff, experiment with, on/off at your own time over the next few weeks
+i think enough waiting/talking/playing, time to get your hands on something real again good?
+zhengyang = michelson interferometer + photon detector + timestamp + spectrometer = detect the moon, by balancing the forces of gravity and spring tension, i.e. mg = -kx
+yudong = sono (noise/sound selection/cancellation)+ raspberry pi (supercomputing?)
+lor = verify and measure planck constant (by measuring the energy, wavelength and photon number of light) via E=nhf
+agreed on adaptor option.  very sensible. Maybe get wireless keyboard n mouse too. easier to use,  less messy
+also to note/think is, how to mount the screens to the profiles, some form of brackets? simlim definitely got sell, but duno whether the screens in src already have
+i would estimate... wireless keyboard/mouse pack costs... $20 to $30 maybe? and adaptor... $10ish?
+ok. if u happen to see the brackets in simlim (as with the keyboards or adaptor)
+can just quickly snap a photo, and share with everyone, so we all have a gauge as to what is happening/expect
+do u have enough cash to buy such things (if so, remember to get receipts), or need me to go down get?
+remember receipts, then claim from adeline on monday
+and probably no need to reply this, but you guys start thinking
+how much time you want to put in during school term
+preferably not zero, because that will be really too slow, given how much time you give during holidays
+as a rough gauge
+i suggest
+1 afternoon a week, and if that is already too heavy a burden
+half a afternoon a week, like 2 hours a week
+such that after 2 months, you have hands on for 16 hours
+(i.e. about the number of hours i give in less than two days, but at least something)
+such that after two weeks, at least have something presentable to show yourself/parents/teachers/funders that, yes, you are good/interested, and willing and able to make things happen and not just talk
+so yea. think about it.
+and in addition, it really would be a great boost, to your confidence/exposure/experience, plus a credit to show off to your dean/principal that you guys are serious and able, and thus release much more funds and freedom in what things can happen (like sending you to caltech for summer program or japan for conference or patent stuff or something)
+and buy real serious scientific equipment rather than the garage level kinda toys at the moment yea
+yeps
+think about it
+and take action!
+oops sorry, i meant two months
+becos in my mind i imagine you guys able to join / take a look at this http://www.ipsmeeting.org/
+at least submit a poster presentation to show your intent/draft/prototype/direction, not thinking you guys want/able to come up with enough experience/intuition/new science to give a talk within 16 hours of work...
+is relatively small scale
+and thus a good start, to warm up you against international conferences against nobel laureates etc to talk to them as fellow people/scientists and not ahgugu
+seriously. join this.
+more meaningful/useful than competition/medals/grades blahs, this is real life networking and exposure, which is all that matters in life, over the paper certs which panic u right now
+a recent paper, on considering whether the universe is actually just a quantum computer http://arxiv.org/abs/1312.4455
+theres also another older unproven view that the universe is a hologram..
+shall we meet on monday 3pm
+things that i expect to be finished within 2 hours are
+-all: setup the computers
+-zhengyang: run u thru a basic michelson interferometer in half hour, touch the existing photodector and photodiodes in another half hour, one hour yourself
+-yudong: gather the stuff for sono(motor?piezo?microphone?oscilloscope?signal generator?, i duno if the raspberry pi are here)
+-lor: gather the stuff to measure planck constant, i think from the pdf and various googling, you have a idea what to get, roughly LED (which?) power supplies, oscilloscope, multimeters, variable resistors, etc
+within half hour, at least the basic tools should be gathered
+another half hour, a rough assembly/sequence as to what connects to what for what purpose
+one hour on making it work
+after two hours we gather and see what are the problems then think of next step
+beautiful job
+the ethernet thingie will be administratively difficult
+though money and academic intelligence is a plentiful resource in an environment like hwachong, unfortunately politics and bureaucracy has also taken a foothold
+i think adeline placed something in our work area just now, some switchbox thingie
+concerning anything that remotely hint/sound to the staff of wifi/network/internet access/lan blahs
+are things we will very much need, but we need to ask this very politely and not push for this. for now.
+lets see how things develop
+thursday i can meet u guys in morning, afternoon u either on your own or go play/nua, but i needa go back nus settle some stuff
+some tasks i think of, to help you focus, but feel free to add in / evolve of course anytime
+for each person, i think of two tasks
+primary task = im pretty sure you can do so by 12noon, precision or 'quality' will grow over the weeks
+secondary task = bonus, to gauge the status and set the stage for the coming 8 weeks/sessions
+primary = get a basic/standard michelson interferometer up, i.e. observe any fringes, keeping in mind that as stable, large, bright and obvious fringes is good
+secondary = talk to lor's setup
+primary = get a vertical spring extending 1.5m, holding/hanging a retroflecting mirror, keeping in mind that as stable as possible is good (mechanical? vacuum? set the stage/thoughts to build up such over the months)
+secondary = talk to zy's setup
+i.e. merge the vertical spring+mirror from lor to be the vertical arm of the michelson
+primary = get the linux pc and/or the raspberry alive and kicking
+secondary = get the photometer (or other form of light detection we have) to speak to some form of data logger, via python script or something
+essentially this is all that is to be done over the next 8 weeks
+of course, the devil is in the details, and as lor points out, its pretty fast to just put the equipment in place
+the problems is in the precision and accuracy, which goes out the window when lor/yudong observe the 3rd extra beam coming out from the beamsplitter that is already interference fringes :D
+note that you have alllll the individual components in the thorlabs demo kit already
+if not better
+to be fair, we certainly have enough equipment and people to build both this quantum eraser and the michelson at the same time...
+perhaps we should
+and feed off each other's experience/lessons/insights
+might prove fruitful
+and there do seem to be issues with firmware, display settings, and even the power supply might be dodgy
+havent found lead on specific solution or symptoms yet
+for your gauge
+i think you guys can make a poster of such flavour within 8 weeks
+no nRT/V :D
+will guide you along at some point...
+i use LaTeX to compile such documents (its the standard typesetter for all scientific journals/conferences/posters/presentations....)
+good
+however i raise this point for your thoughts
+toughest type of steel
+why do we want a tough spring?
+we want a weak spring ( some of my colleagues suspect we might need to get nanowires)
+because we need a spring that extends 1.5 to 3metres, not a spring thats 1.5 to 3metres
+F=-kx; x is extension of the spring, the default spring length at F=0, has no value
+and do reply/sound out about lor's point about whether meeting later/tomorrow or not....
+otherwise i will just take it as a no
+extra time? :D
+every friday, rain or shine, im occupied, weekly meeting with my research group, that lasts about 3 hours
+where everyone, profs, research fellows, research assistants, and about 10 phd students share with each other their progress and problems for the week, and everyone chips in
+its a very useful brainstorming session/method that all research group does
+should the day comes where we do research work in src more than 3 hours a week, then i think we should upgrade to such a level of academics
+before then...
+who knows
+to zy: what time do you intend to be in hci tml?
+i can make it for friday late aftn like 3-6pm but not before
+might pop by tml then to give u pointers (i.e. pressure :D :D) if u like
+maybe 9am to 1130am kinda thing
+recover first.
+even if you recover tml, rest somemore
+or you can come and share the fever germs
+then we get mc next week :D
+just something useful in case you never heard of
+free online courses from fairly reputable unis and profs [[ This email was about Coursera ]]
+before we one day go into learning user (7) lasers to trap atoms
+may i suggest something easier and more easier, less abstract to grasp, and with all the equipment already present more or less in src; i.e. trapping small objects in midair using sound waves, i.e. levitation...
+Please take note, that with immediate effect, unless the situation changes:
+1) Please do not let the students operate any of the optical, electrical nor chemical resources/equipment related to this photonics/src research without adult supervision.
+Reasons:
+-Unsafe to handle lasers, open circuitry, high temperatures, glassware, alcohols, vacuums,  etc by students without training nor due care.
+-Expensive to handle the above-mentioned equipment, which as you know, are very expensive and extremely delicate; already, a number of the equipment have been potentially damaged/compromised over the past 3 weeks.
+p.s. as such, till the situation improves, I will not endorse the laser safety documents (nor any other safety documents) even if HOD or any teacher signs it, because I believe the current situation to be unsafe, and will not be made safe by a signature.
+2) Unless you hear directly from me, be it in person, email or phone, please know that all student activity happens without my knowledge nor consent, so feel free to deny any lab activity which you consider inappropriate or uncomfortable, and if whenever in any doubt, do just text or call me at your convenience to discuss and verify.
+p.s. two other students have voiced interest, wu yikai and shuangyuan; have not met and discussed with them; will meet them soon and assess them and let you know.
+is there any update and/or pressure to make this meeting happen?
+been approached by yikai and shuanyuan to join this endeavour, so might have to regroup to let your teachers know at some point.... as to how to convince them to let you learn/try this on your own with maximum gain and mimimum hassle..
+perhaps you would like to tell me where this meeting will take place,  unless u do not want me to be present, in which case I hope you have mugged enough physics n presentation skills to convince him that you guys are willing and able to do this long term without the need of teachers or projects day system n deadlines breathing down your neck eh
+Thanks.  is just that many of the things n places have evolved n changed over the past 18years... wil be outside second floor of high sch staff office at 130pm.
+so what happen to the weekly 1, 2 hours meetup/research session ah
+cos i note that
+1) this week is half over
+2) left 6, 7 weeks to the meeting of the Institute of Physics (minus one more week for CNY)
+p.s. i havent touched the safety requirements application forms blahs for you all because i felt zero pressure/input from you guys~~; which as you know, without the form, u cant touch the lasers within src labs eh D:
+this email is intentionally delayed to give a grace period to acknowledge the previous email; cos i find it a joke that given smartphones and wifi/internet/blahs, that almost a day to acknowledge one email is 'stressful' and 'difficult'
+unless of course, none of you have smartphones, no 3g plan, no access to wifi and computers in school, and have been in school from 6am to 10pm, and only a brief 15min window access to computer/internet before bedtime.
+the good thing was; for a time, i think a few hours to a couple of days, you guys improved quite a bit
+zhengyang's calculations for the moon gravity was good, and aligning the michelson the other day was good and fast
+lor's finding the planck constant measurement experiment and various components was good too
+and yudong's work on the android, linux pc and the raspberry pi is actually excellent
+you lack self discipline.
+so far, you only worked when/after i pressure you, or scold you, or physically standing in front of you to give you that discipline
+otherwise... things happen so slowly and inefficiently, and you go back to the teenage way of feeling stressed over nothing really at all, rather than a  being excited over doing new contributions to mankind and experience for yourself!
+a pity, you knows.
+thus, i will return your attitude to you, and you can have a feel how its like.
+1) im not going hci tomorrow le, if cannot even reply/acknowledge my question on the weekly meetup
+1b) needless to say, if cannot even have the self discipline and effort to reply on the meetup, certainly in no condition yet to actually meetup to research
+1c) if unwilling and unable to spend time to discuss research nor meetup for research, i find it ridiculous to spend time for administrative ding dongs; esp since this convinces me that you respond well to authority (i.e. you will make time for a hod), but not out of your own self discipline/choice/want to do this...
+1d) the fact that i have to prompt you to even know you already have arranged a meeting with the hod, is already a failure.
+that omission alone speaks volumes about your maturity and seriousness, lack thereof.
+which in turn tells me, even though you *say* you want the freedom away from projects day and a system clamping down on you, your behaviour proves otherwise yea; but i closed one eye at first, particularly given zhengyang's correction to actually say what 'lunchtime' means without being prompted, which suggested the level of maturity and awareness amongst you guys are very uneven right now...
+2) as such, i see no need to be bother myself with researching up on the safety precautions and requirements etc since you have no interest to acknowledge/reply my statement on that >1000 minutes ago,  (seriously, given a grace period over 100times longer than i do to reply to my colleagues/profs/collaborators...is still undoable feat?)
+2b) somemore if you are unwilling/unable to even meet up weekly for research, then need the form for what? for show only.
+so i will play this dragging game with you this time ba ah, till it hits you like a wake-up call
+i do not do things for show, a waste of our one life, answering to people/society/yesmen and the ratrace
+i live, because i want to, the way i want to.
+-i will not take initiative to send you any further article/url for discussion, since so far only yudong bother to acknowledge it, though discussion is repeatedly limited to a single line sentence saying its interesting, which... is something primary sch or poly students can say, so i cant praise too much on that;
+-will not ask you again for weekly meeting, you either do it and ask me, or you just dont, and watch the months waste away, up to you, if you need a few more years to grow up first to realise how much time of your life was burnt and resolve your identity crisis, then take your time, the world doesnt care and continues to move on with or without any of us
+-will not remind u of ips meeting again, if u wish to waste this opportunity, it really is your problem not mine; if you consider this a burden not a chance, then you are naive; if you believe people outside of the exam hall cares about your grades rather than impression (i.e. whether they like u), then... good luck to your fantasy (:
+-feel free to meet the hod with the rest if you like
+otherwise you can find me in my office or labs at NUS: Centre for Quantum Technologies; BLK S15
+text me when you reach @ 9017 0719
+good, except that you chose not to say this earlier,  even when hinted n prompted n questioned, n chose to assume n keep quiet. Why?  Is it very clever or useful or productive or tiring to.
+What admin issues? What safety issues? What forms?  What teachers?  What do you want to convince?  What do you want to achieve?
+Or is just lay back n wait for things to be told to u? n u take it as 'teacher say so,  therefore it must be true n never questioned "
+On my part its getting tiring n annoying just to get you guys to start communicating properly.  Not even expecting any math, physics,  technical skills or time.
+just start talking.  my expectations is now so low that even if you spend one minute a day to email one sentence,  is already more effort than what's been happening the past week.
+ie pls realise how little communication is flowing n how destructive n useless this is
+correct. n I agree.
+n all these should have been conveyed to everyone including me,  the very day or night this was known. Instead days past and something that is chicken feed still unsolved.
+time will tell, what and how you choose to behave.
+everything else is just, courtesy.
+oh yea, there's a psychological test called myer's brigg MBTI; 16 personality types
+i fall under INTJ, as do most scientists, and characters like sherlock holmes are also under this category
+this group of people emphasize on reality and making things happen, and see past courtesy/social as being nice after a certain point as mere falsehoods and empty promises and outright lies...
+sure.
+if you believe that discussing *after* a meeting with your hod will be useful
+and fail to realise that no discussion prior to said meeting, means your 'meeting' with the hod will not so much a discussion, but he dictating terms to you, since you will be incapable of replying any technical/serious questions he ask you, nor can you give him any suggestions/ideas/experience, and without co-ordination, what three of you say will be out of sync with each other, or simply keep quiet, and he will be unconvinced and unimpressed
+after such a meeting; what can you hope to discuss, really?; to travel back in time and not repeat the mistakes, and the things you wish you knew/did/said during the meeting?
+think.; stop. floating on hormones and emotions.; and start thinking logically.
+and i know you all find thinking logically and objectively very hard
+and i assure you, one way to help yourself think; is; to; write; it; down
+many things, when you write it down, and you read it with your own eyes, you will quickly realise how silly it is
+if you just assume and emo and feel, you as yet do not have the level of self awareness to realise what you are thinking yet
+does it not occur you you in the slightest bit, that this whole endeavour lives or dies by how you conduct yourself with him, and his impression of you?
+1) if he's wow by how passionate, serious you are, by the posture you sit, the science you talk about, the logic you apply, the experience you share, the gleam in your eye, the joy in your voice
+so many things is possible, resources, funding, build an observatory, sponsored overseas trips, summer exchange to caltech, conferences in europe, internships with any institute, collaboration, waive off classes/cca, give grades, recognition in cert, whatever
+2) if he's unimpressed at how a trio of uninfomed, unprepared kids just appear infront of him and ask for instructions, ask for money, ask for freedom, ask for trust, ask for everything and showing no confidence, no training, no passion, no preparation:
+-if he's bad mood or unkind: dismiss you to focus on your schoolwork, and be normal like everyone else in the ratrace
+-if he's kind: say encouraging words, but ultimately just redirect/reclassify you as under projects day or something and basically not his problem anymore
+a) if you know the above situation, why the current attitude?
+b) if u duno the above situation, what then do you imagine the meeting to be? a friendly innocent lunch with a friend? play dota with him later? chitchat about the latest tweet/tv/gossip?
+c) or you just dun care, and not think about it, and assume somehow, by magic, everything will happen the way you want, because you are special, and the world owes you
+think.
+yes.; thank you for being constructive.
+spoken like a true intj to realise the glaring obvious
+in the past 6 minutes since yudong first suggested meeting in reccee 12 hours from now; you could already have started discussing
+instead of delaying it because..... you can delay it; just. start.
+its not that hard
+its getting abit painful to watch
+should/do i need to start discussing to myself and start the ball rolling, for you all to read instead?
+in order for you to realise how one person talking to himself can discuss more in ten minutes, than/when 4 of you need to wait for 12 hours in order to start discussing?
+just.; start.
+how much more blatant can this be; -->start<---; discussing
+stop talking/waiting/emoing about discussing, just. start. do it!!
+to help focus your thoughts,  don't spend your attention on not wanting it to be projects day; spend your attention on what you do want it to be like and why; then attention on how you can pull this off when most students cannot
+if im your hod, i would be interested  by yudong's slant
+zhengyang's stance is more detailed, but with some emotional/risky bits
+-DO NOT condemn projects day too obviously, you have to be politically correct when you explain why u rather not do so under that umbrella of projects day
+-the bit about conferences/workshops/etc i wouldnt mention yet, because thats abit overreaching (i.e. it costs money and also requires real scientific results, which u do not have, so who would believe you? instead it sounds like you are just asking for even more money on top of the equipment)
+-instead, sighs, IPS meeting, if you tell him you are interested in presenting/participating in that, it shows him that ; =you have initiative, to find out such a local conference without school pushing u to join; =that you are serious, to dare to go
+=and at this point of the conversation, start sharing what you have done, and what you intend to do: if enough detail is given with enough enthusiasm, then he might believe u
+results = anything to push the brandname hwachong outwards, such as IPS to show NUS/NTU/Raffles/NUS High, etc that you are good, take some nice photos to put in the school websites/newsletter etc, mingle
+capability = talk about what you have done, share the experience of aligning the michelson interferometry, the calculations for gravity measurements, the raspberry pi, planck constant etc
+1) talk fast and in detail, (english drama chair, show excitedness, not nervousness, you have one morning to train them) not the memorisation and regurgitate way, but say the things you really have done, your personal experience, to sound convincing that hey, you really personally did it yourself and learnt something (esp when such things are not taught in class, and way out of syllabus)
+can talk about experience about how sensitive the fringe movements are, how tricky some pc connections can be, how building a table can be not so obvious and yet have many adaptable points
+2) take photos on your phone and show him any images of what you have done, be able to browse thru any photo and show off/identify all the components and what they do, how to use, what problems etc
+do NOT simply read/memorise stuff from internet and try to regurgitate, it will be very obvious
+and with reference to zhengyang's smiley on the notes; (do it. duh. is cute); yes, your words might be taken as anarchist
+and i think the reason is because overall, your logic tends to talk about; 1) what you dont want (projects day, controlled, pressure, reports, restrictions); -but you neglect to say how you can work without such a system; 2) what you want (results, conference, overseas, support, money, equipment, infrastructure, self sufficiency, ); -but you neglect to show why you should be granted such boons above and beyond your peers
+1) deals with your ability; 2) deals with your passion
+and from the notes at least, its not obvious yet
+to the bits in the " "; if im the hod, i will be intrigued by such strong statements, and ask for proof, such as
+1) so, how often do you guys meet up so far?; 2) so how are your workload, timetable, cca, hows you handling the new year?
+no... this is called tact
+strong statements can be less convincing
+I will commit 3 hours a week to labwork = strong statement, but not many people will believe ; I will commit 1 to 4 hours aweek to labwork, but depends on the schedule for the week, if have tests maybe wont spend anytime at all, but if less tests/homework, might double up to two afternoons or something, and work out arrangements with mentor and the lab techs = detailed statement, showing thought, planning, consideration for realistic changes and conditions... believeable and matured
+strong statements or not, is not just about the choice of adjectives
+strong in the sense that its short, full of assumptions (i.e. confidence/arrogance/ignorance?); as opposed to details, careful acknowledgement of varying conditions and methods, to adapt accordingly to reality and time
