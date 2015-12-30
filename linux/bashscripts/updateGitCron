@@ -1,0 +1,12 @@
+date +"%Y-%m-%d %H:%M:%S" > /home/pi/scripts/ugc.log
+cd /home/pi/photonLauncher
+git pull | tee -a /home/pi/scripts/ugc.log
+cp -r -v * /home/pi/scripts/ | tee -a /home/pi/scripts/ugc.log
+
+if pgrep "python" > /dev/null
+then
+    echo "WARNING: Python process running, unable to update safely." | tee -a /home/pi/scripts/ugc.log
+else
+    cd /home/pi/scripts/usbcounter/
+    make
+fi
