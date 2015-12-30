@@ -368,3 +368,46 @@ meows,
 not sure why I have had to stand in front of the src door to know you guys are not there.
 I assume it takes too much stress n effort to say so or acknowledge my whatsapps since 11:52am.
 much easier to just ignore n let me cab down from work to realize you guys not there I suppose
+(do not need to rush to reply this; think you guys deserve a rest/break.
+that being said, im not banning u from replying neither :o )
+think you all did well today; left to your own devices, you guys actually can make things happen reasonably well in a fair time frame
+so now just pending quotations, approve it, the parts arrive, assemble
+i do not foresee any huge hiccups... just small improvements over time as well figure out which lcd screen to get, or velcro, magnets, etc to add on
+what computers to get is an annoying thing, largely because its something that only your school IT department is allowed to buy, and they dun dare to buy anything without warranty
+i.e. they would rather burn a thousand dollars for a laptop or thousands for a mac, then $120 for a quanmax or $175 for a usb linux
+i find it stupid, so am fighting against the admin
+for your part, chill, go dota or watch star trek or hobbit or something
+but do start thinking, reading up on a project that you would like to do
+primary:
+i would suggest continue the optics part: michelson interferometry to detect moon
+if you wish, all three of you might like to work together for now, to build up experience and confidence
+these things will now start getting difficult and require more than googling i fear, and need physics/math/computing
+for example
+-laser (we should figure out how good and stable this laser is, in terms of its intensity, and temporal coherence)
+= intensity: photodiodes, to measure and monitor the intensity over time
+= camera: to measure the shape of the beam, it should be gaussian, otherwise need to warp it with prisms or toroidal mirrors
+= spectrum: via grating to resolve its spectral/frequency to ~0.2nanometres precision
+michelson interferometer
+= build one, see the fringes, then we elaborate
+-motors/piezos
+=to attach this to the mirrors and stages, because for real experiments, we do not want to crudely use hand manually move things during measurements, we use machines to move it in small consistent steps
+-springs / hooke's law
+to construct a way to have a mirror that hangs on a spring or equivalent, such that it moves at least half a micron a day due to the moon being directly above or below
+and im not sure how hard this step is to u;
+to present this visually, perhaps via gnuplot
+i.e. so we can see visually that data in realtime
+i.e. monitor fringe movement, laser intensity fluctuations, temperature change, mirror movement etc in plots/numbers on the computer screen, rather than by.... feeling and guesswork
+chill,
+might be interesting to do this?
+i think quite straightforward with instructions and such
+would make for a fairly nice looking clock, can mount in photonics lab, to make it your lab :D
+really
+make the place more special, unique, specially yours, and not a generic ding dong yea? ^^
+actually not unique enough since people have done it
+it hits me that if combined with this
+maybe we can make a *mandarin/chinese* version
+that will really make it more unique/special
+and perhaps more meaningful for a school like ours
+might not be a bad idea to get the cheapest model
+to tear/strip apart to see whats inside...
+then reproduce/improve/play with it
