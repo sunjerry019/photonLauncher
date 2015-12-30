@@ -1,1 +1,4 @@
+#!/bin/bash
+#script from robin
+
 autossh -M 0 -vv -f -N -R 2222:localhost:22 hcphotonics@infocommsociety.com
