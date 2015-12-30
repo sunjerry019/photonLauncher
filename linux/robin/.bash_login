@@ -17,6 +17,6 @@ function pk
 }
 
 if [ $SESSION_TYPE == "remote/ssh" ]; then
-    echo "\n"
+    echo ''
     pk
 fi
