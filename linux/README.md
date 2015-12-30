@@ -12,7 +12,7 @@ Arranged by time. Top is the earliest (2 Dec, 2013)
 Some 2 liners are combined into 1 line just cus.
 The following are generally not pasted in:
 - Links
-- Salutations (```meow```s are however kept)
+- Salutations (```meow```s and other non-usual signoffs are however kept)
 - Lines with just names of people (e.g. ```zy:```)
 
 Lists might be irritating but I'm just gonna include
