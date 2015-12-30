@@ -12,8 +12,9 @@ Arranged by time. Top is the earliest (2 Dec, 2013)
 Some 2 liners are combined into 1 line just cus.
 The following are generally not pasted in:
 - Links
-- Salutations
+- Salutations (```meow```s are however kept)
+- Lines with just names of people (e.g. ```zy:```)
 
-Lists might be irritating but im just gonna include
+Lists might be irritating but I'm just gonna include
 
 To be used by .bash_login on robin (or anywhere else should you wish)
