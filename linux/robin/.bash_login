@@ -12,7 +12,7 @@ function pk
 {
     echo "Quotes to inspire:"
     wget -q -N "https://rawgit.com/sunjerry019/photonLauncher/master/linux/quotes.txt"
-    shuf -n 1 quotes.txt
+    echo -e "\n\t\""$(shuf -n 1 quotes.txt)"\"\n"
     echo "Run 'shuf -n 1 quotes.txt' for more"
 }
 
