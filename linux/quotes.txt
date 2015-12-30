@@ -1,0 +1,370 @@
+Future correspondence through this channel.
+Including but not limited to discussion, queries and reports;
+sharing of data, papers, imagery and other files.
+Particularly useful for cc-ing people to keep them in passive loop of information without needing active participation in certain matters.
+Useful for logs, when checking/tracing back history for past information (unless you have perfect memory)
+p.s. at some point this should not be needed. i dun actually email my own profs/supervisors/colleagues. we talk.
+but until you are willing and able to communicate properly instead of hiding/shy and only communicate when you think you have the 'right' answer, we will have to fall back to such methods.
+if you guys have nothing in mind, then im placing orders for equipment liao, which will define what is doable in the coming months, since equipment/funding takes time to come in, and generally, till you guys start giving input on ideas/interests/experience/questions/etc
+these equipment are for now, slanted towards what zhengyang is doing, so
+-we going to make two worktables, going to buy the wood and aluminum profiles for the main structure soon
+-i sent quotations for 2~3 silicon photo diodes
+-1~2 quanmax computers
+-many arduinos and raspberry pi
+-assorted electronics such as motorised rotational stages and linear translation stages
+-still thinking over optical equipment, maybe some 30mm cages and polarising beam splitters from thorlabs, and perhaps more optical fibres
+thats to clear this year's budget within two weeks time from now
+if you guys have anything in mind or issues/interests/doubt/anything, please sound out, else i cannot plan for things to happen smoothly..
+thanks
+be more specific
+what exactly IS the idea?
+i mean, i sent u guys that link, i know what it is
+but i do not know what you think
+what type of signal generators (like what specifications would be useful/likely start?)
+what kind of motors? like if you just google/wiki/ebay/amazon/etc, so many options
+if you try the physics/math, what scale/numbers/specifications/types of motors
+until you can begin to discuss what signal generators or motors (and for that matter, how to connect them, power them, measure and control them, etc), its difficult to answer what src has, and what to get
+the thinking process matters alot, think and plan more objectively, logically and in depth
+also think of accessories;
+for example, zhengyang has already assembled a set of tools (various rulers with stands, multimeter, power meter, testpens, variable power supplies, extension cords)
+likewise why we are building a worktable now, to create an area to work on for long term
+so for you: basic things which might have skipped your mind
+things like
+-where are you going to place your setup? (remember this is long term stuff, so unlike games like sypt, this thing is not going to setup within a day, or tear down after 3 hours. its going to be there for months and years, evolving and getting better over time)
+-what tools do you need? computers? internet access? any software? etc
+let things take a more serious, long term tone, albeit flexible
+but not casual anyhow do once and thats it kinda thing ba
+i think at some point ( i forget, was it yday?)
+that you say you would go read up on oscilloscopes or something
+but never got back to discuss/reflect/ask anything about that since
+oscilloscopes and the signal/function generators are very tied in
+understanding one would understand the other better
+and understanding/knowing what they even are, then have an idea what to get and how to use etc
+but not sure if you guys want to google about it though
+shall wait for your updates
+ive received some quotations from oscilloscope companies for various price and technical specs, but placed on hold
+unless anything unemotional (i.e. numbers, not words) is discussed, i not going to approve the purchase (becos honestly, i think spending $10,000 to buy an oscilloscope without knowing what you guys/want need, is a bad way to spend money yea?)
+designing the worktable nows;
+probably getting 126cmx60cm birch wood from ikea, maybe tml
+and 1" aluminum profiles from either kelantan lane or clementi
+deciding the number of profiles, L brackets and screws i need though
+i assume you guys dun have smartphones.....):
+hmm.
+you guys still refusing to discuss or have the basic courtesy to acknowledge via digital text;
+nor the initiative to ask me anything or tell me anything.
+so let's do this the traditional way. ba., via instructions and face to face.
+arrange a time tomorrow (4th Dec 2013), you come to my office in nus and we discuss when and what to do.
+then another day in the future, then actually start to do
+and 12 hours i think is ample time to reply, considering my mentors when i was in hwachong, easily expect such a response time, in an age without handphones, google, wikipedia.
+(or less. i recall emails in the morning telling me to meet at noon)
+so lets see how ba~
+to keep u in the loop/idea of whats happening with the admin,
+have to clear the budget within two weeks, both in terms of quotations from the companies and approval with various hci senior staff etc
+feel free to suggest anything you think might be interesting/fun/useful/curious
+tentatively
+tomorrow ~ 9:30am @ SRC
+for workstation (probably need wood, acrylic to screw onto wood, markers to write on the table/acrylic, screws, drill, aluminum profiles, L-brackets, end caps, LCD screens, holder for LCD screens, something to hold cables together, cable tie plus whatever we can find maybe, wireless keyboard and mouse)
+1) measure dimensions of src photonics lab
+2) check for existing materials
+3) calculate what to get
+4) cab to IKEA Alexandra
+5) drop materials in HCI
+6) cab to wherever hwachong supplier is for the rest
+7) assemble (start) on friday afternoon
+Motivation to have a proper workstation
+1) someplace mechanically stable and heavy, so we can place sensitive expensive equipment with less worry about damaging it by accident
+2) by building it, we can choose to customise it; plus the psychology of it means it belong to you, have a very strong stand in preventing anyone else to use/kop stuff from it
+3) yudong suggested having the surface to be writable, i.e. we can doodle ideas, schematics, anything on it during design, brainstorming, etc which i think is a great idea, very useful for creativity environment/culture, and practical
+-so for that i think we get a wooden top (non conductive against electric shocks, safe; less thermal mass so introduce less temperature fluctuations; less acoustic resonance so should dissipate mechanical vibrations better than metal or ceramics i feel
+-get piece of acrylic on top to act as the writing surface, also works better against scratchs i think, rather than sratch and dirty the wood directly, this should make things more durable, and waterproof somemore
+-get markers/duster or something = think of some clever way to fix it to the table = i thinking of velcro tape
+-the table i think should be h shape
+-the flat middle height portion is the working area
+-the vertical part, we can mount multiple LCD screens and small computers to work with, this should free up working space away from shelves and whatnot, and make things less messy; things will get more complicated over time, so it pays to plan for room early on, and room that is adaptable to whatever needs arise in the future
+would you be willing and able to put in more time next week?
+because theeres a problem
+essentially, its of some importance that a certain setup be up and running within this holiday, as a answer to the sch admin to justify the spending and liberty given to the students
+specifically the setup i have in mind centres around a michelson interferometer that cna(might) detect the moon and its position via its gravitational pull
+this was started by zhengyang, but for one reason or another, he is unable to put time into it (so far about 12 hours in total over the past one month)
+needless to say, this means very little has happened
+since ethan is going oversseas, zhengyang is busy;
+i was wondering if you are interested/able , perhaps with lor, to concentrate on this mid scale project next week+
+will explain tml briefly
+also, think about how to make the table more useful
+maybe a table lamp with hood
+holders with swivel for LCD screens
+magnetic strips to hold tools
+or metal box with strong magnet inside to keep screws
+velcro to keep cables/wires tidy
+some kinda holders for crocodile clips,
+maybe hooks for multimeters etc
+LED strips to use as lighting
+as more people and more projects start happening at the same time
+its the lab lights will be off to reduce cross contamination
+so everyone/table should have one light/torch to operate in the dark
+LED better than normal table lamps cos less heat, less power consumption, last longer
+and LED strips is easier to handle into any shape/posture needed
+qubit. and no. at least not yet.
+the level of mental discipline and maturity and efficiency is still quite some room to grow before have chance of successfully making any research in quantum computing, otherwise its just burning money and time... D:
+but we have time. kinda.
+depends on u~
+tml. 3pm @ src
+so hope you do believe how fast you move,  how much you do,  gets you how far n new de rewards n experiences n vice versa
+reminder to please try to push yourself to have some initiative n common sense. a bit duh that u rather travel to hci, wait one hour do nothing,  n have me push u to get a paper n pen n start drawing,  or google for what profiles exists.  ie things you can do at home.
+so do believe that as long as you need me to stand in front of you,  to make you do such things,  which should take minutes on your own time., you n I know the really fun stuff like making graphene, superconductors,  quantum computers,  qubits, teleportation,  fission reactor, etc... are not going to happen.  money is hardly the issue. Your initiative,  independence, discipline is the problem yea.  Work on it.
+In the ideal world,  when I ask you to come up with  workstation, you should at least start to google n think n draw.  Have some rough sketches,  dimensions,  quantity n type of materials needed n from where,  source for them.  That should take an hour if you sit down n focus.  The next hour,  send out quotations to get the costs. wait overnight.  Next day go get the materials in the morning (split up,  everyone go get different stuff fast. no need four people to carry one thing). afternoon build n assemble.
+done. then next thing. n next thing. n next.
+so shall see how much u understand n accept this reasoning n what action you choose to take ba.
+meanwhile I have budgetted n sourced about fifty odd stuff for this month budget, n dozens of projects to do in the coming weeks.
+hope you four guys can source n design one table workstation faster n better yea.
+Oh n the thing is you guys do have very nice ideas on how to do it.
+The single biggesy problem is you procrastinate.  You only move when I stand in front n insist u pick up pencil n drae. take the tape n measure.  talk n discuss.
+Your ability is not in doubt.
+Your psyche of waiting stoning nuaing is.
+meows (:
+I shall go source for the linux pc now.  issues with finance department,  it department
+oh ya a reason why im annoyed is I didnt go home last night nor sleep because I was in office whole night n morning to source design think for the fifty plus items etc for various projects you guys can do
+upset because I have to one person nor sleep to google for stuff I asked four of you to do for a long time but just refuse to try/bother/reply
+hence my  disappointment when that effort is met with you guys playing in the lab for an hour n I have to physically cab down to hci from my work to do things like measure width of table etc....
+bad enough that you let your junior do the dirty work of designing and crunching up the numbers for the materials needed.
+worse that you are not commenting on his work and helping it to improve.
+two days have passed since friday when you promised to send in the design last night, and you broke your word.
+you had two days to fulfil your promise and your own sense of friendship and initiative. you didnt.
+you have one hour to start comment/help his work.
+stop being selfish.
+thanks.
+sighs.. so formal and rigid... mehs ):
+hope one day you will realise that this was never, ever,  an issue of commitment, but efficiency and maturity...
+none of you have close to my or my supervisors' level of burden nor commitment issues..
+have fun~
+if anyone else wish to fall out, sound out now, preferably before the school invests 5digits sums of money and more in white elephants (which happens all the time over the years);
+fyi your names and progress have always been reported/updated to:
+Mrs Tan Ai Chin, Dean of Research
+Dr Erkan Polatdemir, PhD in Quantum Tunneling
+Mrs Ng Siew Hoon, formerly HOD Science
+and some Dr Tan who i think took over as the hod
+so i will now think of how to report and apologise to them.... for misusing their resources and approvals...
+at the very least, do not be too surprised if next month i tell you that all these have to come under projects day or centad or some formal systematic reportable kinda structure blahs blahs by order of 'above' to enforce a sense of duty and commitment, just like every other kid on the block yea...
+update on the current state of affairs for the items i getting to last for the coming 3~6 months i estimate
+generally larger core items, peripherals/accessories should still be obtainable
+larger/expensive dedicated items need more time/plan/justification...
+open the file. and read briefly through at least ba
+ok. thanks.
+feel free to ask/comments about anything, but preferably not stuff that can be googled right away
+of more useful import is,
+if you have any fun/interesting toys/equipment to add to the list
+dun have to be too sure of what uses, or even how to use, a rough idea = that can come laters
+what we have to be sure, is where/how to get and how much money, and get it
+for your info, to begin having an idea as to what options really exists at what price
+zhengyang: you mentioned some other option just now, sounded good alternative;
+please update details here cos i dun remember specifics and thus difficult to compare practically
+p.s. im thinking of using this particular 30mm profile because of
+1) cost considerations and
+2) thinking of getting such boxes to hold/contain things, modular easy to use, general
+thus by looking at the cad images of the different types of profiles, this 30mm option in particular has the thinnest inner edge, with which to hook this type of container with
+i.e. we can have multiple horizontal bars running across above the table (the side where we elevate and want to hang the LCD screens
+or even the horizontal that runs right under and along the wooden top, can be used to hang these containers to put stuff, i think can be quite useful
+noted with thanks
+note for design:
+consider using thinner profiles (say 30mm or 40mm) but more truss/scaffolding
+rather than the 60mm option (because im worried the $$$ might balloon out of control unneccesarily...)
+and i think zhengyang mention just now (maybe heard wrongly)
+that tested with the acrylic in the src lab on the woodtop, and it was heavy enough + enough friction/traction to stay relatively in place?
+if so, i would feel that thoughts of securing it with extra means is, secondary
+i.e. if one day it proves that just placing the acrylic and wood in place by gravity is not enough , then add stuff (maybe 4 holes + nut and bolt or drill screw or something)
+keeping in mind some basic concerns like
+-drilling holes in stuff might crack them (glass, acrylic, even the laminated top of the wood)
+-screw/bolts stuff through them means will have protrusion, this will haunt us later, we will want a smooth surface and not have stuff jutting out
+=one solution for this that we normally do is drill the hole in steps, specifically T-shape, i.e. bore the main hole, then change drillbit and slightly drill away a wider top for the cap of the screw/nail to rest into and become flush with the rest of the surface
+will add/edit over the weekend, but heres the current draft anyways
+understood. (n generally i reply to all or at least cc everyone to keep information/comms flowing)
+i think the end caps are only used for places like the corners (say, the four points of contacts with the ground, or if any points exposed and might scratch people; i.e. ignore the profile ends that meet other profiles)
+the purpose of the end cap is just a piece of rubber; aluminum is sharp, dun want to scratch the floor or people..
+from the sketches but not your text, i assume you are using 30mm profile (but cannot tell which kind of 30mm profile u have in mind)
+headache till need tiger balm ah? D:
+also, from your component parts, was not immediately obvious which ones are the diagonal pieces
+with the assumption (unchecked) that the supplier is willing and able to cut off the ends diagonally in the first place...
+hmm
+so u agree with the choice of profile, any reason for or against? rather than mental convenience i hope
+but we dont have the baskets, so its a risk thinking that it fits
+ohm didnt remember who is heavier, perhaps write down the numbers when you say statements like that
+against, i dun memorise the mass inertias, would be simpler for you to just write down the numbers rather than say 'slightly higher'
+or for us to either ignore the statement or spend time to hunt down the numbers
+my concern isnt just the depth of the cavity
+but the entry width into the cavity
+and the thickness and slant/gradient of the inner edges of the profiles, with which to hang/hook any container/object
+in choosing the type of profile to fit this particular purpose
+just realised; all your lengths are <1m
+means this is to form a cube?
+if you recall, i said something about having a backstand to mount the computers/screens/tools....?
+u know, like a h shape
+Do the rest have you have no opinions nor time n effort to google... ):
+received.  will read later.  At friend's wedding now
+I suggest source for the wood first  n samples of acrylic to practise the drilling
+n wheres the draft design,  we need to buy the profiles n materials quite soon...
+n choose the drillbit size to use to match with the screws you want to use.  probably flat top so can flush with the surface by drilling an extra wider topRough is ok.  First draft of course what.  no one gets result in first attempt in life.  only in exam hall can mug answer sheet.
+my bad. still st wedding.  didn't see your sketch.  analyze later
+Can u get the drama Centre open.  n are the wood of the type n size you want
+read thru all n analysed.  but shall refrain from sharing the thoughts if you guys do not wish to discuss. till then.
+What is a useful discussion means,  to drill a hole in acrylic,  what is needed: a drill of enough torque,  the drill bit of the size to match the cap screw you want,  n evidence that when you drill something smooth you won't slip the drillbit  off from the vertical n break it sendinf it flying
+of cos other people have done it.  Other people also can go to moon or build nuclear fusion reactors.  That is not useful.
+useful is how do you plan to do it,  and with what.
+As to why not using white board,  what do you think?
+instead of asking questions n leaving it there,  offer your own solutions,  refrain from assuming other people to think and some for you.  You ask the questions you want,  and answer them.  Don't be spoonfed. discuss with people.
+not just asking vague questions ba.  You can do better than this.  I don't believe it takes thirty hours to google a few YouTube videos or think of using white board (like,  where to buy such size? )
+just need to get dram centre opened =
+i'm not entirely sure why what is so obvious that you used 'just'
+it implies you know of a surefire way to get it opened and get the wood
+please share that information here, its not obvious to me sorry
+for example, i want to retrieve wood of similar density and thickness by say, 10am monday
+how to go about, like who to contact, what reason to give, the contact details, thanks
+to be fair, your questions and ideas of drilling acrylic or using whiteboard are entire good and valid points
+but
+its half baked
+as the saying goes, the devil is in the details; so far every single one of you have good ideas *when* pushed desperately
+and when you have the good ideas or good questions, you stop there
+your attention span lasts a few minutes at most
+for example
+1) good that you found that drilling acrylic is doable (this requires the skill to youtube)
+bad that you didnt find out or say where is this acrylic you want to try on (and how if it fails, or whose permisson to get to use the acrylic), what drill to use, how to clamp the acrylic down, which cap screws to use, etc; focus your attention a bit me on the actual physical real things to do, one step more than the abstract idea, and you are good to go already (this requires the skill to convert ideas to reality)
+2) good that you ask why not use whiteboard (this takes a few seconds to ask)
+bad that you stop there. go ahead and say the pros and cons of whiteboard vs acrylic, do the analysis, comment and criticise; source for the whiteboard, how much it costs etc (this is where the effort and skill comes in)
+3) good that you thought of using truss/scafolding/cross beams,
+bad that you stopped it once you left src
+good that you went to hardware stores physically to see what exists
+good that you sketched out a rough draft and quantity/type of profiles and accessories needed. sad that you are the only one who bothered, despite being the youngest.
+to share something
+i said this yesterday, i say this reality again
+why do you believe any adult in hwachong will feel comfortable or trust you with a saw?
+when adeline dont even trust you to enter the photonics lab without my presence
+think, seriously guys
+if you are an adult in hwachong, be you teacher or technician or whatever or your parent
+and a bunch of teenage boys come to the lab to do work, and choose to chat/play for an hour, instead of starting to reply their mentors emails
+or read the freaking excel datasheet he spent nights editting
+or open the url for the profiles company and spend a precious one minute to read instead of one hour playing
+what the.
+wow.
+this is the attitude to convince people that you are so keen to learn and serious
+and willing and able to build qubits, supercomputers, things that your peers are ignorant of and probably no other teen in asean has access to
+yesterday in src i stated like so explicitly, draw the design/sketches and send me by today
+i said i expected by friday (yesterday), but i close one eye and give leeway and give you till today (thirty whole hours)
+to take a piece of pencil and paper and draw some lines and squares and numbers/lengths
+already you cannot do that
+instead you thought of a question, youtubed some videos, thought of where wood can be found
+things that takes me maybe 5 minutes. and i know it takes you pretty much that amount of time as well.
+you honestly, without a second thought
+believe people will trust you to handle a hand drill and not injure yourself or each other
+or damage anything
+spare a minute and
+将心比心
+i know you are young
+but i also have to ask you to grow up abit sooner than you like
+which means taking responsibility for your own life, through your actions and inactions
+so yeps
+this email is timed at midnight, cos i harbour the hope that anyone of you can be bothered to start helping out in the design proper, or comment on zhengyang's effort instead of keeping quiet
+agreed with the practice:
+the things about drilling this i feel are
+1) the duration cannot be long, else might melt
+2) cannot be too fast, else might melt again
+3) hole size should be smaller than the screw, else no threads can be formed with the screw
+4) top of the hole has to be widened to allow the cap of the screw to sink in and flush with the surface
+5) the gradient of the drill has to be vertical and not move, else at speed will risk breaking/snapping the drillbit and send it flying/hitting things and people
+6) the acrylic to be clamped down, else it might spin out of control and cut people
+agreed with the method
+further, its common practice to use a nail or sharp object and hammer, to knock a small guiding 'hole' or depression, to guide the drillbit awy from slipping
+ah and yes, using the ply wood to sandwich the target material is another common good method to add structural support
+good find on your own (:
+good. i agree that is a good choice, safer than a hand drill for beginners
+only issue to use that is to spend some time and effort to clamp the acrylic or wood or whatever onto the anvil like stage
+but once done, its very safe and stable, and with the screws, consistent controlled movements or the directions and depth of the drilbit can be done
+caution for that is the torque for that machine is seriouly high, so common sense things are
+dun wear long sleeve
+accidents have happened in various workshops that the sleeve gets caught by the drill, and the hand is drawn in and meshed almost instantly, there is no way to stop that once its happen, human reaction time is not enough to stop the drill in time
+one of the items im arranging in the budget is
+two  x {raspberry pi, casing, wifi, 64gb sd card} for~ $250 or so
+motivation is this
+to create a 128gb ram 'supercomputer' test
+if and can connect these two, then we can get more, say $1000 for 8 x 64 = half a terabyte of ram supercomputer farm
+or for $2000, say the price for a macbook, we can get a one !@%#^ terabyte of ram! sure hit news/papers as a local wonder...
+it seems they manage to swap memory in the sd card to act as pseuodo ram
+not sure how it works, can think about it further
+but the fact is that its done before, so no doubt about whether it will work, just a matter of how
+will also set aside some budget for this
+to house what will become the most powerful computer outside of mindef/nus/ntu/astar/dsta...
+
+im also considering whether to use
+a) ethernet cable
+b) wifi
+or
+c) radio
+to connect the computer, arduino raspberry pi...
+-ethernet i think is reliable but messy (imagine 20 cables running together)
+-wifi is neat but might not be too reliable in the photonics lab location
+-radio is old fashion but more 'brute' force and less likely to fail and yet neater than cables, less neat as wifi de compromise...
+the prof who invented this method is generous enough (common for academics but not companies) to share and teach how to do what he did with very explicit steps
+just literally read and follow the pdf file
+hmm
+just trying to make sure we have all the parts needed to make this happen, so you can start/do this if it interests u...
+but then it seems wifi/radio might not work, the prevailing method seems to be connnecting via ethernet cable to a network hub, with each pi serving as a node
+radio seems to have a grey area problem of not being unique frequency/ID for each device
+wifi... im not sure
+thinking
+Thanks zy n yd. agree that ethernet would probably be the better bet.
+but exploring possibilities to make future expansion of setup smoother also.
+my labs prefer using bnc n nim cables for data transfer between machines
+as to the arduinos:
+not really, we can use them to build weather stations and mount them outside.
+or mount on the ar drones and fly them around as aerial monitors
+or hook up the arduino makey makey to the floor to convert the floor or stairs into a piano etc
+one of the motivation for getting the makersbeam is to also see whether theres a neater way to mount circuits/arduinos/pi on the optics bench
+perhaps say, 30cm above the the optics, with the cables running down and taped along the mount or something
+at the very least yea, loose cables/wires/fibres should be held together with cable ties, and taped onto the surface or something to stop them from getting entangled or damaged
+which reminds me, we need to get paper tape. lots of.
+my bad, i mean medical tape
+so we can tape down fibres, wires, cables, equipment, papers, etc without leaving behind sticky residue
+excellent!
+i love the idea of drawing on graph paper, makes scaling for reference so much easier and consistent
+(i.e. when taking photos of object, also a great idea to put a ruler beside, in the photo, much easier for reference and calculations)
+yudong: elaborate abit for the reasoning of your modifications, dun leave it to assumptions and guesswork for readers. thanks!
+1) what will u use to join the diagonal profiles?
+
+2) no one ever said the screens must be mounted at the top of the back? i.e. whatever the height of the back, the screens, and anything else, can be mounted at any height < the height of the back
+
+3) the 900mm if shortened by 30mm, will the profile structure be shorter than the width of the wood? is that ok with u?
+
+Lor: are you busy too?
+to be fair, ethan is right in his own way
+i.e. if you find replying emails with a two-day-lag is already a strain on your schedule/life, then ethan made the right choice to drop out;
+
+i love to play and nua. but i do so by working really fast, so i have lots of time to play.
+
+therefore i do not want to burn alot of time on this kinda research, but the requirement is that you respond/work fast
+
+for example, say building the raspberry pi supercomputer
+i expect the moment the raspberry pi physically reach you guys, considering the whole pdf is already listed with explicit steps on the internet and i even stated the url in the emails
+i would expect it to be doable within 2 mornings or 2 afternoons. (its like, you know, just read the pdf and type, shouldnt take 2 months to type 4 pages i think)
+and if work slowly, like facebook/youtube/chat/lim kopi while working kinda slack manner, then a week
+that i think is the realistic expectation i have. if you guys can do that, then we can talk about real research and the really fun stuff rather than such menial tasks
+(fun stuff like superconducting magnets, that are cooled down by liquid nitrogen, and we can suspend blocks of metal in midair)
+to be fair, ethan also failed my test (sorry, but life is a test. not the exam hall, those no one really cares.)
+the test was this, i asked u guys to take a pen and paper and start drawing. i said google and see what profiles exist.
+some of you guys did. one of u didnt.
+for whatever reason, ethan cannot/willnot take paper/pen and start working, just watch; likewise he stared at the laptop in front of him in the src, and just refuse to google, i have to grab the computer and type.
+oh yes
+this is intentionally meant to be psychologically stressing to you guys (by me)
+this is part of the test/training
+because if you find talking to me scary, replying to a digital text within a day a burden on your timetable, googling one url to be stressful
+then...
+then you will definitely underestimate the dangers of playing with liquid nitrogen (spilling it on yourself for example, will kill/destroy the part of the body that comes into contact)
+(for example, i notice some of u playing with lasers before by anyhow waving. if jokers do that in my lab, we will make sure hes debarred from his phd program and kicked out of nus for being a destructive idiot)
+i know some if not all of you will not like this
+but you know, not most teenagers will have access to the kind of toys and experiences you guys would/should/ soon have
+so i need to have you guys pass this psychological/maturity test, to prove to me and your teachers/parents, that you can do it
+and i dun expect you to suddenly grow up overnight, hence the tests/trials/training come in stages, i.e. table is the simplest safest fastest thing i can think of already.... and already 1/4 find it too tough
+next up will be the raspberry pi supercomputer, the sono sound reducer, the moon detector... these 3 i know zhengyang and yudong has some ideas/work done on it already
+Lor: i duno what your interests are yet so i cannot comment/help in any useful way....
+its not meant to bully u for the sake of bullying u orite...
+meows,
+not sure why I have had to stand in front of the src door to know you guys are not there.
+I assume it takes too much stress n effort to say so or acknowledge my whatsapps since 11:52am.
+much easier to just ignore n let me cab down from work to realize you guys not there I suppose
