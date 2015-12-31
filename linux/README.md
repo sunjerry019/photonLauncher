@@ -5,7 +5,12 @@ This includes scripts, motd, etc.
 
 Mostly for archival and backup purposes.
 
+## users.txt
+
+This file contains the info for users on all the computers. This is for easy ssh-ing.
+
 ## quotes.txt
+
 Copy and pasted stuff. Need to update as time goes by.....
 
 Arranged by time. Top is the earliest (2 Dec, 2013)
