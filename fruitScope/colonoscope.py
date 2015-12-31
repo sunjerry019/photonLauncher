@@ -5,7 +5,7 @@ import argparse
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument("t", "--duration", help="Duration of acquisition", type = int)
+  parser.add_argument("t", metavar = "duration", help="Duration of acquisition", type = int, nargs = '+')
   args = parser.parse_args()
   print args.t
   scope = lecroy.Lecroy()
