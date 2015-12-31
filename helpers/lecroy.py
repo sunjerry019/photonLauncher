@@ -116,8 +116,8 @@ class Lecroy():
     def _parseData(self, data, metadata, datatype = 'histogram'):
         """ metadata should be parsed already. contains x-axis data. returns the histogram that is plottable in a list of [x,y] values"""
         h = data.split('\n')
-        h.pop()
-        h.pop()
+        h.pop(0)
+        h.pop(0)
 
         data = [] # should contain both x and y axis data
 
@@ -126,7 +126,7 @@ class Lecroy():
             h = h.split("  ")
         elif datatype == "waveform":
             h = h.split(" ")
-        h.pop()
+        h.pop(0)
         parsed_hist = [float(i.strip()) for i in h]
 
         h_offset = metadata['horiz_offset'] * 10 ** 9 # scale up by a billion, units in nanoseconds easier to read
