@@ -127,6 +127,8 @@ class Lecroy():
         elif datatype == "waveform":
             h = h.split(" ")
         h.pop(0)
+        print h
+        
         parsed_hist = [float(i.strip()) for i in h]
 
         h_offset = metadata['horiz_offset'] * 10 ** 9 # scale up by a billion, units in nanoseconds easier to read
