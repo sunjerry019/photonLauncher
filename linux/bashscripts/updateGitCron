@@ -1,5 +1,5 @@
 #!/bin/bash
-#script from fruitcake0
+# script from fruitcake0
 
 date +"%Y-%m-%d %H:%M:%S" > /home/pi/scripts/ugc.log
 cd /home/pi/photonLauncher

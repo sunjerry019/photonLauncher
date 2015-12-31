@@ -1,5 +1,5 @@
 #!/bin/bash
-#script from robin
+# script from robin
 
 ping -b 192.168.2.255 -c 1
 arp -a | grep -v "<incomplete>" | awk '{print $1,$2}'

@@ -1,4 +1,4 @@
 #!/bin/bash
-#script from fruitcake1
+# script from fruitcake1
 
 mount -t nfs 192.168.2.206:/home/pi/scripts /home/pi/scripts
