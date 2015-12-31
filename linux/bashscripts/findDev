@@ -1,5 +1,11 @@
 #!/bin/bash
 # script from robin
 
+echo "Using arp"
 ping -b 192.168.2.255 -c 1
 arp -a | grep -v "<incomplete>" | awk '{print $1,$2}'
+
+echo "Using ping"
+for ip in $(seq 1 254); do ping -c 1 192.168.2.$ip>/dev/null;
+    [ $? -eq 0 ] && echo "192.168.2.$ip UP" || : ;
+done
