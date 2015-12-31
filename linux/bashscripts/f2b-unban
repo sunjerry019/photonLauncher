@@ -1,0 +1,10 @@
+#!/bin/bash
+# script from HCIRS Server
+# to be run by an admin on HCIRS server should IP be banned by fail2ban due to too many incorrect tries
+
+if [ -z "$1" ]; then
+    echo "Error: No IP address provided"
+else
+    echo Unbanning <$1> from <sshd> jail
+    sudo fail2ban-client set sshd unbanip $1
+fi
