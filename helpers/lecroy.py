@@ -82,16 +82,16 @@ class Lecroy():
         return data
     def getHistogram(self):
         """ Gets the histogram from the Lecroy. Returns a tuple of a plottable histogram, and the metadata for storage"""
-        hist = self.scope.send('TA:INSPECT? "SIMPLE"') # the use of the first math channel is implicit
-        metadata = self.scope.send('TA:INSPECT? "WAVEDESC"')
+        hist = self.send('TA:INSPECT? "SIMPLE"') # the use of the first math channel is implicit
+        metadata = self.send('TA:INSPECT? "WAVEDESC"')
         parsed_metadata = _parseWaveDesc(metadata)
         parsed_hist =  _parseHistogram(hist, parsed_metadata)
         return (parsed_hist, parsed_metadata)
 
     def getWaveForm(self, channel):
         """ Gets the voltage data from the Lecroy. Returns a tuple of a plottable waveform, and the metadata for storage """
-        waveform = self.scope.send('C{}: INSPECT? "SIMPLE"'.format(channel))
-        metadata = self.scope.send('C{}: INSPECT? "WAVEDESC"'.format(channel))
+        waveform = self.send('C{}: INSPECT? "SIMPLE"'.format(channel))
+        metadata = self.send('C{}: INSPECT? "WAVEDESC"'.format(channel))
         parsed_metadata = _parseWaveDesc(metadata)
         parsed_waveform = _parseHistogram(waveform, parsed_metadata, datatype = "waveform")
         return (parsed_waveform, parsed_metadata)
