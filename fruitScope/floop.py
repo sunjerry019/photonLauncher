@@ -57,7 +57,7 @@ def _parse(fp):
 		x = s.split('\n')
 		x = ''.join(x)
 		x = x.strip()
-		x = x.split(" ")
+		x = x.split("  ")
 		x = map(lambda i: float(i), x)
 		return x
     def parsedesc(s):
