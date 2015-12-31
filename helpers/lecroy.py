@@ -85,7 +85,7 @@ class Lecroy():
         hist = self.send('TA:INSPECT? "SIMPLE"') # the use of the first math channel is implicit
         metadata = self.send('TA:INSPECT? "WAVEDESC"')
         parsed_metadata = self._parseWaveDesc(metadata)
-        parsed_hist =  self._parseHistogram(hist, parsed_metadata)
+        parsed_hist =  self._parseData(hist, parsed_metadata)
         return (parsed_hist, parsed_metadata)
 
     def getWaveForm(self, channel):
@@ -93,7 +93,7 @@ class Lecroy():
         waveform = self.send('C{}: INSPECT? "SIMPLE"'.format(channel))
         metadata = self.send('C{}: INSPECT? "WAVEDESC"'.format(channel))
         parsed_metadata = self._parseWaveDesc(metadata)
-        parsed_waveform = self._parseHistogram(waveform, parsed_metadata, datatype = "waveform")
+        parsed_waveform = self._parseData(waveform, parsed_metadata, datatype = "waveform")
         return (parsed_waveform, parsed_metadata)
 
     def _parseWaveDesc(self, raw_metadata): #do note that metadata contains the x-axis data, so any measurement would require knowing the wavedesc
@@ -106,7 +106,7 @@ class Lecroy():
             x = i.split(':')
             if not len(x) == 2:
                 continue
-            x[0] = x.strip().lower()
+            x[0] = x[0].strip().lower()
             try:
                 x[1] = float(x[1].strip())
             except:
