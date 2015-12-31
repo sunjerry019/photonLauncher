@@ -87,9 +87,15 @@ class Lecroy():
         parsed_metadata = _parseWaveDesc(metadata)
         parsed_hist =  _parseHistogram(hist, parsed_metadata)
         return (parsed_hist, parsed_metadata)
-    def getWaveForm(self, channel = 2):
+
+    def getWaveForm(self, channel):
         """ Gets the voltage data from the Lecroy. Returns a tuple of a plottable waveform, and the metadata for storage """
-        pass
+        waveform = self.scope.send('C{}: INSPECT? "SIMPLE"'.format(channel))
+        metadata = self.scope.send('C{}: INSPECT? "WAVEDESC"'.format(channel))
+        parsed_metadata = _parseWaveDesc(metadata)
+        parsed_waveform = _parseHistogram(waveform, parsed_metadata, datatype = "waveform")
+        return (parsed_waveform, parsed_metadata)
+
     def _parseWaveDesc(self, raw_metadata): #do note that metadata contains the x-axis data, so any measurement would require knowing the wavedesc
         """ metadata is the raw wavedesc, returns a parsed dictionary with relevant formatting"""
         m = raw_metadata.split('\n')
@@ -107,16 +113,19 @@ class Lecroy():
                 x[1] = x[1].strip()
             metadata[x[0]] = x[1]
         return metadata
-    def _parseHistogram(self, hist, metadata):
+    def _parseData(self, data, metadata, datatype = 'histogram'):
         """ metadata should be parsed already. contains x-axis data. returns the histogram that is plottable in a list of [x,y] values"""
-        h = hist.split('\n')
+        h = data.split('\n')
         h.pop()
         h.pop()
 
         data = [] # should contain both x and y axis data
 
         h = ''.join(h).strip()
-        h = h.split("  ")
+        if datatype == "histogram":
+            h = h.split("  ")
+        elif datatype == "waveform":
+            h = h.split(" ")
         parsed_hist = [float(i) for i in h]
 
         h_offset = metadata['horiz_offset'] * 10 ** 9 # scale up by a billion, units in nanoseconds easier to read
@@ -126,5 +135,3 @@ class Lecroy():
             data.append([(i * h_binsize) + h_offset, parsed_hist[i]])
 
         return data
-    def _parseWaveForm(self, waveform, raw_metadata):
-        pass
