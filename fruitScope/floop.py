@@ -57,7 +57,7 @@ def _parse(fp):
 		x = s.split('\n')
 		x = ''.join(x)
 		x = x.strip()
-		x = x.split("  ")
+		x = x.split(" ")
 		x = map(lambda i: float(i), x)
 		return x
     def parsedesc(s):
@@ -70,10 +70,10 @@ def _parse(fp):
             if c == 0:
                 pass
             else:
-				j = i.split(':')
-				if not len(j) == 2:
-					continue
-				desc[(j[0]).lower().strip()] = j[1].strip()
+		j = i.split(':')
+		if not len(j) == 2:
+			continue
+		desc[(j[0]).lower().strip()] = j[1].strip()
             c += 1
         return desc
     def getx(hist, desc):
