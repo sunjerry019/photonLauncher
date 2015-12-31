@@ -18,9 +18,15 @@ This returns a tuple, ```(hist, metadata)```, both of which have been parsed. ``
 
 The x-axis data is also scaled up by ```10 ** 9 ``` as in our use case, a histogram in nanoseconds is easier to read, and also because of floating point errors.
 
-```metadata``` is a dictionary, and is relevant to both the histogram and waveform, as it contains the values for the x-axis data, along with things like acquisition duration, oscilloscope model, etc. 
+```metadata``` is a dictionary, and is relevant to both the histogram and waveform, as it contains the values for the x-axis data, along with things like acquisition duration, oscilloscope model, etc.
 
 ## Acquiring the Waveform
+
+```python
+(waveform, metadata) = scope.getWaveform()
+```
+
+This works in a very similar fashion to ```getHistogram()```, though you'll now have to specify the channel. (We usually use ```2``` or ```3```) Note that the parsing is only very slightly different for ```getWaveform()```
 
 ## Sending your own command
 
