@@ -6,6 +6,8 @@ pew pew pew
 
 Scripts to extract, process and plot data from various equipment present in our photonics lab. Highly WIP.
 
+Use ```sys.path.insert(0, '../helpers/')``` to access libraries in ```helpers```.
+
 ## Equipment list
 
 Finished:
@@ -18,7 +20,7 @@ Still in the pipeline:
 
 ## Contact Us
 
-Feel free to add an issue or a pull request. Our emails are open. 
+Feel free to add an issue or a pull request. Our emails are open.
 
 ## Overview of Experiments
 
