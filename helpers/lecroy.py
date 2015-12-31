@@ -130,7 +130,11 @@ class Lecroy():
         print h
         for i in h:
             print i.strip()
-            print float(i.strip())
+            try:
+                print float(i.strip())
+            except:
+                print "???"
+                print i.strip()
         parsed_hist = [float(i) for i in h]
 
         h_offset = metadata['horiz_offset'] * 10 ** 9 # scale up by a billion, units in nanoseconds easier to read
