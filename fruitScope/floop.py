@@ -154,8 +154,8 @@ class fruitScope():
     			self.savef.write(i[:-2] + '\n')
         #self.savef.close()
     def start(self):
-        self.talk('C2:INSPECT? "SIMPLE"')
-        self.talk('C2:INSPECT? "WAVEDESC"')
+        self.talk('TA:INSPECT? "SIMPLE"')
+        self.talk('TA:INSPECT? "WAVEDESC"')
         self.savef.close()
         (desc, hist) = _parse(self.savefp)
 
