@@ -144,7 +144,10 @@ class Lecroy():
             data.append([(i * h_binsize) + h_offset, parsed_hist[i]])
 
         return data
-
+    def start(self):
+        self.send('TRMD NORM')
+    def stop(self):
+        self.send('STOP')
 if __name__ == '__main__':
     s = Lecroy()
     s.getHistogram()
