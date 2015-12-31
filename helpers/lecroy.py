@@ -120,6 +120,7 @@ class Lecroy():
         h.pop(0)
 
         data = [] # should contain both x and y axis data
+        parsed_hist = []
 
         h = ''.join(h).strip()
         if datatype == "histogram":
@@ -127,15 +128,14 @@ class Lecroy():
         elif datatype == "waveform":
             h = h.split(" ")
         h.pop(0)
-        print h
+        #print h
         for i in h:
-            print i.strip()
+            #print i.strip()
             try:
-                print float(i.strip())
+                parsed_hist.append(float(i.strip("\n\r \"")))
             except:
-                print "???"
-                print i.strip()
-        parsed_hist = [float(i) for i in h]
+                print i
+                pass
 
         h_offset = metadata['horiz_offset'] * 10 ** 9 # scale up by a billion, units in nanoseconds easier to read
         h_binsize = metadata['horiz_interval'] * 10 ** 9
@@ -144,3 +144,7 @@ class Lecroy():
             data.append([(i * h_binsize) + h_offset, parsed_hist[i]])
 
         return data
+
+if __name__ == '__main__':
+    s = Lecroy()
+    s.getHistogram()
