@@ -18,7 +18,7 @@ class helper:
             return False
 
 class Lecroy():
-    def __init__(self, savefile):
+    def __init__(self):
         _ = helper()
         #default configuration
         cfg = {
@@ -27,7 +27,9 @@ class Lecroy():
             "parity"    : "N",
             "stopbits"  : 1,
             "bytesize"  : 8,
-            "timeout"   : 2
+            "timeout"   : 2,
+            "rawData"   :"/home/robin/Dropbox/hbar/GhostImaging/fruitScope/rawData", #this is hard coded, please don't strike me down
+            "parsedData":"/home/robin/Dropbox/hbar/GhostImaging/fruitScope/parsedData"
         }
 
         #check whether there is a configuration file lecroy.conf
@@ -62,12 +64,7 @@ class Lecroy():
             self.scope.bytesize = cfg['bytesize']
             self.scope.timeout = cfg['timeout']
             self.scope.open()
-            print("Initalised serial communication....")
-            try:
-                self.savef = open(savefile, 'w')
-                self.savef.write("Started {}\n".format(savetime))
-            except IOError:
-                print("Unable to open/write to {}".format(savefile))
+            print("Initalised serial communication...")
         except:
             print("Unable to establish serial communication. Please check port settings and change configuration file accordingly. For more help, consult the documention.")
             sys.exit(0)
@@ -94,7 +91,7 @@ class Lecroy():
         """ Gets the voltage data from the Lecroy. Returns a tuple of a plottable waveform, and the metadata for storage """
         pass
     def _parseWaveDesc(self, raw_metadata): #do note that metadata contains the x-axis data, so any measurement would require knowing the wavedesc
-        """ metadata is the raw wavedesc, returns a parsed dictionary with relevant formatting""" 
+        """ metadata is the raw wavedesc, returns a parsed dictionary with relevant formatting"""
         m = raw_metadata.split('\n')
         metadata = {}
         m.pop() # the first line is always an echo of the command used. removing.
@@ -115,19 +112,19 @@ class Lecroy():
         h = hist.split('\n')
         h.pop()
         h.pop()
-        
+
         data = [] # should contain both x and y axis data
-        
+
         h = ''.join(h).strip()
         h = h.split("  ")
         parsed_hist = [float(i) for i in h]
-        
+
         h_offset = metadata['horiz_offset'] * 10 ** 9 # scale up by a billion, units in nanoseconds easier to read
         h_binsize = metadata['horiz_interval'] * 10 ** 9
-        
+
         for i in range(len(parsed_hist)):
             data.append([(i * h_binsize) + h_offset, parsed_hist[i]])
-        
+
         return data
     def _parseWaveForm(self, waveform, raw_metadata):
         pass
