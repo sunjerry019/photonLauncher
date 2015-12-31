@@ -154,7 +154,6 @@ class fruitScope():
     			self.savef.write(i[:-2] + '\n')
         #self.savef.close()
     def start(self):
-        self.talk('STOP')
         self.talk('C2:INSPECT? "SIMPLE"')
         self.talk('C2:INSPECT? "WAVEDESC"')
         self.savef.close()
