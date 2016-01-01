@@ -1,2 +1,2 @@
 #!/bin/bash
-mpiexec -hosts robin@192.168.2.188,robin@192.168.2.194 -n 2 $1
+mpiexec -hosts robin@192.168.2.188,robin@192.168.2.194 -n 2 $1 $2 $3 $4 $5
