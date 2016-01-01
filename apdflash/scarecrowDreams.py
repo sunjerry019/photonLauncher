@@ -57,8 +57,6 @@ class scopeControl():
         t = threading.Timer(self.c, stop)
         t.start()
 
-
-
 class thorControl():
 	def __init__(self, step, deg):
 		self.step = step
@@ -114,8 +112,29 @@ def main(dg, step, binsize):
             else:
                 break
             # clean up and data exporting
+		tar = tarfile.open("apdflashCoincidences{}.tar.gz".format(timestamp), "w:gz")
+		tar.add(timestamp, arcname = timestamp)
+		tar.close()
+
+		for i in os.listdir(timestamp):
+			os.remove(os.path.join(timestamp,i))
+		os.rmdir(timestamp)
+
+		ssh = rpiDBUploader("apdflashCoincidences{}.tar.gz".format(timestamp), "apdflash")
+		ssh.upload()
+
     elif rank == 1:
         print "on 2.194, motor control"
         b = thorControl(step, dg)
         b.timestamp = timestamp
         b.start()
+
+def init():
+	parser = argparse.ArgumentParser(description = "Script to control motor for coincidence measurement of APD flash breakdown")
+	parser.add_argument('degrees', metavar = 'd', type = float, help = "Total degrees to rotate")
+	parser.add_argument('stepsize', metavar = 's', type = int, help = "Encoder counts to move, every rotation. Rotate until total degrees. Each encoder count is 2.16 arcseconds.")
+	parser.add_argument('binlength', metavar = 'b', type = int, help = "Duration for oscilloscope to measure histogram")
+	args = parser.parse_args()
+	main(args.degrees, args.stepsize, args.binlength)
+
+init()
