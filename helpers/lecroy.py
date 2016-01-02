@@ -148,6 +148,8 @@ class Lecroy():
         self.send('TRMD NORM')
     def stop(self):
         self.send('STOP')
+    def clear(self):
+        self.send('CLSW')
 if __name__ == '__main__':
     s = Lecroy()
     s.getHistogram()
