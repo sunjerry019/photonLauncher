@@ -12,7 +12,8 @@ def check_dir(directory):
 	if not os.path.exists(directory):
 	    os.makedirs(directory)
 
-def main(dg, step, binlength, filepath):
+def main(dg, step, binlength):
+    filepath = '/home/robin/temp'
     ssh = paramiko.SSHClient()
     timestamp = time.strftime('%Y%m%d_%H%M')
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
