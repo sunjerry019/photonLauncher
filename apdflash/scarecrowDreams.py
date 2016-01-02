@@ -7,7 +7,7 @@ Rotates the stage by a certain amount with arguments rather similar to odin.py, 
 """
 
 
-import sys, os
+import sys, os, json
 sys.path.insert(0,'../helpers/')
 
 from mpi4py import MPI
