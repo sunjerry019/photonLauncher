@@ -38,6 +38,7 @@ class scopeControl():
         self.id = None
         self.timestamp = None
     def acquireData(self):
+        print "starting to collect data from scope"
         check_dir(self.timestamp)
         scope = Lecroy()
         def stop():
@@ -54,7 +55,7 @@ class scopeControl():
                 json.dump(mmdata, f)
             self.comm.send("done", dest = 1, tag = 0)
         #scope.start()
-		print "scope starts acquisition"
+        print "scope starts acquisition"
         t = threading.Timer(self.c, stop)
         t.start()
 
