@@ -106,9 +106,8 @@ def main(dg, step, binsize):
         c.timestamp = timestamp
         while True:
             a = comm.recv(source = 1, tag = 0)
-
-
             if a == "next":
+		print "received from source 1"
                 b = comm.recv(source = 1, tag = 1)
                 c.id = b
                 c.acquireData()
