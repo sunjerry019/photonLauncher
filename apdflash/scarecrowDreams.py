@@ -50,7 +50,7 @@ class scopeControl():
             'id':           self.id,
             'hist':         hist,
             'histMetaData': mdata}
-            with open(os.path.join(self.timestamp, str(self.id)), 'wb+') as f
+            with open(os.path.join(self.timestamp, str(self.id)), 'wb+') as f:
                 json.dump(mmdata, f)
             self.comm.send("done", dest = 1, tag = 0)
         #scope.start()
