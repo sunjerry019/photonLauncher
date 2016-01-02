@@ -44,12 +44,12 @@ class scopeControl():
             #scope.stop()
 			print "scope stops acquisition"
             #(hist, mdata) = scope.getHistogram()
-            mmdata = {
-                'timestamp':    self.timestamp,
-                'binsize':      self.c,
-                'id':           self.id,
-                'hist':         hist,
-                'histMetaData': mdata
+			mmdata = {
+            'timestamp':    self.timestamp,
+            'binsize':      self.c,
+            'id':           self.id,
+            'hist':         hist,
+            'histMetaData': mdata
             }
             with open(os.path.join(self.timestamp, str(self.id)), 'wb+') as f:
                 json.dump(mmdata, f)
