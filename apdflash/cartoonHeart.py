@@ -37,7 +37,6 @@ def main(dg, step, binlength, filepath):
             }
             with open(os.path.join(filepath, timestamp, str(i)),'wb+') as f:
                 json.dump(mmdata, f)
-            continue
         t = threading.Timer(self.c,stop)
         t.start()
 
