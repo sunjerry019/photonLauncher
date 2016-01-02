@@ -3,7 +3,7 @@ from mpi4py import MPI
 
 comm =  MPI.COMM_WORLD
 rank =  comm.Get_rank()
-name = MPI.Get_proccessor_name()
+name = MPI.Get_processor_name()
 print rank
 
 if rank == 0:
