@@ -6,6 +6,8 @@ sys.path.insert(0, '../helpers')
 from lecroy import Lecroy
 from mjolnir import Mjolnir
 
+import argparse
+
 def check_dir(directory):
 	if not os.path.exists(directory):
 	    os.makedirs(directory)
