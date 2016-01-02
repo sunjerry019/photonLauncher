@@ -1,3 +1,4 @@
+import threading
 import paramiko
 import sys, os, json
 import time
@@ -24,25 +25,27 @@ def main(dg, step, binlength):
     x/= s
     scope = Lecroy()
     check_dir(os.path.join(filepath, timestamp))
+    print x
     for i in xrange(int(x)):
+        print i
         stdin,stdout, stderror = ssh.exec_command("cd photonLauncher/apdflash; python scarecrowMotor.py {}".format(step))
+	print stdout.readlines()
         time.sleep(1)
+	#scope.stop()
         scope.clear()
-        def stop():
-            scope.stop()
-            (hist, mdata) = scope.getHistogram()
-            mmdata = {
+        scope.start()
+        time.sleep(binlength)
+        scope.stop()
+        (hist, mdata) = scope.getHistogram()
+        mmdata = {
             'timestamp': timestamp,
             'bin_duration':binlength,
             'id': i,
             'hist':hist,
             'histMetaData':mdata
             }
-            with open(os.path.join(filepath, timestamp, str(i)),'wb+') as f:
-                json.dump(mmdata, f)
-        t = threading.Timer(self.c,stop)
-        t.start()
-
+        with open(os.path.join(filepath, timestamp, str(i)),'wb+') as f:
+            json.dump(mmdata, f)
 
 def init():
 	parser = argparse.ArgumentParser(description = "Script to control motor for coincidence measurement of APD flash breakdown")

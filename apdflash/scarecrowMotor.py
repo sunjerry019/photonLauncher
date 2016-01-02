@@ -13,5 +13,5 @@ args = parser.parse_args()
 
 m = Mjolnir()
 print args.s
-print "imagine that the motor moved a little"
-#m.moveRotMotor(args.s)
+#print "imagine that the motor moved a little"
+m.moveRotMotor(args.s)
