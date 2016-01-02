@@ -10,4 +10,5 @@ if rank == 0:
 	data = {1: 2, 3:4}
 	comm.send(data, dest = 1, tag = 0)
 if rank == 1:
-	print comm.recv(source = 0, tag = 0)
+	data = comm.recv(source = 0, tag = 0)
+	print data
