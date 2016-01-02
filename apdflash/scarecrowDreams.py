@@ -41,8 +41,9 @@ class scopeControl():
         check_dir(self.timestamp)
         scope = Lecroy()
         def stop():
-            scope.stop()
-            (hist, mdata) = scope.getHistogram()
+            #scope.stop()
+			print "scope stops acquisition"
+            #(hist, mdata) = scope.getHistogram()
             mmdata = {
                 'timestamp':    self.timestamp,
                 'binsize':      self.c,
@@ -53,7 +54,8 @@ class scopeControl():
             with open(os.path.join(self.timestamp, str(self.id)), 'wb+') as f:
                 json.dump(mmdata, f)
             self.comm.send("done", dest = 1, tag = 0)
-        scope.start()
+        #scope.start()
+		print "scope starts acquisition"
         t = threading.Timer(self.c, stop)
         t.start()
 
@@ -71,7 +73,8 @@ class thorControl():
 		x /= s
 		self.data = {}
 		for i in xrange(int(x)):
-			m.moveRotMotor(self.step)
+			#m.moveRotMotor(self.step)
+			print "motor moves a little"
 			comm.send("next", dest = 0, tag = 0)
 			comm.send(i, dest = 0, tag = 1)
 			if comm.recv(source = 0, tag = 0) == "done":
