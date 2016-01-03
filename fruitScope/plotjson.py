@@ -39,8 +39,7 @@ class plotJson():
                         self.cfg[i[0]] = i[1]
         except:
             print "No config file found...using default settings";
-            self.cfg =
-            {
+            self.cfg = {
                 "format": "epscairo",
                 "xlabel": "t@level (ns)",
                 "ylabel": "Two-photon coincidence events"
