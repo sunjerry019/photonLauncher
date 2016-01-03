@@ -14,10 +14,10 @@ def main():
     parser = argparse.ArgumentParser(description = "Plots and saves json objects in folder parseddata, uses a config file for plot setting inside cfg/.plotjson for gnuplot settings")
     parser.add_argument('f', metavar = 'f', help="Filename of json file to be plotted.")
     parser.add_argument('title', metavar = 't', help = "Title to be included in plot.")
-    parser.add_argument('-e', '--errorbars', help = "Use this flag to NOT plot with error bars, in case the plot is too messy.", action = "store_true")
+    parser.add_argument('-ne', '--noerrorbars', help = "Use this flag to NOT plot with error bars, in case the plot is too messy.", action = "store_true")
 
     args = parser.parse_args()
-    p = plotJson(args.errorbars)
+    p = plotJson(args.noerrorbars)
     p.load(args.f, args.title)
 
 def hms(x):
