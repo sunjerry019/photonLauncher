@@ -53,15 +53,15 @@ class plotJson():
         return s
     def load(self, path, title):
         #fpath = 'parseddata/' + path
-        fpath = path
-        with open(fpath, 'rb+') as datafile:
+        fpath = path + ".dat"
+        with open(path, 'rb+') as datafile:
             data = json.load(datafile)
         if not isinstance(data['hist'][0], list):
             data['hist'] = self.getx(data['hist'], data['desc'])
         duration = int(float(data['histMetaData']['acq_duration']))
         duration = hms(duration)
 
-        rawf = open(fpath + ".dat", 'wb+')
+        rawf = open(fpath, 'wb+')
         for i in xrange(len(data['hist'])):
             _x = data['hist'][i][0]
             _y = data['hist'][i][1]
@@ -83,7 +83,7 @@ class plotJson():
         self.g = Gnuplot.Gnuplot()
         self.g('set term {} transparent truecolor size 10,7.5'.format(self.cfg['format']))
         self.g('set xlabel "{}"'.format(self.cfg['xlabel']))
-        self.g('set ylabel {}'.format(self.cfg['ylabel']))
+        self.g('set ylabel "{}"'.format(self.cfg['ylabel']))
 
 
 main()
