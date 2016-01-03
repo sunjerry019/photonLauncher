@@ -70,7 +70,7 @@ class plotJson():
         rawf.close()
 
         self.initPlot()
-        self.g('set title "{} {}, acquisition duration {}s"'.format(path,title,duration))
+        self.g('set title "{} {}, acquisition duration {}"'.format(path,title,duration))
         if not self.eb:
             self.g('set output "{}.eps"'.format(fpath + "_withErrors"))
             self.g('f(x) = mean_y')
