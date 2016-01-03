@@ -71,12 +71,13 @@ class plotJson():
 
         self.initPlot()
         self.g('set title "{} {}, acquisition duration {}s"'.format(path,title,duration))
-        self.g('set output "{}.eps"'.format(fpath))
         if not self.eb:
+            self.g('set output "{}.eps"'.format(fpath + "_withErrors"))
             self.g('f(x) = mean_y')
             self.g('fit f(x) "{}" u 1:2 via mean_y'.format(fpath))
             self.g('plot "{}" u 1:2:(sqrt(mean_y)) with yerrorbars pt 7 ps 0.2 '.format(fpath))
         else:
+            self.g('set output "{}.eps"'.format(fpath))
             self.g('plot "{}" u 1:2 w p pt 7 ps 0.2'.format(fpath))
 
     def initPlot(self):
