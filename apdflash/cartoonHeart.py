@@ -37,6 +37,9 @@ def main(dg, step, binlength):
         time.sleep(binlength)
         scope.stop()
         (hist, mdata) = scope.getHistogram()
+        if hist == []:
+            time.sleep(5)
+            (hist,mdata) = scope.getHistogram()
         mmdata = {
             'timestamp': timestamp,
             'bin_duration':binlength,
