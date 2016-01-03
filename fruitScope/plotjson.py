@@ -4,15 +4,21 @@ import argparse
 import time, os, sys
 import tempfile
 import math
+
+def check_dir(directory):
+    if not os.path.exists(directory):
+        print "Directory {} does not exist...creating...".format(directory)
+        os.makedirs(directory)
+
 def main():
     parser = argparse.ArgumentParser(description = "Plots and saves json objects in folder parseddata, uses a config file for plot setting inside cfg/.plotjson for gnuplot settings")
-    parser.add_argument('dir', metavar = 'd', nargs = '+', help="Timestamp of  json file to be plotted.")
-    parser.add_argument('title', metavar = 't', nargs = '+', help = "Title to be included in plot.")
+    parser.add_argument('f', metavar = 'f', help="Filename of json file to be plotted.")
+    parser.add_argument('title', metavar = 't', help = "Title to be included in plot.")
     parser.add_argument('-e', '--errorbars', help = "Use this flag to NOT plot with error bars, in case the plot is too messy.", action = "store_true")
 
     args = parser.parse_args()
     p = plotJson(args.errorbars)
-    p.load(args.dir[0], args.title[0])
+    p.load(args.f, args.title)
 
 def hms(x):
     m, s = divmod(x, 60)
@@ -22,14 +28,23 @@ class plotJson():
     def __init__(self, eb):
         self.eb = eb
         self.cfg = {}
-        with open('cfg/.plotjson', 'rb+') as f:
-            x = f.read()
-            x = x.split('\n')
-            for i in x:
-                if len(i) > 0:
-                    i = i.rstrip()
-                    i = i.split('=')
-                    self.cfg[i[0]] = i[1]
+        try:
+            with open('cfg/.plotjson', 'rb+') as f:
+                x = f.read()
+                x = x.split('\n')
+                for i in x:
+                    if len(i) > 0:
+                        i = i.rstrip()
+                        i = i.split('=')
+                        self.cfg[i[0]] = i[1]
+        except:
+            print "No config file found...using default settings";
+            self.cfg =
+            {
+                "format": "epscairo",
+                "xlabel": "t@level (ns)",
+                "ylabel": "Two-photon coincidence events"
+            }
     def getx(self,hist, desc):
         h_offset = float(desc['horiz_offset']) * 10 ** 9
         h_binsize = float(desc['horiz_interval']) * 10 ** 9
@@ -38,16 +53,16 @@ class plotJson():
             s.append([(i * h_binsize) + h_offset, hist[i]])
         return s
     def load(self, path, title):
-        fpath = 'parseddata/' + path
-
-        with open(fpath + '.json', 'rb+') as datafile:
+        #fpath = 'parseddata/' + path
+        fpath = path
+        with open(fpath, 'rb+') as datafile:
             data = json.load(datafile)
         if not isinstance(data['hist'][0], list):
             data['hist'] = self.getx(data['hist'], data['desc'])
         duration = int(float(data['desc']['acq_duration']))
         duration = hms(duration)
 
-        rawf = open(fpath, 'wb+')
+        rawf = open(fpath + ".dat", 'wb+')
         for i in xrange(len(data['hist'])):
             _x = data['hist'][i][0]
             _y = data['hist'][i][1]
