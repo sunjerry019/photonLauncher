@@ -58,7 +58,7 @@ class plotJson():
             data = json.load(datafile)
         if not isinstance(data['hist'][0], list):
             data['hist'] = self.getx(data['hist'], data['desc'])
-        duration = int(float(data['desc']['acq_duration']))
+        duration = int(float(data['histMetaData']['acq_duration']))
         duration = hms(duration)
 
         rawf = open(fpath + ".dat", 'wb+')
@@ -70,7 +70,7 @@ class plotJson():
         rawf.close()
 
         self.initPlot()
-        self.g('set title "{} {}, acquisition duration {}"'.format(path,title,duration))
+        self.g('set title "{} {}, acquisition duration {}s"'.format(path,title,duration))
         self.g('set output "{}.eps"'.format(fpath))
         if not self.eb:
             self.g('f(x) = mean_y')
