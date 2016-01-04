@@ -56,7 +56,7 @@ class spectrum():
         self.start = min(end, start)
         self.end = max(end, start)
         self.title = title
-        patt = re.compile(ur'\s+')
+        patt = re.compile(r'\s+')
         self.esctitle = re.sub(patt, '_', self.title)
         self.ofname = 'collated_{}'.format(self.esctitle)
         self.ofname_cut = 'collated_{}.cut'.format(self.esctitle)
