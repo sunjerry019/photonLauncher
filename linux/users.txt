@@ -2,9 +2,11 @@
 
 # Ubuntu
 192.168.2.188	robin		robin
+192.168.2.140	freedommill	mill
 
 # Fedora
 192.168.2.199	freedombarn	localhost
+192.168.2.150	freedommill	localhost
 
 # Raspbian
 192.168.2.206	pi		fruitcake0
