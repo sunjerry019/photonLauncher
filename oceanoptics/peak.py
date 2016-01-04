@@ -14,6 +14,7 @@ import argparse
 import numpy as np
 import Gnuplot, Gnuplot.PlotItems, Gnuplot.funcutils
 import os, sys
+import re
 
 def keywithmaxval(d):
      """ a) create a list of the dict's keys and values;
@@ -55,8 +56,10 @@ class spectrum():
         self.start = min(end, start)
         self.end = max(end, start)
         self.title = title
-        self.ofname = 'collated_{}'.format(self.title)
-        self.ofname_cut = 'collated_{}.cut'.format(self.title)
+        patt = re.compile(ur'\s+')
+        self.esctitle = re.sub(patt, '_', self.title)
+        self.ofname = 'collated_{}'.format(self.esctitle)
+        self.ofname_cut = 'collated_{}.cut'.format(self.esctitle)
 
         try:
             self.bgfl = [x for x in os.listdir(self.bgdir) if x.endswith(".txt")]
