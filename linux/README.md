@@ -12,14 +12,13 @@ Currently, robin is set up to use infocommsociety.com as an intermediary for SSH
 ### What is reverse SSH
 _explained by depressedsheep_
 
-usual SSH from Alice to Bob looks like: Alice --> Bob
-now suppose there's a charlie
-charlie lives in a cage. charlie can only send messages outside, but messages can't get in normally
-Bob cannot ssh into charlie normally
-now, charlie reverse ssh into bob
-bob <-- charlie
+usual SSH from Alice to Bob looks like: Alice --> Bob <br />
+now suppose there's a charlie <br />
+charlie lives in a cage. charlie can only send messages outside, but messages can't get in normally <br />
+Bob cannot ssh into charlie normally <br />
+now, charlie reverse ssh into bob <br />
+bob <-- charlie <br />
 alice can now talk to charlie through bob
-
 
 ### Technical Information
 
