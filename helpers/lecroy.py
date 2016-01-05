@@ -80,18 +80,20 @@ class Lecroy():
             else:
                 data += i + '\n'
         return data
-    def getHistogram(self):
+    def getHistogram(self, channel = 'A'): # the use of the first math channel is implicit
         """ Gets the histogram from the Lecroy. Returns a tuple of a plottable histogram, and the metadata for storage"""
-        hist = self.send('TA:INSPECT? "SIMPLE"') # the use of the first math channel is implicit
-        metadata = self.send('TA:INSPECT? "WAVEDESC"')
+        hist = self.send('T{}:INSPECT? "SIMPLE"'.format(channel))
+        metadata = self.send('T{}:INSPECT? "WAVEDESC"'.format(channel))
         parsed_metadata = self._parseWaveDesc(metadata)
         parsed_hist =  self._parseData(hist, parsed_metadata)
         return (parsed_hist, parsed_metadata)
 
     def getWaveForm(self, channel):
         """ Gets the voltage data from the Lecroy. Returns a tuple of a plottable waveform, and the metadata for storage """
-        waveform = self.send('C{}: INSPECT? "SIMPLE"'.format(channel))
-        metadata = self.send('C{}: INSPECT? "WAVEDESC"'.format(channel))
+        waveform = self.send('C{}:INSPECT? "SIMPLE"'.format(channel))
+        metadata = self.send('C{}:INSPECT? "WAVEDESC"'.format(channel))
+        metadata = self.send('C{}:INSPECT? "WAVEDESC"'.format(channel))
+        metadata = self.send('C{}:INSPECT? "WAVEDESC"'.format(channel))
         print waveform
         print metadata
         parsed_metadata = self._parseWaveDesc(metadata)
@@ -139,8 +141,8 @@ class Lecroy():
                 print i
                 pass
 
-        h_offset = metadata['horiz_offset'] * 10 ** 9 # scale up by a billion, units in nanoseconds easier to read
-        h_binsize = metadata['horiz_interval'] * 10 ** 9
+        h_offset = metadata['horiz_offset'] # scale up by a billion, units in nanoseconds easier to read
+        h_binsize = metadata['horiz_interval']
 
         for i in range(len(parsed_hist)):
             data.append([(i * h_binsize) + h_offset, parsed_hist[i]])
