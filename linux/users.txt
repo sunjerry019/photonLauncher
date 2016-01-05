@@ -7,6 +7,8 @@
 # Fedora
 192.168.2.199	freedombarn	localhost
 192.168.2.150	freedommill	localhost
+192.168.2.141	liberty	canada
+192.168.2.220	liberty	canada (WLAN)
 
 # Raspbian
 192.168.2.206	pi		fruitcake0
