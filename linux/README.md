@@ -10,20 +10,14 @@ Mostly for archival and backup purposes.
 Currently, robin is set up to use infocommsociety.com as an intermediary for SSH-ing from the outside world.
 
 ### What is reverse SSH
-*explained by depressedsheep*
+_explained by depressedsheep_
 
 usual SSH from Alice to Bob looks like: Alice --> Bob
-
 now suppose there's a charlie
-
 charlie lives in a cage. charlie can only send messages outside, but messages can't get in normally
-
 Bob cannot ssh into charlie normally
-
 now, charlie reverse ssh into bob
-
 bob <-- charlie
-
 alice can now talk to charlie through bob
 
 
