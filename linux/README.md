@@ -5,6 +5,35 @@ This includes scripts, motd, etc.
 
 Mostly for archival and backup purposes.
 
+## Reverse SSH
+
+Currently, robin is set up to use infocommsociety.com as an intermediary for SSH-ing from the outside world.
+
+### What is reverse SSH
+_explained by depressedsheep_
+
+usual SSH from Alice to Bob looks like: Alice --> Bob <br />
+now suppose there's a charlie <br />
+charlie lives in a cage. charlie can only send messages outside, but messages can't get in normally <br />
+Bob cannot ssh into charlie normally <br />
+now, charlie reverse ssh into bob <br />
+bob <-- charlie <br />
+alice can now talk to charlie through bob
+
+### Technical Information
+
+```
+Local Account: robin
+Remote Account: hcphotonics
+Forwarded to port: 2222
+```
+
+Basic usage: ```ssh -R 2222:localhost:22 hcphotonics@infocommsociety.com```
+
+As the server will end the ssh session should it be inactive, ```ServerAliveInterval 100``` has to be appended to ```/etc/ssh/ssh_config``` on robin to keep the connection alive.
+
+Since the school network is temperamental: ```autossh -M 0 -vv -f -N -R 2222:localhost:22 hcphotonics@infocommsociety.com```
+
 ## users.txt
 
 This file contains the info for users on all the computers. This is for easy ssh-ing.

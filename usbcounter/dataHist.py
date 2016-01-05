@@ -4,6 +4,7 @@ import Gnuplot, Gnuplot.PlotItems, Gnuplot.funcutils
 import numpy as np
 import math
 import lmfit
+from lmfit.models import SkewedGaussianModel
 import matplotlib.pyplot as plt
 import os
 import scipy as sp
@@ -181,7 +182,8 @@ class dataHist():
 
     def plotDet(self, detector, hist, fitresults):
         self.g('set title "{}, detector {}"'.format(self.title, detector))
-        self.g('fit_skewedgauss(x) = (({0}/({1}*sqrt(2*pi)))*exp((-((x-{2})**2))/(2*({1}**2))))*(1+erf(({3}*(x-{2}))/({1}*sqrt(2))))'.format(fitresults['amplitude'].value, fitresults['sigma'].value, fitresults['center'].value, fitresults['gamma'].value))
+	print fitresults['amplitude']
+        self.g('fit_skewedgauss(x) = (({0}/({1}*sqrt(2*pi)))*exp((-((x-{2})**2))/(2*({1}**2))))*(1+erf(({3}*(x-{2}))/({1}*sqrt(2))))'.format(fitresults['amplitude'], fitresults['sigma'], fitresults['center'], fitresults['gamma']))
         self.g('set output "{}_{}.eps"'.format(self.fname, detector))
         self.g.plot(hist, "fit_skewedgauss(x)")
 

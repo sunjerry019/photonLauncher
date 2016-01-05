@@ -60,3 +60,9 @@ target/
 rawdata/
 data/
 parseddata/
+
+# getresponse
+getresponse
+
+# tempfiles
+.temp
