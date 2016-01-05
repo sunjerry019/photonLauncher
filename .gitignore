@@ -61,5 +61,8 @@ rawdata/
 data/
 parseddata/
 
-#getresponse
+# getresponse
 getresponse
+
+# tempfiles
+.temp
