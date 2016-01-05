@@ -73,7 +73,7 @@ class Arthur():
         if not self.monitor:
             self.jsonoutput = open(self.savefp, 'w')
             self.rawoutput = open(self.raw_savefp, 'w')
-        self.dt = 0.2
+        self.dt = 0.3
         self.initSaveFile()
 
         if self.togglePlot:
@@ -97,8 +97,9 @@ class Arthur():
 
     def initPlot(self):
         self.p = Gnuplot.Gnuplot(debug=0)
-        #self.p('set style line 1 linewidth 10')
-        #self.p('set style line 2 linewidth 10')
+        self.p('set ytics font ",12"')
+        self.p('set style line 1 linewidth 10')
+        self.p('set style line 2 linewidth 10')
         self.p.title('usbcounter: Photon Counts from APD')
         #self.p('set data style lines')
         self.p('set xrange [0:120]')
