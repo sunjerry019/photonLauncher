@@ -35,7 +35,11 @@ Remote Account: hcphotonics
 Forwarded to port: 2222
 ```
 
+Basic usage: ```ssh -R 2222:localhost:22 hcphotonics@infocommsociety.com```
+
 As the server will end the ssh session should it be inactive, ```ServerAliveInterval 100``` has to be appended to ```/etc/ssh/ssh_config``` on robin to keep the connection alive.
+
+Since the school network is temperamental: ```autossh -M 0 -vv -f -N -R 2222:localhost:22 hcphotonics@infocommsociety.com```
 
 ## users.txt
 
