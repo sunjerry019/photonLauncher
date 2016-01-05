@@ -42,21 +42,21 @@ class rpiDBUploader():
             ssh_stdin, ssh_stdout, ssh_stderr = self.ssh.exec_command("ls /mnt/photonics | grep {}".format(self.filepath))
             stdout = ssh_stdout.readlines()[0].strip()
             if stdout == self.filepath:
-                print "running cp -r -v /mnt/photonics/{0} /home/robin/Dropbox/hbar/{1}/".format(self.filepath, self.projects[self.project])
+                print("running cp -r -v /mnt/photonics/{0} /home/robin/Dropbox/hbar/{1}/".format(self.filepath, self.projects[self.project]))
                 ssh_stdin, ssh_stdout, ssh_stderr = self.ssh.exec_command("cp -r -v /mnt/photonics/{0} /home/robin/Dropbox/hbar/{1}/ > /home/robin/Dropbox/hbar/{1}/rpiDBUploader.log".format(self.filepath, self.projects[self.project]))
                 try:
-                    print ssh_stdout.readline()
-                    print ssh_stderr.readline()
+                    print(ssh_stdout.readline())
+                    print(ssh_stderr.readline())
                 except:
                     pass
-                print "Uploaded successfully! Exiting..."
+                print("Uploaded successfully! Exiting...")
                 break
             else:
                 time.sleep(1)
-                print "Waiting... "
+                print("Waiting... ")
                 c += 1
                 if c > 20:
-                    print "Timeout after 20 seconds. Attempt to upload failed. Quitting"
+                    print("Timeout after 20 seconds. Attempt to upload failed. Quitting")
 
 #c = rpiDBUploader("apdflash20151214_1004.tar.gz", "apdflash")
 #c.upload()

@@ -29,7 +29,7 @@ def _genName():
 
 def check_dir(directory):
     if not os.path.exists(directory):
-        print "Directory {} does not exist...creating...".format(directory)
+        print("Directory {} does not exist...creating...".format(directory))
         os.makedirs(directory)
 
 def main():
@@ -44,7 +44,7 @@ def main():
 
 class Arthur():
     def __init__(self, intTime, t, plot = False):
-        print "Initialising variables.."
+        print("Initialising variables..")
         self.togglePlot = plot
         self.timestamp = time.strftime('%Y%m%d_%H%M%S')
         self.start_t = time.time()
@@ -54,7 +54,7 @@ class Arthur():
         self.intTime = intTime
 
         p = subprocess.Popen(['./getresponse', '-n', 'TIME{}'.format(self.intTime)], stdout = subprocess.PIPE)
-        print "Time per bin set to {} ms".format(self.intTime)
+        print("Time per bin set to {} ms".format(self.intTime))
 
         self.d1 = deque([0] * 120)
         self.d2 = deque([0] * 120)
@@ -67,8 +67,8 @@ class Arthur():
             self.monitor = True
         else:
             check_dir("data")
-            print "Saving JSON to: {}".format(self.savefp)
-            print "Saving raw ASCII file to: {}".format(self.raw_savefp)
+            print("Saving JSON to: {}".format(self.savefp))
+            print("Saving raw ASCII file to: {}".format(self.raw_savefp))
 
         if not self.monitor:
             self.jsonoutput = open(self.savefp, 'w')
@@ -81,7 +81,7 @@ class Arthur():
         try:
             self.collectionManager()
         except KeyboardInterrupt:
-            print "[{}] INTERRUPTED ACQUISITION AT {} WILL BE LOST".format(time.strftime('%Y%m%d_%H%M'), self.timestamp)
+            print("[{}] INTERRUPTED ACQUISITION AT {} WILL BE LOST".format(time.strftime('%Y%m%d_%H%M'), self.timestamp))
 
     def initSaveFile(self):
         self.data = {}
@@ -127,8 +127,8 @@ class Arthur():
             except:
                 pass
         def writeData():
-            self.tempf = open(self.tempfp, 'rb+')
-            for i in xrange(len(self.d1)):
+            self.tempf = open(self.tempfp, 'w+')
+            for i in range(len(self.d1)):
                 self.tempf.write('{}\t{}\t{}\n'.format(i,self.d1[i], self.d2[i]))
             self.updatePlot()
             self.tempf.close()
@@ -140,35 +140,36 @@ class Arthur():
         self.rawoutput.close()
         self.jsonoutput.close()
 
-        print "Data saved!"
-        print "Uploading to Dropbox..."
+        print("Data saved!")
+        print("Uploading to Dropbox...")
         ssh = rpiDBUploader("apddata", "common")
         ssh.uploadFromNFS()
 
     def ping(self):
         proc = subprocess.Popen(['./getresponse','COUNTS?'], stdout=subprocess.PIPE)
-    	output = proc.stdout.read()
+        output = str(proc.stdout.read())
         if output == "timeout while waiting for response":
             pass
         else:
             t = time.time() - self.start_t
-            data = output.rstrip().split(' ')
+            data = output.rstrip("\\r\\n'").split(' ')
             data.pop(0)
             try:
-                data = map(lambda x: float(x), data)
+                #data = map(lambda x: float(x), data)
+                data = [float(x) for x in data]
                 _data = [t, data]
                 self.c -= 1
                 dtpt = _data
                 if not self.monitor:
                     self.rawoutput.write('{}\t{}\t{}\t{}\n'.format(dtpt[0], dtpt[1][0], dtpt[1][1], dtpt[1][2]))
-                #self.data['counts'].append(_data)
+                    #self.data['counts'].append(_data)
             except ValueError:
-                print data
+                print("Error", data)
                 pass
 
         if self.togglePlot:
             self.plotManager(data)
-        print "{}:\t{}".format(self.c + 1, data)
+        print("{}:\t{}".format(self.c + 1, data))
 
 main()
-print "== Operation Ended ==\a"
+print("== Operation Ended ==\a")
