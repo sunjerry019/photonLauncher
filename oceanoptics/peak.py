@@ -68,27 +68,40 @@ class spectrum():
             print("Error reading from directories");
             sys.exit(1)
 
-        print("Parsing BG")
-        self.traverse("bg")
-        print("Parsing readings")
-        self.traverse("readings")
+        if os.path.exists(self.ofname):
+            print("Found collated file")
+            print("Reading...")
+            self.traverse("collated")
+        else:
+            print("Parsing BG")
+            self.traverse("bg")
+            print("Parsing readings")
+            self.traverse("readings")
+            print("Calculating...")
+            self.calc()
 
-        self.calc()
-
+        print("Done")
         if self.start is not None:
             self.sieve()
             self.plot()
 
     def traverse(self, typ):
-        if typ == "bg":
-            dirpath = self.bgdir
-            flist = self.bgfl
-        else:
-            dirpath = self.datadir
-            flist = self.datfl
+        if typ == "bg" or typ == "readings":
+            if typ == "bg":
+                dirpath = self.bgdir
+                flist = self.bgfl
+            else:
+                dirpath = self.datadir
+                flist = self.datfl
 
-        for datei in flist:
-            self.parse(typ, os.path.join(dirpath, datei))
+            for datei in flist:
+                self.parse(typ, os.path.join(dirpath, datei))
+        else:
+            with open(self.ofname) as f:
+                for line in f:
+                    x = line.rstrip().split("\t")
+                    x = [float(i) for i in x]
+                    self.dataprocessed[x[0]] = [x[1], x[2]]
 
     def parse(self, typ, fname):
         #typ: 0 = bg, 1 = readings
