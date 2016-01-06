@@ -9,6 +9,8 @@
 192.168.2.150	freedommill	localhost
 192.168.2.141	liberty	canada
 192.168.2.220	liberty	canada (WLAN)
+192.168.2.165	freedomfarm	liberty
+192.168.2.131	freedomfarm	liberty (WLAN)
 
 # Raspbian
 192.168.2.206	pi		fruitcake0
