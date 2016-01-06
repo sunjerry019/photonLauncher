@@ -13,7 +13,7 @@ def main():
     print "Stopping scope"
     scope.stop()
     print "Getting Histogram"
-    hist = scope.getHistogram()
+    (hist,mdata) = scope.getHistogram()
 
     try:
         with open(args.f, "w") as f:
