@@ -30,6 +30,8 @@ Forwarded to port: 2222
 
 Basic usage: ```ssh -R 2222:localhost:22 hcphotonics@infocommsociety.com```
 
+Please remember to do ```sudo systemctl enable sshd``` and ```sudo systemctl start sshd``` on fresh linux installations as sshd is not enabled by default.
+
 As the server will end the ssh session should it be inactive, ```ServerAliveInterval 100``` has to be appended to ```/etc/ssh/ssh_config``` on robin to keep the connection alive.
 
 Since the school network is temperamental: ```autossh -M 0 -vv -f -N -R 2222:localhost:22 hcphotonics@infocommsociety.com```
