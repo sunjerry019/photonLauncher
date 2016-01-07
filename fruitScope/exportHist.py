@@ -7,7 +7,7 @@ import json
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("f", metavar = "exportFile", help="File path to save in", type = str)
-    parser.add_argument("c", metavar = "channel" help = "1,2,3,4, A,B,C,D")
+    parser.add_argument("c", metavar = "channel", help = "1,2,3,4, A,B,C,D")
     args = parser.parse_args()
 
     scope = lecroy.Lecroy()
