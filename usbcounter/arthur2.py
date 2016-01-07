@@ -155,18 +155,22 @@ class Arthur():
             t = time.time() - self.start_t
             data = output.rstrip("\\r\\n'").split(' ')
             data.pop(0)
-            try:
-                #data = map(lambda x: float(x), data)
-                data = [float(x) for x in data]
-                _data = [t, data]
-                self.c -= 1
-                dtpt = _data
-                if not self.monitor:
-                    self.rawoutput.write('{}\t{}\t{}\t{}\n'.format(dtpt[0], dtpt[1][0], dtpt[1][1], dtpt[1][2]))
-                    #self.data['counts'].append(_data)
-            except ValueError:
-                print("Error", data)
-                pass
+            if len(data) == 3:
+                try:
+                    #data = map(lambda x: float(x), data)
+                    data = [float(x) for x in data]
+                    _data = [t, data]
+                    self.c -= 1
+                    dtpt = _data
+                    if not self.monitor:
+                        self.rawoutput.write('{}\t{}\t{}\t{}\n'.format(dtpt[0], dtpt[1][0], dtpt[1][1], dtpt[1][2]))
+                        #self.data['counts'].append(_data)
+                except ValueError:
+                    print("Error:", data)
+                    pass
+            else:
+                print("Empty or Incomplete data:", data)
+
 
         if self.togglePlot:
             self.plotManager(data)
