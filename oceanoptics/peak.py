@@ -30,6 +30,7 @@ def main():
     parser.add_argument('title', metavar = 't', help = "Title of plot")
     parser.add_argument('--start', metavar = 'ps', help = "Start of range to plot")
     parser.add_argument('--end', metavar = 'pe', help = "End of range to plot")
+    parser.add_argument('-g', '--gaussian', help = "Use this flag to fit with gaussian and not the skewed gaussian model", action = "store_true")
     args = parser.parse_args()
 
     if args.start is not None and args.end is not None:
@@ -45,12 +46,13 @@ def main():
     else:
         print("No start and end wavelength specified, script will skip plotting and fitting.")
 
-    s = spectrum(args.bgdir, args.datadir, args.title, args.start, args.end)
+    s = spectrum(args.bgdir, args.datadir, args.title, args.start, args.end, args.g)
 
 class spectrum():
-    def __init__(self, bgdir, datadir, title, start = None, end = None):
+    def __init__(self, bgdir, datadir, title, start = None, end = None, g = False):
         self.dataraw = {}
         self.dataprocessed = {}
+        self.cutdata = {}
         self.bgdir = bgdir
         self.datadir = datadir
         self.start = min(end, start)
@@ -60,6 +62,7 @@ class spectrum():
         self.esctitle = re.sub(patt, '_', self.title)
         self.ofname = 'collated_{}'.format(self.esctitle)
         self.ofname_cut = 'collated_{}.cut'.format(self.esctitle)
+        self.guass = g
 
         try:
             self.bgfl = [x for x in os.listdir(self.bgdir) if x.endswith(".txt")]
@@ -83,7 +86,7 @@ class spectrum():
         print("Done")
         if self.start is not None:
             self.sieve()
-            self.plot()
+            self.plot(self.gauss)
 
     def traverse(self, typ):
         if typ == "bg" or typ == "readings":
@@ -147,12 +150,13 @@ class spectrum():
             for wavelength in self.dataprocessed:
                 if wavelength <= self.end and wavelength >= self.start:
                     dtpt = self.dataprocessed[wavelength]
+                    self.cutdata[wavelength] = dtpt
                     outfile.write("{}\t{}\t{}\n".format(wavelength, dtpt[0], dtpt[1]))
 
-    def plot(self):
-        maxWL = keywithmaxval(self.dataprocessed)
+    def plot(self, gauss):
+        maxWL = keywithmaxval(self.cutdata)
         initialGuess = {
-            'amp' : self.dataprocessed[maxWL][0],
+            'amp' : self.cutdata[maxWL][0],
             'sigma': (self.end - self.start) / 4, #Purely arbituary 4 is selected here
             'mu' : maxWL,
             'gamma': 1
@@ -167,9 +171,16 @@ class spectrum():
         self.g('set fit logfile "{}.fitlog"'.format(self.ofname_cut))
         self.g('set fit maxiter 1000')
         self.g('set fit limit 1e-4')
-        self.g('amp={}; sigma={}; mu={}; gamma={}'.format(initialGuess['amp'], initialGuess['sigma'], initialGuess['mu'], initialGuess['gamma']))
-        self.g('skewedGauss(x) = ((amp/(sigma*sqrt(2*pi))) * exp((-((x-mu)**2))/(2*(sigma**2)))) * (1 + erf((gamma*(x-mu))/(sigma*sqrt(2))))')
-        self.g('fit skewedGauss(x) "{}" using 1:2:3 yerrors via amp, sigma, mu, gamma'.format(self.ofname_cut))
-        self.g('plot "{}" using 1:2:3 with yerrorbars, skewedGauss(x)'.format(self.ofname_cut))
+
+        if not gauss:
+            self.g('amp={}; sigma={}; mu={}; gamma={}'.format(initialGuess['amp'], initialGuess['sigma'], initialGuess['mu'], initialGuess['gamma']))
+            self.g('skewedGauss(x) = ((amp/(sigma*sqrt(2*pi))) * exp((-((x-mu)**2))/(2*(sigma**2)))) * (1 + erf((gamma*(x-mu))/(sigma*sqrt(2))))')
+            self.g('fit skewedGauss(x) "{}" using 1:2:3 yerrors via amp, sigma, mu, gamma'.format(self.ofname_cut))
+            self.g('plot "{}" using 1:2:3 with yerrorbars, skewedGauss(x)'.format(self.ofname_cut))
+        else:
+            self.g('amp={}; sigma={}; mu={}'.format(initialGuess['amp'], initialGuess['sigma'], initialGuess['mu']))
+            self.g('gauss(x) = ((amp/(sigma*sqrt(2*pi))) * exp((-((x-mu)**2))/(2*(sigma**2))))')
+            self.g('fit gauss(x) "{}" using 1:2:3 yerrors via amp, sigma, mu'.format(self.ofname_cut))
+            self.g('plot "{}" using 1:2:3 with yerrorbars, gauss(x)'.format(self.ofname_cut))
 
 main()
