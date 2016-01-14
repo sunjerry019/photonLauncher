@@ -20,7 +20,7 @@ def main(dg, step, binlength):
     timestamp = time.strftime('%Y%m%d_%H%M')
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect('192.168.2.194', username = 'robin', password = 'freeasinfreedom')
-    
+
     x = int(dg / step)
     scope = Lecroy()
     check_dir(os.path.join(filepath, timestamp))
@@ -36,10 +36,9 @@ def main(dg, step, binlength):
         time.sleep(binlength)
         scope.stop()
         while True:
-        	(hist, mdata) = scope.getHistogram()
-        if hist == []:
-            time.sleep(5)
-            (hist,mdata) = scope.getHistogram()
+            (hist, mdata) = scope.getHistogram()
+            if not hist == []:
+                break
         mmdata = {
             'timestamp': timestamp,
             'bin_duration':binlength,
