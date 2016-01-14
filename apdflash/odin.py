@@ -1,6 +1,6 @@
 #!/bin/python2
 
-
+from __future__ import division
 from mpi4py import MPI
 import time
 import subprocess
@@ -69,12 +69,10 @@ class thorControl():
 	def start(self):
 		comm = MPI.COMM_WORLD
 		m = Mjolnir()
-		x = self.deg * 3600
-		x /= float(2.16)
-		s = int(self.step)
-		x /= s
+                x = self.deg / self.step
+		x = int(x)
 		self.data = {}
-		for i in xrange(int(x)):
+		for i in xrange(x):
 			m.moveRotMotor(self.step)
 			comm.send("next", dest = 0, tag = 0)
 			comm.send([self.timestamp, i], dest = 0, tag = 1)
@@ -132,7 +130,7 @@ def main(kwargs):
 def init():
 	parser = argparse.ArgumentParser(description = "Script to control motor for characterisation of APD flash breakdown")
 	parser.add_argument('degrees', metavar = 'd', type = float, help = "Total degrees to rotate")
-	parser.add_argument('stepsize', metavar = 's', type = int, help = "Encoder counts to move, every rotation. Rotate until total degrees. Each encoder count is 2.16 arcseconds.")
+	parser.add_argument('stepsize', metavar = 's', type = int, help = "Degrees to move per step. Rule of thumb, not less than 1/2000.")
 	parser.add_argument('binsize', metavar = 'b', type = int, help = "Number of readings the usbcounter device should record")
 	args = parser.parse_args()
 	main({'degree':args.degrees, 'step':args.stepsize, 'binsize': args.binsize})
