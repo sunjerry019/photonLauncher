@@ -3,7 +3,7 @@
 Brief examples will be illustrated to demonstrate their common use cases. Should the snippets be insufficient, please do take a leap of faith and read the source code. It really isn't that difficult.
 
 Import the ```helpers``` folder with ``` sys.path(0, '../helpers') ```
-##lecroy.py
+##lecroy
 
 Communicates with Lecroy 9384TM Oscillocope via RS232 Serial communication. Serial settings (like port, baudrate, .etc. have defautls and are assumed to taken on certain values)
 
@@ -18,10 +18,21 @@ scope = lecroy.Lecroy() #importing the library
 print scope.send("custom command") # refer to docs from lecroy for 9300 devices
 ```
 
-##mjolnir.py
+##mjolnir
 
-Controls Thorlabs Motorised Stages with TDC001 Controller Cube.
+Controls Thorlabs Motorised Stages with TDC001 Controller Cube via RS-232 serial communication. [The communication protocol is provided by Thorlabs](http://www.thorlabs.hk/software_pages/ViewSoftwarePage.cfm?Code=APT). Commands to make the motor blink, and move a certain distance are supported, because we find ourselves only using those commands.
 
-##rpiDBUploader.py
+Usage of ```mjolnir``` assumes knowledge that an encoder count for the rotational motor (we use the [Thorlabs CR1-Z7](https://www.thorlabs.com/thorproduct.cfm?partnumber=CR1-Z7) is about 2.16 arcseconds per encoder count, and that the input should be adjusted accordingly. Likewise, the encoder count for our linear motor is 34304 encoder counts per millimetre.
 
-##getCounts.py
+Input to ```moveRotMotor``` is in encoder counts, which is a real integer. 
+Input to ```moveLinMotor``` is in milimetres. We acknowledge this inconsistency. 
+
+Example Usage:
+```python
+
+
+```
+
+##rpiDBUploader
+
+##getCounts
