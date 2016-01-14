@@ -10,6 +10,7 @@ Cheers
 20151107
 """
 import serial
+from __future__ import division
 import time
 import datetime
 import os, sys
@@ -38,7 +39,7 @@ class Mjolnir():
 
         self.const['LINSCALE'] = 34304
         #self.const['ROTSCALE'] = ((0.0006)**(-1))/3600
-        self.const['ROTSCALE'] = 1
+        self.const['ROTSCALE'] = 3600/2.16
     def initSerial(self):
         cfg = {}
         with open('./cfg/.mjolnir') as f:
@@ -85,8 +86,10 @@ class Mjolnir():
             x.append(i)
         self.talk(x)
     def moveRotMotor(self, distance):
+        distance *= self.const['ROTSCALE']
+        distance = int(distance)
         print "Moving {}".format(distance)
-        d = struct.pack('<l', int(distance * self.const['ROTSCALE']))
+        d = struct.pack('<l', distance)
         x = ['\x48', '\x04', '\x06', '\x00', '\xA2', '\x01', '\x01', '\x00']
         for i in d:
             x.append(i)
