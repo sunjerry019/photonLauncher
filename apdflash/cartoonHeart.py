@@ -1,3 +1,4 @@
+from future import __division__
 import threading
 import paramiko
 import sys, os, json
@@ -19,15 +20,13 @@ def main(dg, step, binlength):
     timestamp = time.strftime('%Y%m%d_%H%M')
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect('192.168.2.194', username = 'robin', password = 'freeasinfreedom')
-    x = dg * 3600
-    x /= float(2.16)
-    s = int(step)
-    x/= s
+    
+    x = int(dg / step)
     scope = Lecroy()
     check_dir(os.path.join(filepath, timestamp))
     print x
     for i in xrange(int(x)):
-        print i
+        #print i
         stdin,stdout, stderror = ssh.exec_command("cd photonLauncher/apdflash; python scarecrowMotor.py {}".format(step))
 	print stdout.readlines()
         time.sleep(1)
@@ -36,7 +35,8 @@ def main(dg, step, binlength):
         scope.start()
         time.sleep(binlength)
         scope.stop()
-        (hist, mdata) = scope.getHistogram()
+        while True:
+        	(hist, mdata) = scope.getHistogram()
         if hist == []:
             time.sleep(5)
             (hist,mdata) = scope.getHistogram()
@@ -53,7 +53,7 @@ def main(dg, step, binlength):
 def init():
 	parser = argparse.ArgumentParser(description = "Script to control motor for coincidence measurement of APD flash breakdown")
 	parser.add_argument('degrees', metavar = 'd', type = float, help = "Total degrees to rotate")
-	parser.add_argument('stepsize', metavar = 's', type = int, help = "Encoder counts to move, every rotation. Rotate until total degrees. Each encoder count is 2.16 arcseconds.")
+	parser.add_argument('stepsize', metavar = 's', type = int, help = "Degrees to move per motor step. A rule of thumb is to have this figure > 1/2000.")
 	parser.add_argument('binlength', metavar = 'b', type = int, help = "Duration for oscilloscope to measure histogram")
 	args = parser.parse_args()
 	main(args.degrees, args.stepsize, args.binlength)
