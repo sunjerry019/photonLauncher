@@ -6,7 +6,7 @@ Rotates the stage by a certain amount with arguments rather similar to odin.py, 
 
 """
 
-
+from __future__ import division
 import sys, os, json
 sys.path.insert(0,'../helpers/')
 
@@ -67,10 +67,7 @@ class thorControl():
 	def start(self):
 		comm = MPI.COMM_WORLD
 		m = Mjolnir()
-		x = self.deg * 3600
-		x /= float(2.16)
-		s = int(self.step)
-		x /= s
+		x = self.deg / self.step
 		self.data = {}
 		for i in xrange(int(x)):
 			#m.moveRotMotor(self.step)
@@ -134,7 +131,7 @@ def main(dg, step, binsize):
 def init():
 	parser = argparse.ArgumentParser(description = "Script to control motor for coincidence measurement of APD flash breakdown")
 	parser.add_argument('degrees', metavar = 'd', type = float, help = "Total degrees to rotate")
-	parser.add_argument('stepsize', metavar = 's', type = int, help = "Encoder counts to move, every rotation. Rotate until total degrees. Each encoder count is 2.16 arcseconds.")
+	parser.add_argument('stepsize', metavar = 's', type = int, help = "Number of degrees to rotate at every step. Rule of thumb: > 1/2000 degrees")
 	parser.add_argument('binlength', metavar = 'b', type = int, help = "Duration for oscilloscope to measure histogram")
 	args = parser.parse_args()
 	main(args.degrees, args.stepsize, args.binlength)
