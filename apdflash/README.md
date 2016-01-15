@@ -15,12 +15,12 @@ The output is a folder with the timestamp you ran the script at, with ASCII file
 
 Similar concept as ```odin```, but instead of the computer communicating with the APD counts, we communicate with the oscilloscope to obtain the histogram of the two-photon coincidences. During the writing of this script, MPI Communication failed on us, so we had to use an SSH workaround.
 
-Usage:
+##Usage:
 
 ```./lightup scarecrowDreams.py D S T ```
 where D is the total number of degrees to rotate, S is the number of degrees to rotate per step, and T is the duration of acquisition for the oscilloscope at every step.
 
-## Troubleshooting Checklist
+# Troubleshooting Checklist
 
 - Are the raspis even on?
 - Can the raspis see each other? (Check with ```mpiexec -f machinefile -n 2 hostname``` where machinefile is the directory of your machinefile)
