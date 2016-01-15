@@ -1,4 +1,4 @@
-# odin.py
+# odin
 
 With two raspberry pis, one of them controlling a Thorlabs motor (depends on ```mjolnir.py```) and the other one logging the counts from the usbcounter device. (uses ```getresponse``` binary)
 
@@ -11,6 +11,15 @@ With two raspberry pis, one of them controlling a Thorlabs motor (depends on ```
 
 The output is a folder with the timestamp you ran the script at, with ASCII files inside. The filenames are the ID number (i.e. 0, 1, 2, etc.) and so on. Have not settled on a useful naming convention, so I will leave the file naming system like this.
 
+# scarecrowDreams
+
+Similar concept as ```odin```, but instead of the computer communicating with the APD counts, we communicate with the oscilloscope to obtain the histogram of the two-photon coincidences. During the writing of this script, MPI Communication failed on us, so we had to use an SSH workaround.
+
+Usage:
+
+```./lightup scarecrowDreams.py D S T ```
+where D is the total number of degrees to rotate, S is the number of degrees to rotate per step, and T is the duration of acquisition for the oscilloscope at every step.
+
 ## Troubleshooting Checklist
 
 - Are the raspis even on?
@@ -21,3 +30,4 @@ The output is a folder with the timestamp you ran the script at, with ASCII file
 - Can the motor move by itself? SSH into the raspi, open up a python interpretor window, import mjolnir.py and try.
 
 This order of troubleshooting steps should allow you identify which parts don't work. 
+
