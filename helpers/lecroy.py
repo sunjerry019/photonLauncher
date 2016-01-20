@@ -88,7 +88,7 @@ class Lecroy():
         parsed_hist =  self._parseData(hist, parsed_metadata)
         return (parsed_hist, parsed_metadata)
 
-    def getWaveForm(self, channel):
+    def getWaveform(self, channel):
         """ Gets the voltage data from the Lecroy. Returns a tuple of a plottable waveform, and the metadata for storage """
         waveform = self.send('C{}:INSPECT? "SIMPLE"'.format(channel))
         metadata = self.send('C{}:INSPECT? "WAVEDESC"'.format(channel))
