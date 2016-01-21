@@ -7,8 +7,9 @@ import numpy as np
 """ main class takes a string of folder name, then returns a dictionary with the std dev (error bars). option to save json file."""
 
 class spec():
-    def __init__(self, foldername, output = None, basefilename = ""):
+    def __init__(self, foldername, output = None, basefilename = "", raw = None):
         self.fn = foldername
+        self.base = basefilename
         self.files = [f for f in listdir(foldername) if isfile(join(foldername, f))]
         #print self.f
 
@@ -20,6 +21,7 @@ class spec():
 
         #print self.f
         self.output = output
+        self.raw = raw
         self.data = {}
 
     def parse(self):
@@ -42,19 +44,29 @@ class spec():
                             print "Error parsing {}, {}".format(i, line)
                     if line[:2] == ">>":
                         start_read = True
-
-
-
+        std = {}
+        m = {}
         for wavelength in self.data:
             wavelengths = np.array(self.data[wavelength])
-            wavelengths_std = np.std(wavelengths, dtype = np.float64)
-            wavelengths_m = np.mean(wavelengths, dtype = np.float64)
-        mdata = {"raw": self.data, "std": wavelengths_std, "mean": wavelengths_m}
+            std[wavelength] = np.std(wavelengths, dtype = np.float64)
+            m[wavelength] = np.mean(wavelengths, dtype = np.float64)
+
+        mdata = {"raw": self.data, "std": std, "mean": m}
         if self.output:
             with open(join(self.output + ".json") ,'w') as f:
                 json.dump(mdata, f)
+        if self.raw:
+            if self.base == "":
+                rawpath = join(self.fn,"raw")
+            else:
+                rawpath = join(self.fn, self.base)
+            with open(rawpath, 'w') as f:
+                f.write("#x\ty\tyerror\n")
+                for i in sorted(self.data, key=self.data.get):
+                    f.write("{}\t{}\t{}\n".format(i, m[i], std[i]))
+
         return mdata
 
 if __name__ == '__main__':
-    s = spec("/home/zy/Documents/spectrum_data/glass_slide_measurement", basefilename = "led_base")
+    s = spec("/home/zy/Documents/spectrum_data/glass_slide_measurement", basefilename = "led_base", raw = 1)
     print s.parse()
