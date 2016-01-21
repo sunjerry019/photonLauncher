@@ -108,21 +108,34 @@ class dataHist():
             plt.show()
             params0 = input("Guess for fitting parameters (amplitude, center, sigma, gamma) separated by spaces. \n>>").strip().split(' ')
             params0 = [float(i) for i in params0]
-            model = SkewedGaussianModel()
-            params = model.make_params(amplitude=params0[0], center=params0[1], sigma=params0[2], gamma=params0[3])
-            result0 = model.fit(hist0, params, x=bin_c0)
+
+            fit_params = lmfit.Parameters()
+            fit_params.add('amplitude', value=params0[0])
+            fit_params.add('center', value=params0[1])
+            fit_params.add('sigma', value=params0[2])
+            fit_params.add('gamma', value=params0[3])
+
+            errors0 = np.array([sp.sqrt(i) for i in hist0])
+
+            result0 = lmfit.minimize(self.residual, fit_params, args = (bin_c0, hist0, errors0))
+
             print("Bin size for histogram: {}\n\n".format(bin_0))
-            print(result0.best_values)
-            print(result0.fit_report())
+            print(lmfit.fit_report(result0))
+            print(result0.success)
+            print(result0.var_names)
+            print(result0.covar)
+            print(result0.errorbars)
+            print(result0.redchi)
+            print(result0.params)
 
             f.write("== det 0 ==\n\n")
             f.write("Bin size for histogram: {}\n\n".format(bin_0))
-            for k in result0.best_values:
-                f.write("{}:\t{}\n".format(k, result0.best_values[k]))
+            for k in result0.params:
+                f.write("{}:\t{}\n".format(k, result0.params[k].value))
             f.write('\n')
-            f.write(result0.fit_report())
+            f.write(lmfit.fit_report(result0))
 
-            self.plotDet(0, plotHist0, result0.best_values)
+            self.plotDet(0, plotHist0, result0.params)
 
         if self.detector == -1 or self.detector == 1:
             bin_1 =  int(math.ceil(math.fabs(max(self.data[1]) - min(self.data[1]))/float(iqr(self.data[1]))))
