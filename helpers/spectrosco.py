@@ -68,5 +68,12 @@ class spec():
         return mdata
 
 if __name__ == '__main__':
-    s = spec("/home/zy/Documents/spectrum_data/glass_slide_measurement", basefilename = "led_base", raw = 1)
-    print s.parse()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('fn', type = str, help = "Folder of data files")
+    parser.add_argument('-o', '--outputfolder', type = str, help = "Directory to dump json file.", default = None)
+    parser.add_argument('-r', '--rawfile', action = 'store_true', help = "True to output raw, plottable ascii file", default = None)
+    args = parser.parse_args()
+
+    a = spec(args.fn, output = args.outputfolder, raw = args.rawfile)
+    a.parse()
+    print " == Parse complete == \n"
