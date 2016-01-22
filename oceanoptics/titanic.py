@@ -38,32 +38,37 @@ class Iceberg():
         #cfg = self.get_active_configuration()
     def initConstants(self):
         ep = {}
-        ep['talk'] = "\x01"
-        ep['listen'] = "\x81"
-        ep['2in'] = "\x82"
-        ep['6in'] = "\x86"
+        ep['talk'] = 0x01
+        ep['listen'] = 0x81
+        ep['2in'] = 0x82
+        ep['6in'] = 0x86
         cmd = {}
         cmd['init'] = "\x01"
         cmd['ingt'] = "\x02"
         return ep
     def testInit(self):
+		# initalise usb4000
         self.talk(bytearray(['\x01']))
-        ingTime = 10000 #integration time
+		# set integration time in microseconds
+        ingTime = 16969 #integration time
         x = struct.pack('<I', ingTime)
         s = ['\x02']
         for i in x:
             s.append(i)
         self.talk(bytearray(x))
-        print "test ask spec"
-
+        
+		# query serial number
         r = bytearray(['\x05','0'])
         self.talk(r)
         #print self.talk(r)
-        self.dev.listen(self.ep['listen'], 2)
+        print self.listen(self.ep['listen'], 22)
+	t = bytearray(['\x6C'])
+	self.talk(r)
+	self.listen(self.ep['listen']. 3)
     def talk(self, msg):
-        print "talking"
-        self.dev.write(1, msg, 100)
+        print "talking {}".format(msg)
+        self.dev.write(1, msg, 1000 )
     def listen(self, port, mlen):
-        self.dev.read(port, mlen, 100)
+        self.dev.read(port, mlen, 1000)
 
 main()
