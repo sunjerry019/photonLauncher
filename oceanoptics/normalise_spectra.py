@@ -1,0 +1,53 @@
+from __future__ import division
+import argparse
+from os import listdir
+from os.path import isfile, join, dirname, realpath, basename
+import sys, json
+import numpy as np
+import math
+
+class norm():
+    def __init__(self, basefile, samplefile, data_format = "raw", raw = True):
+        base = []
+        sample = []
+        result = []
+        if data_format == "raw":
+            base = parse_raw(basefile, base)
+            sample = parse_raw(sample)
+        else:
+            print "Feature not supported yet"
+            sys.exit(0)
+        for i in xrange(len(base)):
+            result.append([base[i][0], (sample[i][1] / base[i][1]), getErrorOf([base[i][1], base[i][2]],[sample[i][1], sample[i][2]])])
+        if raw:
+            with open(join(dirname(samplefile), "normalised{}with{}".format(basename(sample), basename(basefile)))) as f:
+                for i in result:
+                    f.write("{}\t{}\t{}\n".format(i[0], i[1], i[2]))
+        else:
+            print result
+        print " == Normalisation Complete == \n"
+    def parse_raw(self,_f, data_array):
+        with open(_f) as f:
+            for line in f:
+                if line[:1] == "#":
+                    continue
+                line = line.strip().split('\t')
+                line = [float(x) for x in line]
+                data_array.append(line)
+        return data_array
+
+    def getErrorOf(self, base, sample):
+        # base = [mean value, error value]
+        # z = sample/base
+        return math.sqrt((1/base[0] * sample[1])**2 + ((sample[0]/(base[0])**-2) * base[1])**2)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('bn', type = str, help = "Path to base file")
+    parser.add_argument('sn', type = str, help = "Path to of sample file")
+    parser.add_argument('-d', '--dataformat', type = str, help = "Defaults to raw, choose json to process.json files", default = "raw")
+    parser.add_argument('-r', '--rawfile', action = 'store_true', help = "True to output raw, plottable ascii file", default = None)
+    args = parser.parse_args()
+
+    n = norm(args.bn, args.sn, data_format = args.dataformat, raw = args.rawfile)

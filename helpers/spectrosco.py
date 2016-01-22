@@ -7,7 +7,7 @@ import numpy as np
 """ main class takes a string of folder name, then returns a dictionary with the std dev (error bars). option to save json file."""
 
 class spec():
-    def __init__(self, foldername, output = None, basefilename = "", raw = None):
+    def __init__(self, foldername, output = None, basefilename = None, raw = None):
         self.fn = foldername
         self.base = basefilename
         self.files = [f for f in listdir(foldername) if isfile(join(foldername, f))]
@@ -56,7 +56,7 @@ class spec():
             with open(join(self.output + ".json") ,'w') as f:
                 json.dump(mdata, f)
         if self.raw:
-            if self.base == "":
+            if self.base == None:
                 rawpath = join(self.fn,"raw")
             else:
                 rawpath = join(self.fn, self.base)
@@ -70,10 +70,11 @@ class spec():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('fn', type = str, help = "Folder of data files")
+    parser.add_argument('-b', '--basename', type = str, help = "Base file name", default = None)
     parser.add_argument('-o', '--outputfolder', type = str, help = "Directory to dump json file.", default = None)
     parser.add_argument('-r', '--rawfile', action = 'store_true', help = "True to output raw, plottable ascii file", default = None)
     args = parser.parse_args()
 
-    a = spec(args.fn, output = args.outputfolder, raw = args.rawfile)
+    a = spec(args.fn, output = args.outputfolder, raw = args.rawfile, basefilename = args.basename)
     a.parse()
     print " == Parse complete == \n"
