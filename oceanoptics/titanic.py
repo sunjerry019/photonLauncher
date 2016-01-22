@@ -62,9 +62,9 @@ class Iceberg():
         self.talk(r)
         #print self.talk(r)
         print self.listen(self.ep['listen'], 22)
-		t = bytearray(['\x6C'])
-		self.talk(r)
-		self.listen(self.ep['listen']. 3)
+	t = bytearray(['\x6C'])
+	self.talk(r)
+	self.listen(self.ep['listen']. 3)
     def talk(self, msg):
         print "talking {}".format(msg)
         self.dev.write(1, msg, 1000 )
