@@ -35,6 +35,10 @@ class Iceberg():
 		self.dev.set_configuration()
 		self.ep = self.initConstants()
 		self.testInit()
+		if self.dev.is_kernel_driver_active(0):
+			self.dev.detach_kernel_driver(0)
+			usb.util.claim_interface(self.dev, 0)
+		
 	def initConstants(self):
 		ep = {}
 		ep['talk'] = 0x01
