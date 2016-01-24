@@ -66,5 +66,5 @@ void printdev(libusb_device *dev) {
 	cout<<endl<<endl<<endl;
 	libusb_free_config_descriptor(config);
 
-}
+};
 
