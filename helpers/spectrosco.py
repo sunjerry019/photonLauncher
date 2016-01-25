@@ -23,27 +23,28 @@ class spec():
         self.output = output
         self.raw = raw
         self.data = {}
-
+    def traverse(self, i):
+        with open(join(self.fn, i), 'rb') as f:
+            start_read = False
+            for line in f:
+                if start_read and line[:2] == ">>":
+                    start_read = False
+                if start_read:
+                    try:
+                        x = line.rstrip().split("\t")
+                        #print x
+                        x = [float(i) for i in x]
+                        if x[0] not in self.data.keys():
+                            self.data[x[0]] = [x[1]]
+                        else:
+                            self.data[x[0]].append(x[1])
+                    except:
+                        print "Error parsing {}, {}".format(i, line)
+                if line[:2] == ">>":
+                    start_read = True
     def parse(self):
         for i in self.files:
-            with open(join(self.fn, i), 'rb') as f:
-                start_read = False
-                for line in f:
-                    if start_read and line[:2] == ">>":
-                        start_read = False
-                    if start_read:
-                        try:
-                            x = line.rstrip().split("\t")
-                            #print x
-                            x = [float(i) for i in x]
-                            if x[0] not in self.data.keys():
-                                self.data[x[0]] = [x[1]]
-                            else:
-                                self.data[x[0]].append(x[1])
-                        except:
-                            print "Error parsing {}, {}".format(i, line)
-                    if line[:2] == ">>":
-                        start_read = True
+            self.traverse(i)
         std = {}
         m = {}
         for wavelength in self.data:
@@ -73,6 +74,7 @@ if __name__ == '__main__':
     parser.add_argument('-b', '--basename', type = str, help = "Base file name", default = None)
     parser.add_argument('-o', '--outputfolder', type = str, help = "Directory to dump json file.", default = None)
     parser.add_argument('-r', '--rawfile', action = 'store_true', help = "True to output raw, plottable ascii file", default = None)
+    #parser.add_argument('-bg', '--backgroundfile', type = str, help = "Background readings to normalise the data", default = None)
     args = parser.parse_args()
 
     a = spec(args.fn, output = args.outputfolder, raw = args.rawfile, basefilename = args.basename)

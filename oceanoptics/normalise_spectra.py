@@ -7,7 +7,7 @@ import numpy as np
 import math
 
 class norm():
-    def __init__(self, basefile, samplefile, data_format = "raw", raw = True):
+    def __init__(self, basefile, samplefile, ntype, data_format = "raw", raw = True):
         base = []
         sample = []
         result = []
@@ -18,9 +18,12 @@ class norm():
             print "Feature not supported yet"
             sys.exit(0)
         for i in xrange(len(base)):
-            result.append([base[i][0], (sample[i][1] / base[i][1]), getErrorOf([base[i][1], base[i][2]],[sample[i][1], sample[i][2]])])
+            if ntype == 'div':
+                result.append([base[i][0], (sample[i][1] / base[i][1]), getDivErrorOf([base[i][1], base[i][2]],[sample[i][1], sample[i][2]])])
+            elif ntype == 'sub':
+                result.append([base[i][0], (sample[i][1] - base[i][1]), getSubErrorOf([base[i][1], base[i][2]],[sample[i][1], sample[i][2]])])
         if raw:
-            with open(join(dirname(samplefile), "normalised{}with{}".format(basename(sample), basename(basefile)))) as f:
+            with open(join(dirname(samplefile), "norm{}_{}".format(basename(sample), basename(basefile)))) as f:
                 for i in result:
                     f.write("{}\t{}\t{}\n".format(i[0], i[1], i[2]))
         else:
@@ -36,18 +39,22 @@ class norm():
                 data_array.append(line)
         return data_array
 
-    def getErrorOf(self, base, sample):
+    def getDivErrorOf(self, base, sample):
         # base = [mean value, error value]
         # z = sample/base
         return math.sqrt((1/base[0] * sample[1])**2 + ((sample[0]/(base[0])**-2) * base[1])**2)
+    def getSubErrorOf(self,base,sample):
+        # z = sample - base
+        return math.sqrt(( sample[1])**2 + (-1 * base[1])**2)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('bn', type = str, help = "Path to base file")
     parser.add_argument('sn', type = str, help = "Path to of sample file")
+    parser.add_argument('normalised_type', type = str, help = "Normalise by division or subtraction. 'div' and 'sub' respectively")
     parser.add_argument('-d', '--dataformat', type = str, help = "Defaults to raw, choose json to process.json files", default = "raw")
     parser.add_argument('-r', '--rawfile', action = 'store_true', help = "True to output raw, plottable ascii file", default = None)
     args = parser.parse_args()
 
-    n = norm(args.bn, args.sn, data_format = args.dataformat, raw = args.rawfile)
+    n = norm(args.bn, args.sn, args.ntype, data_format = args.dataformat, raw = args.rawfile,)
