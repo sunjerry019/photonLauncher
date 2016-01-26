@@ -44,7 +44,7 @@ class spec():
                     start_read = True
     def parse(self):
         for i in self.files:
-            self.traverse(i)
+            self.traverse(i) ; sys.stdout.write("\r{}".format(i))
         std = {}
         m = {}
         for wavelength in self.data:
