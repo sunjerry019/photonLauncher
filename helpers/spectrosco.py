@@ -53,14 +53,11 @@ class spec():
             m[wavelength] = np.mean(wavelengths, dtype = np.float64)
 
         mdata = {"raw": self.data, "std": std, "mean": m}
-        if self.output:
-            with open(join(self.output + ".json") ,'w') as f:
-                json.dump(mdata, f)
         if self.raw:
             if self.base == None:
-                rawpath = join(self.fn,"raw")
+                rawpath = join(self.fn, "raw")
             else:
-                rawpath = join(self.fn, self.base)
+                rawpath = self.output
             with open(rawpath, 'w') as f:
                 f.write("#x\ty\tyerror\n")
                 for i in sorted(self.data, key=self.data.get):
@@ -72,8 +69,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('fn', type = str, help = "Folder of data files")
     parser.add_argument('-b', '--basename', type = str, help = "Base file name", default = None)
-    parser.add_argument('-o', '--outputfolder', type = str, help = "Directory to dump json file.", default = None)
-    parser.add_argument('-r', '--rawfile', action = 'store_true', help = "True to output raw, plottable ascii file", default = None)
+    parser.add_argument('-o', '--outputfolder', type = str, help = "Path to dump raw file.", default = None)
+    parser.add_argument('-r', '--rawfile', action = 'store_true', help = "Use this flag to output raw, plottable ascii file", default = None)
     #parser.add_argument('-bg', '--backgroundfile', type = str, help = "Background readings to normalise the data", default = None)
     args = parser.parse_args()
 
