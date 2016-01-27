@@ -44,9 +44,19 @@ for _ in xrange(11):
 	data.append(handle.bulkRead(130, 512))
 print handle.bulkRead(130, 1)
 
-print data
+#print data
 
-print len(data)
+#print len(data)
+
+#with open ('.temp', 'wb') as f:
+#	for i in data:
+#		f.write(i)
+
+for i in data:
+	_data = list(i)
+	for j in xrange(0, len(_data), 2):
+		x = _data[j] + _data[j]
+		print struct.unpack('<H', x)
 handle.releaseInterface(0)
 handle.close()
 #handle.exit()
