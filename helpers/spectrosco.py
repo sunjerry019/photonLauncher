@@ -44,7 +44,7 @@ class spec():
                     start_read = True
     def parse(self):
         for i in self.files:
-            self.traverse(i) ; sys.stdout.write("\r Now processing {}".format(i))
+            self.traverse(i) ; sys.stdout.write("\rNow processing {}".format(i))
         std = {}
         m = {}
         for wavelength in self.data:
@@ -72,7 +72,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('fn', type = str, help = "Folder of data files")
     parser.add_argument('-b', '--basename', type = str, help = "Base file name", default = None)
-    parser.add_argument('-o', '--outputfolder', type = str, help = "Path to dump raw file.", default = None)
+    parser.add_argument('-o', '--outputfolder', type = str, help = "File path of ascii otuput.", default = None)
     parser.add_argument('-r', '--rawfile', action = 'store_true', help = "Use this flag to output raw, plottable ascii file", default = None)
     #parser.add_argument('-bg', '--backgroundfile', type = str, help = "Background readings to normalise the data", default = None)
     args = parser.parse_args()
