@@ -72,11 +72,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('fn', type = str, help = "Folder of data files")
     parser.add_argument('-b', '--basename', type = str, help = "Base file name", default = None)
-    parser.add_argument('-o', '--outputfolder', type = str, help = "File path of ascii otuput.", default = None)
+    parser.add_argument('-o', '--outputpath', type = str, help = "File path of ascii output.", default = None)
     parser.add_argument('-r', '--rawfile', action = 'store_true', help = "Use this flag to output raw, plottable ascii file", default = None)
     #parser.add_argument('-bg', '--backgroundfile', type = str, help = "Background readings to normalise the data", default = None)
     args = parser.parse_args()
 
-    a = spec(args.fn, output = args.outputfolder, raw = args.rawfile, basefilename = args.basename)
+    a = spec(args.fn, output = args.outputpath, raw = args.rawfile, basefilename = args.basename)
     a.parse()
     print " == Parse complete == \n"
