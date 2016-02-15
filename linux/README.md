@@ -7,7 +7,9 @@ Mostly for archival and backup purposes.
 
 ## Reverse SSH
 
-Currently, robin is set up to use infocommsociety.com as an intermediary for SSH-ing from the outside world.
+Currently, robin is set up to use infocommsociety.com as an intermediary for SSH-ing from the outside world. Use PuTTY for Windows, the terminal for *Nix systems.
+
+```ssh hcphotonics@infocommsociety.com```, with the usual password. Use ```./connect 2222``` and the usual password, to enter the lab network. 
 
 ### Technical Information
 

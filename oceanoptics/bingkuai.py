@@ -4,6 +4,10 @@ import struct
 import usb1
 context = usb1.USBContext()
 
+#ep 2:0x82 --> 130
+#ep 6:0x86 --> 134
+
+
 #init
 handle = context.openByVendorIDAndProductID(0x2457, 0x1022, skip_on_error=True)
 if handle is None:
@@ -31,11 +35,28 @@ print handle.bulkRead(129, 512)
 print "set int time"
 print handle.bulkWrite(1, '\x02' + t_i)
 
-print "get spectra:""
+print "get spectra:"
+data = []
 print handle.bulkWrite(1, '\x09')
-print handle.bulkRead(134, 512)
-print handle.bulkRead(130, 512)
+for i in xrange(4):
+	data.append(handle.bulkRead(134, 512))
+for _ in xrange(11):
+	data.append(handle.bulkRead(130, 512))
+print handle.bulkRead(130, 1)
 
+#print data
 
+#print len(data)
+
+#with open ('.temp', 'wb') as f:
+#	for i in data:
+#		f.write(i)
+
+for i in data:
+	_data = list(i)
+	for j in xrange(0, len(_data), 2):
+		x = _data[j] + _data[j]
+		print struct.unpack('<H', x)
 handle.releaseInterface(0)
 handle.close()
+#handle.exit()
