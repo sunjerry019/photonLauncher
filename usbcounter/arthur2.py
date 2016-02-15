@@ -74,7 +74,7 @@ class Arthur():
             self.jsonoutput = open(self.savefp, 'w')
             self.rawoutput = open(self.raw_savefp, 'w')
         self.dt = 0.3
-        self.initSaveFile()
+
 
         if self.togglePlot:
             self.initPlot()
@@ -116,6 +116,7 @@ class Arthur():
             while self.c > 0:
                 self.ping()
                 time.sleep(self.dt)
+            self.initSaveFile()
             self.saveManager()
 
     def plotManager(self,data):

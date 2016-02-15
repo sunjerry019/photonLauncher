@@ -44,7 +44,7 @@ class spec():
                     start_read = True
     def parse(self):
         for i in self.files:
-            self.traverse(i) ; sys.stdout.write("\r{}".format(i))
+            self.traverse(i) ; sys.stdout.write("\r Now processing {}".format(i))
         std = {}
         m = {}
         for wavelength in self.data:
@@ -60,7 +60,10 @@ class spec():
                 rawpath = self.output
             with open(rawpath, 'w') as f:
                 f.write("#x\ty\tyerror\n")
-                for i in sorted(self.data, key=self.data.get):
+                print self.data
+                _data = self.data.keys()
+                _data.sort()
+                for i in _data:
                     f.write("{}\t{}\t{}\n".format(i, m[i], std[i]))
 
         return mdata
