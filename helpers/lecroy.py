@@ -156,4 +156,4 @@ class Lecroy():
         self.send('CLSW')
 if __name__ == '__main__':
     s = Lecroy()
-    s.getHistogram()
+    print(s.getHistogram())
