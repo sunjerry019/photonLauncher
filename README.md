@@ -4,7 +4,7 @@
  >
  > Pale Blue Dot, Carl Sagan
 
-Pseudo-official Github account for the Photonics Lab at Hwa Chong Institution. ~~~The school admin doesn't know that this exists, nor do they have to.~~~
+Pseudo-official Github account for the Photonics Lab at Hwa Chong Institution. ~~The school admin doesn't know that this exists, nor do they have to.~~
 
 **Documentation for individual scripts / experiments can be found in their respective folders.**
 
