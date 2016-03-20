@@ -2,7 +2,7 @@
 
 # Ubuntu
 192.168.2.188	robin		robin
-192.168.2.140	freedommill	mill
+192.168.2.141	freedommill	mill
 
 # Fedora
 192.168.2.197	freedombarn	localhost
