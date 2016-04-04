@@ -1,5 +1,7 @@
 # odin
 
+Spectrum measurement of APD flash breakdown using a rotational stage (with a grating mounted on it) and an APD. 
+
 Two devices ( we use raspis), one of them controlling a Thorlabs rotational stage (CR1-Z7) motor (depends on ```mjolnir.py```) and the other one logging the counts from the usbcounter device. (uses ```getresponse``` binary)
 
 ## Usage
