@@ -1,3 +1,23 @@
+"""
+uses usb1 from libusb1 which apparently works while pyusb does not
+
+link to github
+https://github.com/vpelletier/python-libusb1
+
+with not so useful ish documentation but it is sufficient for getting the data we need
+
+currently need to finish the proof of concept
+
+then a parser
+
+then a general library to handle everything
+
+
+zy
+4 apr 2016
+
+"""
+
 # run with sudo
 import binascii
 import struct
