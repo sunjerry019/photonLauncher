@@ -28,7 +28,11 @@ def getMetadata(s):
             t = getac(i)
         if "Number of S" in i:
             N = getac(i)
-    print(time.strptime(d + t,'%Y-%m-%d%H:%M:%S'))
+    dt = (time.strftime('%Y%m%d_%H%M',time.strptime(d + t,'%Y-%m-%d%H:%M:%S')))
+    metadata = {}
+    metadata['N'] = N
+    metadata['time'] = dt
+    return metadata
     #print(date + " " + time)
 
 def parse(filepath):
@@ -36,7 +40,7 @@ def parse(filepath):
         raw_text = str(f.read())
         raw_text = raw_text.split('\\r\\n')
         #print(raw_text)
-        getMetadata(raw_text)
+        metadata = getMetadata(raw_text)
 
 
 def main():
