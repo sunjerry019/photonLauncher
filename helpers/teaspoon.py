@@ -28,10 +28,14 @@ def getMetadata(s):
             t = getac(i)
         if "Number of S" in i:
             N = getac(i)
-    dt = (time.strftime('%Y%m%d_%H%M',time.strptime(d + t,'%Y-%m-%d%H:%M:%S')))
+        if "Measurement Int" in i:
+            dt = getac(i)
+            #print(dt)
+    datetime = (time.strftime('%Y%m%d_%H%M',time.strptime(d + t,'%Y-%m-%d%H:%M:%S')))
     metadata = {}
-    metadata['N'] = N
-    metadata['time'] = dt
+    metadata['N'] = float(N)
+    metadata['time'] = datetime
+    metadata['time_interval'] = float(dt)
     return metadata
     #print(date + " " + time)
 
