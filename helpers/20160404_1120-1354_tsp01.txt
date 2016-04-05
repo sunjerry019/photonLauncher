@@ -1,0 +1,149 @@
+Thorlabs Temperature Sensor Probe TSP01 Data Export
+
+Date (YYYY-MM-DD):	2016-04-04
+Time (HH:MM:SS):	11:20:47
+Device Name:	TSP01
+Serial Number:	M00336098
+GUI Revision:	1.2 Build 0
+Driver Revision:	1.2.0
+Firmware Revision:	1.2.0
+
+Application settings:
+
+Temperature Unit:	°C
+Measurement Channel Temperature measured:	Yes
+Measurement Channel Temperature displayed:	Yes
+Measurement Channel Temperature Offset:	0
+Display Channel Temperature Minimum Value:	15
+Display Channel Temperature Maximum Value:	35
+Display Channel Temperature Low Value:	10
+Display Channel Temperature High Value:	30
+Measurement Channel Humidity measured:	Yes
+Measurement Channel Humidity displayed:	Yes
+Measurement Channel Humidity Offset:	0
+Display Channel Humidity Minimum Value:	40
+Display Channel Humidity Maximum Value:	60
+Display Channel Humidity Low Value:	30
+Display Channel Humidity High Value:	60
+Measurement Channel Temperature external 1 measured:	Yes
+Measurement Channel Temperature external 1 displayed:	Yes
+Measurement Channel Temperature external 1 name:	TH1
+Measurement Channel Temperature external 1 Offset:	0
+Display Channel Temperature external 1 Minimum Value:	15
+Display Channel Temperature external 1 Maximum Value:	35
+Display Channel Temperature external 1 Low Value:	10
+Display Channel Temperature external 1 High Value:	30
+Thermistor Parameter external 1 R0 Value:	10000
+Thermistor Parameter external 1 T0 Value:	25
+Thermistor Parameter external 1 B Value:	3988
+Measurement Channel Temperature external 2 measured:	No
+Measurement Channel Temperature external 2 displayed:	No
+Measurement Channel Temperature external 2 name:	TH2
+Measurement Channel Temperature external 2 Offset:	0
+Display Channel Temperature external 2 Minimum Value:	-17.95
+Display Channel Temperature external 2 Maximum Value:	219.95
+Display Channel Temperature external 2 Low Value:	10
+Display Channel Temperature external 2 High Value:	30
+Thermistor Parameter external 2 R0 Value:	10000
+Thermistor Parameter external 2 T0 Value:	25
+Thermistor Parameter external 2 B Value:	3988
+Measurement Interval [s]:	100
+Averaging:	No
+Logging Control:	samples
+Number of Samples:	1000
+Duration of Logging:	10
+Duration Unit:	s
+Time Axis Scale:	seconds
+
+Time [s]	  Temperature [°C]	rel. Humidity [%]	TH1 [°C]	TH2 [°C]	Remarks
+     100	      28.79     	      48.76      	  25.85 	   -.-- 	
+     200	      28.63     	      47.37      	  25.55 	   -.-- 	
+     300	      28.47     	      48.18      	  25.55 	   -.-- 	
+     400	      28.47     	      48.34      	  25.75 	   -.-- 	
+     500	      28.47     	      48.49      	  25.84 	   -.-- 	
+     600	      28.47     	      48.49      	  25.85 	   -.-- 	
+     700	      28.63     	      48.39      	  25.85 	   -.-- 	
+     800	      28.63     	      48.02      	  25.75 	   -.-- 	
+     900	      28.63     	      48.04      	  25.84 	   -.-- 	
+    1000	      28.63     	      48.05      	  25.84 	   -.-- 	
+    1100	      28.63     	      47.92      	  25.75 	   -.-- 	
+    1200	      28.63     	      47.76      	  25.66 	   -.-- 	
+    1300	      28.63     	      47.83      	  25.65 	   -.-- 	
+    1400	      28.63     	      48.04      	  25.75 	   -.-- 	
+    1500	      28.76     	      48.03      	  25.84 	   -.-- 	
+    1600	      28.78     	      47.85      	  25.75 	   -.-- 	
+    1700	      28.66     	      47.23      	  25.75 	   -.-- 	
+    1800	      28.63     	      47.35      	  25.55 	   -.-- 	
+    1900	      28.56     	      47.71      	  25.75 	   -.-- 	
+    2000	      28.63     	      47.96      	  25.76 	   -.-- 	
+    2100	      28.63     	      47.99      	  25.85 	   -.-- 	
+    2200	      28.78     	      47.66      	  25.84 	   -.-- 	
+    2300	      28.79     	      47.12      	  25.75 	   -.-- 	
+    2400	      28.63     	      46.85      	  25.46 	   -.-- 	
+    2500	      28.47     	      47.22      	  25.65 	   -.-- 	
+    2600	      28.47     	      47.53      	  25.75 	   -.-- 	
+    2700	      28.47     	      47.63      	  25.77 	   -.-- 	
+    2800	      28.63     	      47.44      	  25.82 	   -.-- 	
+    2900	      28.60     	      47.04      	  25.75 	   -.-- 	
+    3000	      28.55     	      46.87      	  25.75 	   -.-- 	
+    3100	      28.60     	      47.04      	  25.84 	   -.-- 	
+    3200	      28.62     	      47.13      	  25.83 	   -.-- 	
+    3300	      28.63     	      46.85      	  25.75 	   -.-- 	
+    3400	      28.55     	      45.99      	  25.55 	   -.-- 	
+    3500	      28.47     	      46.47      	  25.58 	   -.-- 	
+    3600	      28.47     	      46.66      	  25.75 	   -.-- 	
+    3700	      28.47     	      46.90      	  25.75 	   -.-- 	
+    3800	      28.63     	      46.95      	  25.84 	   -.-- 	
+    3900	      28.63     	      46.64      	  25.85 	   -.-- 	
+    4000	      28.63     	      46.56      	  25.85 	   -.-- 	
+    4100	      28.63     	      46.40      	  25.75 	   -.-- 	
+    4200	      28.60     	      45.98      	  25.66 	   -.-- 	
+    4300	      28.47     	      46.18      	  25.65 	   -.-- 	
+    4400	      28.47     	      46.46      	  25.66 	   -.-- 	
+    4500	      28.47     	      46.62      	  25.75 	   -.-- 	
+    4600	      28.47     	      46.78      	  25.85 	   -.-- 	
+    4700	      28.56     	      46.68      	  25.85 	   -.-- 	
+    4800	      28.63     	      46.66      	  25.85 	   -.-- 	
+    4900	      28.75     	      46.50      	  25.85 	   -.-- 	
+    5000	      28.79     	      46.17      	  25.85 	   -.-- 	
+    5100	      28.75     	      45.96      	  25.79 	   -.-- 	
+    5200	      28.73     	      45.94      	  25.76 	   -.-- 	
+    5300	      28.63     	      45.78      	  25.75 	   -.-- 	
+    5400	      28.55     	      45.69      	  25.65 	   -.-- 	
+    5500	      28.47     	      45.88      	  25.72 	   -.-- 	
+    5600	      28.48     	      46.17      	  25.75 	   -.-- 	
+    5700	      28.55     	      46.50      	  25.85 	   -.-- 	
+    5800	      28.63     	      46.55      	  25.85 	   -.-- 	
+    5900	      28.63     	      46.00      	  25.75 	   -.-- 	
+    6000	      28.47     	      46.17      	  25.55 	   -.-- 	
+    6100	      28.43     	      46.58      	  25.69 	   -.-- 	
+    6200	      28.47     	      46.85      	  25.75 	   -.-- 	
+    6300	      28.47     	      46.85      	  25.83 	   -.-- 	
+    6400	      28.63     	      46.75      	  25.85 	   -.-- 	
+    6500	      28.63     	      46.48      	  25.85 	   -.-- 	
+    6600	      28.63     	      46.27      	  25.55 	   -.-- 	
+    6700	      28.63     	      46.47      	  25.74 	   -.-- 	
+    6800	      28.63     	      46.71      	  25.79 	   -.-- 	
+    6900	      28.63     	      46.86      	  25.85 	   -.-- 	
+    7000	      28.63     	      46.95      	  25.94 	   -.-- 	
+    7100	      28.63     	      46.85      	  25.85 	   -.-- 	
+    7200	      28.64     	      46.85      	  25.85 	   -.-- 	
+    7300	      28.63     	      46.85      	  25.88 	   -.-- 	
+    7400	      28.63     	      46.89      	  25.84 	   -.-- 	
+    7500	      28.63     	      46.95      	  25.77 	   -.-- 	
+    7600	      28.63     	      46.76      	  25.75 	   -.-- 	
+    7700	      28.55     	      46.69      	  25.75 	   -.-- 	
+    7800	      28.55     	      47.07      	  25.85 	   -.-- 	
+    7900	      28.58     	      47.54      	  25.85 	   -.-- 	
+    8000	      28.63     	      47.82      	  25.89 	   -.-- 	
+    8100	      28.66     	      47.75      	  25.85 	   -.-- 	
+    8200	      28.63     	      47.26      	  25.75 	   -.-- 	
+    8300	      28.60     	      47.27      	  25.65 	   -.-- 	
+    8400	      28.47     	      47.82      	  25.55 	   -.-- 	
+    8500	      28.45     	      48.20      	  25.75 	   -.-- 	
+    8600	      28.45     	      48.61      	  25.85 	   -.-- 	
+    8700	      28.47     	      48.71      	  25.85 	   -.-- 	
+    8800	      28.47     	      48.32      	  25.75 	   -.-- 	
+    8900	      28.47     	      48.02      	  25.46 	   -.-- 	
+    9000	      28.46     	      48.36      	  25.67 	   -.-- 	
+    9100	      28.47     	      49.35      	  25.85 	   -.-- 	
