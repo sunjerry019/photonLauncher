@@ -39,14 +39,26 @@ def getMetadata(s):
     return metadata
     #print(date + " " + time)
 
+def parseline(s):
+
+    line = (s.split("\\t"))[:-2]
+    line = [float(x.strip()) for x in line]
+    return line
 def parse(filepath):
     with open(filepath, 'rb') as f:
         raw_text = str(f.read())
         raw_text = raw_text.split('\\r\\n')
         #print(raw_text)
         metadata = getMetadata(raw_text)
-
-
+        parse_data = False
+        data  = []
+        for i in raw_text:
+            if parse_data:
+                data.append(parseline(i))
+            if "Time [s]" in i:
+                parse_data = True
+        data.pop()
+        print(data)
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("fp", type = str, help = "Path to textfile to be parsed.")
