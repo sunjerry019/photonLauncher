@@ -1,22 +1,27 @@
 import argparse
 from os import listdir
 from os.path import isfile, join
-import sys, json
+import sys
+import json
 import numpy as np
 
-""" main class takes a string of folder name, then returns a dictionary with the std dev (error bars). option to save json file."""
+# main class takes a string of folder name, then returns a dictionary with the std dev (error bars). option to save json file.
 
 class spec():
+    """Initialises the class with options."""
     def __init__(self, foldername, output = None, basefilename = None, raw = None):
         self.fn = foldername
         self.base = basefilename
         self.files = [f for f in listdir(foldername) if isfile(join(foldername, f))]
-        #print self.f
+
+        # The SpectraSuite application dumps separate readings at certain time intervals in separate files
+        # There's an option for a BASEFILENAME which helps to identify which measurement it is
+        # The filenames look like "BASEFILENAMEXXX" where XXX refers to the index of the sample.
 
         if basefilename == "":
-            print "No base filename indicated, will use all files in directory {}".format(foldername)
+            print("No base filename indicated, will use all files in directory {}".format(foldername))
         else:
-            print "Base filename of {}.".format(basefilename)
+            print("Base filename of {}.".format(basefilename))
             self.files = [x for x in self.files if basefilename == x[:-9]]
 
         #print self.f
@@ -24,6 +29,7 @@ class spec():
         self.raw = raw
         self.data = {}
     def traverse(self, i):
+        """ Read through data file (files inside directory FOLDERNAME with a BASEFILENAME) """
         with open(join(self.fn, i), 'rb') as f:
             start_read = False
             for line in f:
@@ -39,7 +45,7 @@ class spec():
                         else:
                             self.data[x[0]].append(x[1])
                     except:
-                        print "Error parsing {}, {}".format(i, line)
+                        print("Error parsing {}, {}".format(i, line))
                 if line[:2] == ">>":
                     start_read = True
     def parse(self):
@@ -79,4 +85,4 @@ if __name__ == '__main__':
 
     a = spec(args.fn, output = args.outputpath, raw = args.rawfile, basefilename = args.basename)
     a.parse()
-    print " == Parse complete == \n"
+    print(" == Parse complete == \n")
