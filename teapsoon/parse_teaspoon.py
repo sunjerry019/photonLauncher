@@ -1,8 +1,7 @@
-import sys, os, json
-import time, datetime
+import sys
 
 sys.path.insert(0, '../helpers/')
 
 from teaspoon import parse
 
-print(parse("20160404_1120-1354_tsp01.txt"))
+(data, metadata) = (parse("20160404_1120-1354_tsp01.txt"))
