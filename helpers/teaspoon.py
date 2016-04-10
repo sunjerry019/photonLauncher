@@ -69,6 +69,7 @@ def parse(filepath):
 
 def main():
     """ argparse to process CLI options in case we want to use this directly, instead of using a separate controller script."""
+    parser = argparse.ArgumentParser()
     parser.add_argument("fp", type = str, help = "Path to textfile from Thorlabs TSP01 to be parsed.")
     args = parser.parse_args()
     parse(args.fp)
