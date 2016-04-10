@@ -6,6 +6,7 @@ sys.path.insert(0, '../helpers/')
 from teaspoon import parse
 
 def main(inputpath, outputpath, outputboolean, verbosity):
+    """ Writes ASCII data to file. """
     if verbosity:
         print("TSP01 data parser. \n ============")
         print("Reading file from {}".format(inputpath))
@@ -30,6 +31,7 @@ def main(inputpath, outputpath, outputboolean, verbosity):
         print(metadata)
 
 def init():
+    """ Argument parsing for command line usage """
     parser = argparse.ArgumentParser()
     parser.add_argument("inputpath", type = str, default = ".", help = "Path for input data file to be parsed.")
     parser.add_argument("-o", "--outputpath", type = str, default = ".",help = "Path for output plottable file.")
