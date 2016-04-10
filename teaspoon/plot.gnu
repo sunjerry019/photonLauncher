@@ -20,7 +20,8 @@ set ytics font ",8"
 set size 1,0.5
 set origin 0,0.45
 
-plot filename u 1:2 ls 1 notitle, filename u 1:4 ls 2 notitle
+set key font ",8"
+plot filename u 1:2 ls 1 title "onboard", filename u 1:4 ls 2 title "external probe"
 
 set size 1,0.5
 set origin 0,0
