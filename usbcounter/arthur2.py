@@ -1,31 +1,16 @@
 import sys
 sys.path.insert(0, '../helpers/')
 
-import Gnuplot
 import subprocess
 import time
-import threading
 import argparse
-import os, sys
+import os
 import numpy
 import Gnuplot, Gnuplot.PlotItems, Gnuplot.funcutils
 import json
 import random
 from collections import deque
 from rpiDBUploader import rpiDBUploader
-
-def _genName():
-    def _genWord(fp):
-        with open(fp,'r') as f:
-            w = []
-            for i in f:
-                w.append(i.strip())
-            return w[int(round((len(w) - 1) * random.random()))]
-    x = ''
-    x += _genWord('./cfg/adjectives').capitalize()
-    x += _genWord('./cfg/adjectives').capitalize()
-    x += _genWord('./cfg/animals')
-    return x
 
 def check_dir(directory):
     if not os.path.exists(directory):
@@ -86,9 +71,7 @@ class Arthur():
     def initSaveFile(self):
         self.data = {}
         self.data['timestamp'] = self.timestamp
-        self.data['uid'] = _genName()
         self.data['counts'] = []
-        self.data['timebinsize'] = self.dt
         self.data['timeperbin'] = self.intTime
         self.data['totaltargetcounts'] = self.duration
         if not self.monitor:
@@ -97,15 +80,15 @@ class Arthur():
 
     def initPlot(self):
         self.p = Gnuplot.Gnuplot(debug=0)
-        self.p('set ytics font ",12"')
-        self.p('set style line 1 linewidth 10')
-        self.p('set style line 2 linewidth 10')
+        self.p('set ytics font "Helvetica,14"')
+        self.p('set style line 1 lw 10 lc rgb "red"')
+        self.p('set style line 2 lw 10 lc rgb "blue"')
         self.p.title('usbcounter: Photon Counts from APD')
         #self.p('set data style lines')
         self.p('set xrange [0:120]')
 
     def updatePlot(self):
-        self.p('plot "{}" u 1:2 w l lw 3 , "{}" u 1:3 w l lw 3'.format(self.tempfp, self.tempfp))
+        self.p('plot "{0}" u 1:2 w l ls 1 , "{0}" u 1:3 w l ls 2'.format(self.tempfp))
 
     def collectionManager(self):
         if self.c == -1:
