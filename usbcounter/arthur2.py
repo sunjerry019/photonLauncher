@@ -18,10 +18,10 @@ def check_dir(directory):
         os.makedirs(directory)
 
 def main():
-    parser = argparse.ArgumentParser(description="arthur.py: Calls getresponse to obtain the photon counts for one second from the APDs.")
+    parser = argparse.ArgumentParser(description="arthur2.py: Uses ./getresponse to get photon counts per second from APDs. Default time per bin is 100ms.")
     #parser.add_argument('time', metavar='t', type=int, nargs='+', help="Duration in seconds for which to record photon counts from APDs. Set to -1 to keep running until Ctrl-C is pressed.")
     parser.add_argument('total', metavar='n', type=int, help="Number of readings to record photon counts from APDs. Set to -1 to keep running until Ctrl-C is pressed.")
-    parser.add_argument('--t', metavar='intTime', type=int, default=1000, help='Time per bin in ms')
+    parser.add_argument('--t', metavar='intTime', type=int, default=100, help='Time per bin in ms')
     parser.add_argument('-p', dest = 'plot', action = 'store_true', help = 'Use this flag to enable live plotting')
     args = parser.parse_args()
 
@@ -29,10 +29,9 @@ def main():
 
 class Arthur():
     def __init__(self, intTime, t, plot = False):
-        print("Initialising variables..")
+
         self.togglePlot = plot
         self.timestamp = time.strftime('%Y%m%d_%H%M%S')
-        self.start_t = time.time()
         self.duration = t
         self.raw_savefp = os.path.join('data', self.timestamp)
         self.savefp = os.path.join('data', self.timestamp+'.json')
@@ -58,8 +57,6 @@ class Arthur():
         if not self.monitor:
             self.jsonoutput = open(self.savefp, 'w')
             self.rawoutput = open(self.raw_savefp, 'w')
-        self.dt = 0.3
-
 
         if self.togglePlot:
             self.initPlot()
@@ -94,11 +91,11 @@ class Arthur():
         if self.c == -1:
             while True:
                 self.ping()
-                time.sleep(self.dt)
+
         else:
             while self.c > 0:
                 self.ping()
-                time.sleep(self.dt)
+
             self.initSaveFile()
             self.saveManager()
 
@@ -136,29 +133,24 @@ class Arthur():
         if output == "timeout while waiting for response":
             pass
         else:
-            t = time.time() - self.start_t
             data = output.rstrip("\\r\\n'").split(' ')
             data.pop(0)
             if len(data) == 3:
                 try:
-                    #data = map(lambda x: float(x), data)
-                    data = [float(x) for x in data]
-                    _data = [t, data]
                     self.c -= 1
-                    dtpt = _data
+                    str_data = data
+                    data = [float(x) for x in data]
                     if not self.monitor:
-                        self.rawoutput.write('{}\t{}\t{}\t{}\n'.format(dtpt[0], dtpt[1][0], dtpt[1][1], dtpt[1][2]))
-                        #self.data['counts'].append(_data)
+                        self.rawoutput.write('\t'.join(str_data) + '\n')
+                    self.data['counts'].append(_data)
                 except ValueError:
                     print("Error:", data)
                     pass
             else:
                 print("Empty or Incomplete data:", data)
-
-
         if self.togglePlot:
             self.plotManager(data)
-        print("{}:\t{}".format(self.c + 1, data))
+        print("\r{}:\t{}".format(self.c + 1, data))
 
 main()
 print("== Operation Ended ==\a")
