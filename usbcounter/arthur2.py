@@ -91,7 +91,6 @@ class Arthur():
         if self.c == -1:
             while True:
                 self.ping()
-
         else:
             while self.c > 0:
                 self.ping()
@@ -150,7 +149,7 @@ class Arthur():
                 print("Empty or Incomplete data:", data)
         if self.togglePlot:
             self.plotManager(data)
-        print("\r{}:\t{}".format(self.c + 1, data))
+        print("\r{}:\t{}".format(self.c + 1, "\t".join(str_data)))
 
 main()
 print("== Operation Ended ==\a")
