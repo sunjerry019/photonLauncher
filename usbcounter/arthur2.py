@@ -1,26 +1,42 @@
 import sys
 sys.path.insert(0, '../helpers/')
 
+import Gnuplot
 import subprocess
 import time
+import threading
 import argparse
-import os
+import os, sys
+import numpy
 import Gnuplot, Gnuplot.PlotItems, Gnuplot.funcutils
 import json
 import random
 from collections import deque
 from rpiDBUploader import rpiDBUploader
 
+def _genName():
+    def _genWord(fp):
+        with open(fp,'r') as f:
+            w = []
+            for i in f:
+                w.append(i.strip())
+            return w[int(round((len(w) - 1) * random.random()))]
+    x = ''
+    x += _genWord('./cfg/adjectives').capitalize()
+    x += _genWord('./cfg/adjectives').capitalize()
+    x += _genWord('./cfg/animals')
+    return x
+
 def check_dir(directory):
     if not os.path.exists(directory):
-        #print("Directory {} does not exist...creating...".format(directory))
+        print("Directory {} does not exist...creating...".format(directory))
         os.makedirs(directory)
 
 def main():
-    parser = argparse.ArgumentParser(description="arthur2.py: Calls getresponse to obtain the photon from the APDs for a specified timebin. Default is 100ms per timebin. ")
+    parser = argparse.ArgumentParser(description="arthur.py: Calls getresponse to obtain the photon counts for one second from the APDs.")
     #parser.add_argument('time', metavar='t', type=int, nargs='+', help="Duration in seconds for which to record photon counts from APDs. Set to -1 to keep running until Ctrl-C is pressed.")
     parser.add_argument('total', metavar='n', type=int, help="Number of readings to record photon counts from APDs. Set to -1 to keep running until Ctrl-C is pressed.")
-    parser.add_argument('--t', metavar='intTime', type=int, default=100, help='Time per bin in ms')
+    parser.add_argument('--t', metavar='intTime', type=int, default=1000, help='Time per bin in ms')
     parser.add_argument('-p', dest = 'plot', action = 'store_true', help = 'Use this flag to enable live plotting')
     args = parser.parse_args()
 
@@ -28,6 +44,7 @@ def main():
 
 class Arthur():
     def __init__(self, intTime, t, plot = False):
+        print("Initialising variables..")
         self.togglePlot = plot
         self.timestamp = time.strftime('%Y%m%d_%H%M%S')
         self.start_t = time.time()
@@ -39,8 +56,8 @@ class Arthur():
         p = subprocess.Popen(['./getresponse', '-n', 'TIME{}'.format(self.intTime)], stdout = subprocess.PIPE)
         print("Time per bin set to {} ms".format(self.intTime))
 
-        self.d1 = deque([0] * 90)
-        self.d2 = deque([0] * 90)
+        self.d1 = deque([0] * 120)
+        self.d2 = deque([0] * 120)
         self.monitor = False
         self.tempfp = '.temp'
         self.tempf = open(self.tempfp, 'wb+')
@@ -56,18 +73,20 @@ class Arthur():
         if not self.monitor:
             self.jsonoutput = open(self.savefp, 'w')
             self.rawoutput = open(self.raw_savefp, 'w')
+        self.dt = 0.3
+
 
         if self.togglePlot:
             self.initPlot()
         try:
             self.collectionManager()
         except KeyboardInterrupt:
-            print("[{}] Data from acquisition {} will be lost".format(time.strftime('%Y%m%d_%H%M'), self.timestamp))
+            print("[{}] INTERRUPTED ACQUISITION AT {} WILL BE LOST".format(time.strftime('%Y%m%d_%H%M'), self.timestamp))
 
     def initSaveFile(self):
         self.data = {}
         self.data['timestamp'] = self.timestamp
-        #self.data['uid'] = _genName()
+        self.data['uid'] = _genName()
         self.data['counts'] = []
         self.data['timebinsize'] = self.dt
         self.data['timeperbin'] = self.intTime
@@ -78,22 +97,25 @@ class Arthur():
 
     def initPlot(self):
         self.p = Gnuplot.Gnuplot(debug=0)
-        self.p('set ytics font "Helvetica,18"')
-        self.p('set style line 1 lw 10 lc rgb "red"')
-        self.p('set style line 2 lw 10 lc rgb "blue"')
-        self.p.title('counter')
-        self.p('set xrange [0:90]')
+        self.p('set ytics font ",12"')
+        self.p('set style line 1 linewidth 10')
+        self.p('set style line 2 linewidth 10')
+        self.p.title('usbcounter: Photon Counts from APD')
+        #self.p('set data style lines')
+        self.p('set xrange [0:120]')
 
     def updatePlot(self):
-        self.p('plot "{0}" u 1:2 w l ls 1 , "{0}" u 1:3 w l ls 2'.format(self.tempfp))
+        self.p('plot "{}" u 1:2 w l lw 3 , "{}" u 1:3 w l lw 3'.format(self.tempfp, self.tempfp))
 
     def collectionManager(self):
         if self.c == -1:
             while True:
                 self.ping()
+                time.sleep(self.dt)
         else:
             while self.c > 0:
                 self.ping()
+                time.sleep(self.dt)
             self.initSaveFile()
             self.saveManager()
 
@@ -149,11 +171,11 @@ class Arthur():
                     pass
             else:
                 print("Empty or Incomplete data:", data)
+
+
         if self.togglePlot:
             self.plotManager(data)
-        data = list(map(lambda x: float(x), data))
-        data.pop()
-        print("\r{}:\t{}".format(self.c + 1, data))
+        print("{}:\t{}".format(self.c + 1, data))
 
 main()
 print("== Operation Ended ==\a")
