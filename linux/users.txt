@@ -2,12 +2,12 @@
 
 # Ubuntu
 192.168.2.188	robin		robin
-192.168.2.140	freedommill	mill
+192.168.2.141	freedommill	mill
 
 # Fedora
-192.168.2.199	freedombarn	localhost
+192.168.2.197	freedombarn	localhost
 192.168.2.150	freedommill	localhost
-192.168.2.141	liberty	canada
+192.168.2.142	liberty	canada
 192.168.2.220	liberty	canada (WLAN)
 192.168.2.165	freedomfarm	liberty
 192.168.2.131	freedomfarm	liberty (WLAN)

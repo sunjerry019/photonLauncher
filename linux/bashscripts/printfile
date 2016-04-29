@@ -1,0 +1,4 @@
+#!/bin/bash
+
+#filename copies
+lpr -o media=a4 -o sides=two-sided-long-edge -# $2 $1

@@ -1,30 +1,37 @@
 # photonLauncher
+---------
+ > Look again at that dot. That's here. That's home. That's us. On it everyone you love, everyone you know, everyone you ever heard of, every human being who ever was, lived out their lives.
+ >
+ > Pale Blue Dot, Carl Sagan
 
-pew pew pew
+Pseudo-official Github account for the Photonics Lab at Hwa Chong Institution. ~~The school admin doesn't know that this exists, nor do they have to.~~
 
-*Documentation for individual scripts / experiments can be found in their respective folders.*
+**Documentation for individual scripts / experiments can be found in their respective folders.**
 
 Scripts to extract, process and plot data from various equipment present in our photonics lab. Highly WIP.
 
 Use ```sys.path.insert(0, '../helpers/')``` to access libraries in ```helpers```.
 
+Also has tools for system administration in our Linux network.
+
 ## Equipment list
 
 Finished:
-- Oscilloscope, Lecroy 9384
-- Thorlabs TDC001 Controller Cube
+- Oscilloscope, Lecroy 9384TM (this is ancient)
+- Thorlabs TDC001 Controller Cube (CR1-Z7, MTS25-Z8)
 - Avalanche Photon Detectors (built at NUS)
 
 Still in the pipeline:
 - OceanOptics Spectrometer, USB2000 and USB4000
+- TSP001 Temperature and Humidity sensor
 
 ## Contact Us
 
 Feel free to add an issue or a pull request. Our emails are open.
 
-## Overview of Experiments
+Our official email contact is ```photonics@hci.edu.sg```.
 
-We don't have anything but happy trees here. Just pretend you are a whisper floating across a mountain. Don't be bashful drop me a line. Pretend you're water. Just floating without any effort. Having a good day. I'm going to mix up a little color. We’ll use Van Dyke Brown, Permanent Red, and a little bit of Prussian Blue. All you need to paint is a few tools, a little instruction, and a vision in your mind.
+## Overview of Experiments
 
 Note: naming conventions are still fairly inconsistent, expect them to change.
 
