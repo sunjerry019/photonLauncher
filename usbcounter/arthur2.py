@@ -60,6 +60,7 @@ class Arthur():
 
         if self.togglePlot:
             self.initPlot()
+	self.initSaveFile()
         try:
             self.collectionManager()
         except KeyboardInterrupt:
@@ -72,7 +73,7 @@ class Arthur():
         self.data['timeperbin'] = self.intTime
         self.data['totaltargetcounts'] = self.duration
         if not self.monitor:
-            json.dump(self.data, self.jsonoutput)
+            #json.dump(self.data, self.jsonoutput)
             self.rawoutput.write("# {} \n".format(json.dumps(self.data)))
 
     def initPlot(self):
@@ -95,7 +96,7 @@ class Arthur():
             while self.c > 0:
                 self.ping()
 
-            self.initSaveFile()
+            #self.initSaveFile()
             self.saveManager()
 
     def plotManager(self,data):
@@ -141,15 +142,15 @@ class Arthur():
                     data = [float(x) for x in data]
                     if not self.monitor:
                         self.rawoutput.write('\t'.join(str_data) + '\n')
-                    self.data['counts'].append(_data)
+                    self.data['counts'].append(data)
                 except ValueError:
-                    print("Error:", data)
+                    #print("Error:", data)
                     pass
-            else:
-                print("Empty or Incomplete data:", data)
+            else: pass
+                #print("Empty or Incomplete data:", data)
         if self.togglePlot:
             self.plotManager(data)
-        print("\r{}:\t{}".format(self.c + 1, "\t".join(str_data)))
+       # print("\r{}:\t{}".format(self.c + 1, "\t".join(str_data)))
 
 main()
 print("== Operation Ended ==\a")
