@@ -1,7 +1,7 @@
 ## IP Address	user		hostname
 
 # Ubuntu
-192.168.2.188	robin		robin
+192.168.2.133	robin		robin
 192.168.2.141	freedommill	mill
 
 # Fedora
