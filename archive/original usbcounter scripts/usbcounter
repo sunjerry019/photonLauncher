@@ -1,8 +1,8 @@
 #!/usr/bin/wish
 
 # variable definitions and default values:
-set COUNTPROG "/home/qitlab/programs/getresponse/getresponse"
-set ADDROWS "/home/qitlab/programs/usbcounter/addrows"
+set COUNTPROG "./getresponse"
+set ADDROWS "./addrows"
 
 set nru 0
 set RUNNING 0

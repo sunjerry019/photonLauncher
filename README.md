@@ -1,5 +1,5 @@
 # photonLauncher
-
+---------
  > Look again at that dot. That's here. That's home. That's us. On it everyone you love, everyone you know, everyone you ever heard of, every human being who ever was, lived out their lives.
  >
  > Pale Blue Dot, Carl Sagan
@@ -56,5 +56,3 @@ Only God can make a tree - but you can paint one. We have a fantastic little sky
 Absolutely no pressure. You are just a whisper floating across a mountain. We start with a vision in our heart, and we put it one canvas. Volunteering your time; it pays you and your whole community fantastic dividends. Let's put some happy little bushes on the other side now.
 
 Credit: [Bob Ross Generator](http://www.bobrosslipsum.com/)
-
-
