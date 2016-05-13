@@ -11,7 +11,7 @@ set sd [pwd] ; set sdl $sd ; # saving directory
 set COMMENT ""
 set tipeb 1000.0 ; set TIMEPERBIN $tipeb ; # time per bin in millisec
 set binu 95 ; set BINNUM $binu ; # initial bin number
-set fn michelson ; set FINAME $fn ; # loop filename
+set fn apdcounts ; set FINAME $fn ; # loop filename
 set bt 5000 ; set BUFFERTIME $bt ; # buffer time
 set lono 1 ; set LOOPNUMBER $lono ; # number of loops
 set tmpfile "[pwd]/.emil.dat"
