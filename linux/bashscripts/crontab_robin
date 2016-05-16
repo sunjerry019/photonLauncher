@@ -1,1 +1,1 @@
-@reboot screen nohup reversessh > /home/robin/reversessh.out 2> /home/robin/reversessh.err < /dev/null
+@reboot nohup reversessh > /home/robin/reversessh.out 2> /home/robin/reversessh.err < /dev/null &
