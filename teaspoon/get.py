@@ -17,10 +17,15 @@ class Teaspoon():
         print(self.ping("*IDN?"))
         print(self.ping("*TST?"))
         self.getTemperature()
-
+        print(self.ping("READ?"))
+        print(self.ping("MEAS:TEMP?"))
+        print(self.ping("MEAS:HUM?"))
+        print(self.ping("CONF?"))
     def getTemperature(self):
-        print(self.ping("SENS:TEMP:DATA?"))
+        print(self.ping("SENS1:TEMP1:DATA?"))
+        print(self.ping("SENS:TEMP1:DATA?"))
         print(self.ping("SENS:HUM:DATA?"))
+
 
 def main():
     tea = Teaspoon()
