@@ -9,7 +9,7 @@ Mostly for archival and backup purposes.
 
 Currently, robin is set up to use infocommsociety.com as an intermediary for SSH-ing from the outside world. Use PuTTY for Windows, the terminal for *Nix systems.
 
-```ssh hcphotonics@infocommsociety.com```, with the usual password. Use ```./connect 2222``` and the usual password, to enter the lab network. 
+```ssh hcphotonics@infocommsociety.com```, with the usual password. Use ```./connect 2222``` and the usual password, to enter the lab network.
 
 ### Technical Information
 
@@ -26,6 +26,8 @@ Please remember to do ```sudo systemctl enable sshd``` and ```sudo systemctl sta
 As the server will end the ssh session should it be inactive, ```ServerAliveInterval 100``` has to be appended to ```/etc/ssh/ssh_config``` on robin to keep the connection alive.
 
 Since the school network is temperamental: ```autossh -M 0 -vv -f -N -R 2222:localhost:22 hcphotonics@infocommsociety.com```
+
+Use ```nohup``` to prevent autossh from dying should the parent spawning process (e.g. ```cron```) die.
 
 ## users.txt
 
