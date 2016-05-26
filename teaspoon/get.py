@@ -14,7 +14,9 @@ class Teaspoon():
         self.spoon.ask(x)
 
     def test(self):
+        print("identify")
         print(self.ping("*IDN?"))
+        print("test")
         print(self.ping("*TST?"))
         self.getTemperature()
         print(self.ping("READ?"))
@@ -22,6 +24,7 @@ class Teaspoon():
         print(self.ping("MEAS:HUM?"))
         print(self.ping("CONF?"))
     def getTemperature(self):
+        print("get temperature")
         print(self.ping("SENS1:TEMP1:DATA?"))
         print(self.ping("SENS:TEMP1:DATA?"))
         print(self.ping("SENS:HUM:DATA?"))
