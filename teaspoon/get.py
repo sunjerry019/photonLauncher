@@ -15,6 +15,7 @@ class Teaspoon():
 
     def test(self):
         print(self.ping("*IDN?"))
+        print(self.ping("*TST?"))
         self.getTemperature()
 
     def getTemperature(self):
