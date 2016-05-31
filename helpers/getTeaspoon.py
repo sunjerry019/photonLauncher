@@ -10,11 +10,10 @@ class Teaspoon():
         return a
     def test(self):
         return self.ping("*IDN?")
-    def getTemperature(self):
-        t = []
-        t.append(self.ping("SENS1:TEMP:DATA?"))
-        t.append(self.ping("SENS3:TEMP:DATA?"))
-        return t
+    def getTemperatureOnBoard(self):
+        return (float(self.ping("SENS1:TEMP:DATA?")))
+    def getTemperatureProbe(self):
+        return (float(self.ping("SENS3:TEMP:DATA?")))
     def getHumidity(self):
         return self.ping("SENS2:HUM:DATA?")
 
