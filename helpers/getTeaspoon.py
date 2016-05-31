@@ -9,7 +9,7 @@ class Teaspoon():
             print(a)
         return a
     def test(self):
-        self.ping("*IDN?")
+        return self.ping("*IDN?")
     def getTemperature(self):
         t = []
         t.append(self.ping("SENS1:TEMP:DATA?"))
