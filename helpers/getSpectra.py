@@ -27,7 +27,7 @@ class Icecube():
             for i in xrange(256):
                 x = data[j][2*i:(i+1)*2]
                 _data.append(struct.unpack('<h', x)[0])
-        return _data[0:len(self.wavelengths)]
+        return [(self.wavelengths[i], _data[i]) for i in xrange(len(self.wavelengths))]
 
     def __enter__(self):
         context = usb1.USBContext()
