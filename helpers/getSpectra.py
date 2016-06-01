@@ -23,7 +23,7 @@ class Icecube():
         	data.append(self.icecube.bulkRead(134, 512))
         for _ in xrange(11):
         	data.append(self.icecube.bulkRead(130, 512))
-        print(handle.bulkRead(130, 1))
+        print(self.icecube.bulkRead(130, 1))
 
         for j in xrange(len(data)):
             for i in xrange(256):
