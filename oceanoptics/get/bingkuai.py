@@ -37,13 +37,13 @@ handle.claimInterface(0) #default interface is 0, from lsusb.
 
 #main stuff
 
-print(handle.bulkWrite(1, 1)) #init message
+print(handle.bulkWrite(1, '\x01')) #init message
 
 integrationTime = 100000 # in microseconds
 t_i = struct.pack('<I', integrationTime)
 
 print("get basic info")
-print(handle.bulkWrite(1, '\x05\x00')0 # get id
+print(handle.bulkWrite(1, '\x05\x00')) # get id
 print(handle.bulkRead(129, 512))
 
 print(handle.bulkWrite(1, '\x05\x01')) # get 0th order wavelength coefficient
@@ -58,25 +58,25 @@ print(handle.bulkWrite(1, '\x02' + t_i))
 print("get spectra:")
 data = []
 print(handle.bulkWrite(1, '\x09'))
+
+
 for i in xrange(4):
 	data.append(handle.bulkRead(134, 512))
 for _ in xrange(11):
 	data.append(handle.bulkRead(130, 512))
+print("sync packet:\n")
 print(handle.bulkRead(130, 1))
 
-#print data
 
-#print len(data)
+print(len(data))
+for j in xrange(len(data)):
+	for i in xrange(256):
+		x = data[j][2*i:(i+1)*2]
+#		print len(x)
+#		print x
+		print(struct.unpack('<h', x)[0])
 
-#with open ('.temp', 'wb') as f:
-#	for i in data:
-#		f.write(i)
-
-for i in data:
-	_data = list(i)
-	for j in range(0, len(_data), 2):
-		x = _data[j] + _data[j]
-		print(struct.unpack('<H', x))
+#f = open('.temp', 'w')
 handle.releaseInterface(0)
 handle.close()
 #handle.exit()
