@@ -1,8 +1,9 @@
 import sys
 sys.path.insert(0, '../helpers/')
-#from getTeaspoon import Teaspoon
+from getTeaspoon import Teaspoon
 import argparse
 import time
+from collections import deque
 
 def init():
     parser = argparse.ArgumentParser()
@@ -15,13 +16,23 @@ def init():
 
     main(total,dt)
 def main(total, dt):
+    data =  [0] * 90
+
     teaspoon = Teaspoon()
-    print(teaspoon.test() == "0")
-    print len(teaspoon.test())
-    f = open("test", "w")
+
     for i in range(total/dt):
-         x = (teaspoon.getTemperature())
-         f.write("".format(x[0], x[1], teaspoon.getHumidity()))
+        f = open("test","w")
+		x0 = teaspoon.getTemperatureOnboard()
+		x1 = teaspoon.getTemperatureProbe()
+		
+		data.append(x1)
+    	data.pop(0)
+        #print(x)
+        #print(data)
+        for i in data:
+        	f.write("{}\n".format(i))
+        	
+        f.close()
         time.sleep(dt)
 
 
