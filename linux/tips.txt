@@ -1,0 +1,10 @@
+
+## To find the size of a folder ##
+The command du "summarizes disk usage of each FILE, recursively for directories," e.g.,
+
+du -hs /path/to/directory
+
+    -h is to get the numbers "human readable", e.g. get 140M instead of 143260 (size in KBytes)
+    -s is for summary (otherwise you'll get not only the size of the folder but also for everything in the folder separately)
+
+
