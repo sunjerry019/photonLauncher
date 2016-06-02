@@ -17,13 +17,12 @@ def init():
     main(total,dt)
 def main(total, dt):
     data =  [0] * 90
-    #print(data)
+
     teaspoon = Teaspoon()
-    #print(teaspoon.test() == "0")
-    #print len(teaspoon.test())
-#    f = open("test", "w")
+
     for i in range(total/dt):
         f = open("test","w")
+
         x = (teaspoon.getTemperature())
 
         x[0] = float(x[0])
@@ -32,11 +31,12 @@ def main(total, dt):
 	data.append(x[1])
         data.pop(0)
         print("\r \n Onboard temperature: {} \n External probe temperature: {} \n Onboard humidity: {}".format(x[0], x[1], float(teaspoon.getHumidity())))
+
         #print(data)
         for i in data:
-            f.write("{}\n".format(i))
+        	f.write("{}\n".format(i))
+        	
         f.close()
-        #f.write("{}\n".format(x[0], x[1], float(teaspoon.getHumidity())))
         time.sleep(dt)
 
 
