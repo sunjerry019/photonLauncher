@@ -31,7 +31,7 @@ def main(total, dt):
 
 	data.append(x[1])
         data.pop(0)
-        #print(x)
+        print("\r \n Onboard temperature: {} \n External probe temperature: {} \n Onboard humidity: {}".format(x[0], x[1], float(teaspoon.getHumidity())))
         #print(data)
         for i in data:
             f.write("{}\n".format(i))
