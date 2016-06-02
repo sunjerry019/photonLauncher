@@ -69,7 +69,7 @@ for i in xrange(4):
 for _ in xrange(11):
 	data.append(handle.bulkRead(130, 512))
 print("sync packet:\n")
-print(handle.bulkRead(130, 1))
+print(handle.bulkRead(130, 100))
 
 _data = []
 print(len(data))
@@ -77,11 +77,11 @@ for j in xrange(len(data)):
 	for i in xrange(256):
 		x = data[j][2*i:(i+1)*2]
 #		print len(x)
-#		print x
+		print x
 		_data.append(struct.unpack('<h', x)[0])
 
-for i in xrange(len(wavelengths)):
-	print("{}: {}\n".format(wavelengths[i], _data[i]))
+#for i in xrange(len(wavelengths)):
+#	print("{}: {}\n".format(wavelengths[i], _data[i]))
 
 print(len(_data))
 
