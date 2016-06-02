@@ -1,6 +1,7 @@
+
 set xrange [400:1000]
 
-#set yrange [0:600000]
+set yrange [0:600000]
 set xlabel 'Wavelength/nm'
 set ylabel 'Arbitrary Intensity /unit'
 pause 0.5

@@ -25,14 +25,14 @@ Controls Thorlabs Motorised Stages with TDC001 Controller Cube via RS-232 serial
 Usage of ```mjolnir``` assumes knowledge that an encoder count for the rotational motor (we use the [Thorlabs CR1-Z7](https://www.thorlabs.com/thorproduct.cfm?partnumber=CR1-Z7) is about 2.16 arcseconds per encoder count, and that the input should be adjusted accordingly. Likewise, the encoder count for our linear motor is 34304 encoder counts per millimetre.
 
 Input to ```moveRotMotor``` is in encoder counts, which is a real integer. 
-Input to ```moveLinMotor``` is in milimetres. We acknowledge this inconsistency. 
+Input to ```moveLinMotor``` is in milimetres. We acknowledge this inconsistency.  (not sure about this actually, go check.) 
 
-Example Usage:
-```python
+##spectrosco.py
 
+Parses data files from the Spectrasuite software. These datafiles are assumed to be together in a folder. This outputs the mean and standard deviation for each wavelength in an ASCII file that gnuplot can read.
+
+Usage:
 
 ```
-
-##rpiDBUploader
-
-##getCounts
+python spectrosco.py DATAFOLDER -r -o ASCIIOUTPUTPATH -b BASEFILENAME
+```
