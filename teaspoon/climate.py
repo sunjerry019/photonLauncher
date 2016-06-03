@@ -9,34 +9,41 @@ def init():
     parser = argparse.ArgumentParser()
     parser.add_argument("d", metavar = "duration", type = int, help = "Duration of acquisition and measurement in seconds. Set to -1 for infinite loop.")
     parser.add_argument("t", metavar = "time interval", type = int, help = "Time interval between each acquisition in seconds.")
-    parser.add_argument("--r", metavar = "log data", type = bool, default = False, help = "Set to true to log data.")
+    parser.add_argument("-r",  default = False, action = "store_true", help = "Flag to log data.")
     args = parser.parse_args()
     total = args.d
     dt = args.t
-
-    main(total,dt)
-def main(total, dt):
+    log = args.r
+    main(total,dt, log)
+def main(total, dt,log):
+    if log:
+        g = open("{}".format(time.strftime("%Y%m%d_%M%S")), "w")
     data =  [0] * 90
 
     teaspoon = Teaspoon()
 
     for i in range(total/dt):
-        f = open("test","w")
+#        f = open("test","w")
 
-        x = (teaspoon.getTemperature())
+#        x = (teaspoon.getTemperature())
+#        h = float(teaspoon.getHumidity())
 
-        x[0] = float(x[0])
-        x[1] = float(x[1])
+        x0 = teaspoon.getTemperatureOnboard()
+        x1 = teaspoon.getTemperatureProbe()
+        h = teaspoon.getHumidity()
 
-	data.append(x[1])
+	data.append(x1)
         data.pop(0)
-        print("\r \n Onboard temperature: {} \n External probe temperature: {} \n Onboard humidity: {}".format(x[0], x[1], float(teaspoon.getHumidity())))
+        print("\r \n Onboard temperature: {} \n External probe temperature: {} \n Onboard humidity: {}".format(x0, x1, h))
 
         #print(data)
+        f = open("test", "w")
         for i in data:
         	f.write("{}\n".format(i))
         	
         f.close()
+        if log:
+            g.write("{}\t{}\t{}\n".format(x0, x1, h))
         time.sleep(dt)
 
 
