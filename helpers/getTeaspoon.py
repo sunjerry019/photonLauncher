@@ -10,12 +10,12 @@ class Teaspoon():
         return a
     def test(self):
         return self.ping("*IDN?")
-    def getTemperatureOnBoard(self):
+    def getTemperatureOnboard(self):
         return (float(self.ping("SENS1:TEMP:DATA?")))
     def getTemperatureProbe(self):
         return (float(self.ping("SENS3:TEMP:DATA?")))
     def getHumidity(self):
-        return self.ping("SENS2:HUM:DATA?")
+        return float(self.ping("SENS2:HUM:DATA?"))
 
 if __name__ == '__main__':
     print("Hello, it's me. ")
