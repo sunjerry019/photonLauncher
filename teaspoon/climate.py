@@ -17,7 +17,7 @@ def init():
     main(total,dt, log)
 def main(total, dt,log):
     if log:
-        g = open("{}".format(time.strftime("%Y%m%d_%M%S")), "w")
+        g = open("/mnt/photonics/climate/{}".format(time.strftime("%Y%m%d_%M%S")), "w")
     data =  [0] * 90
 
     teaspoon = Teaspoon()
@@ -40,7 +40,7 @@ def main(total, dt,log):
         f = open("test", "w")
         for i in data:
         	f.write("{}\n".format(i))
-        	
+
         f.close()
         if log:
             g.write("{}\t{}\t{}\n".format(x0, x1, h))
