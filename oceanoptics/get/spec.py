@@ -15,6 +15,7 @@ class specterm(cmd.Cmd):
 
     def specplot(self):
         while True:
+            print "\r{}".format(time.strftime("%D"))
             self.spec = self.cube.getSpectra()
             with open('.temp', 'w') as f:
                 for i in self.spec:
@@ -23,7 +24,7 @@ class specterm(cmd.Cmd):
 
     def do_EOF(self, line):
         print("\n Exiting specterm prompt.")
-        self.cube.__exit__()
+        self.cube.close()
 
         return True
 if __name__ == "__main__":
