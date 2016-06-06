@@ -2,6 +2,15 @@
 
 This is a library for interacting with the Lecroy Oscilloscope via RS323 <--> USB Serial.
 
+## Exporting stuff from the scope
+
+Check that the RS232 cable is connected. Run ```python export.py``` with the relevant arguments.
+
+Example: saving the waveform on channel 2 to ```~/FILEPATH``` 
+```
+python export.py ~/FILEPATH w 2
+```
+
 ## Initialisation
 ```python
 import lecroy
