@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, "../..helpers")
+sys.path.insert(0, "../../helpers")
 from getSpectra import Icecube
 import cmd
 import time
