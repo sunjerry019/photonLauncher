@@ -43,6 +43,10 @@ class Icecube():
         print(self.icecube.bulkWrite(1, '\x01')) # init message
         return self
 
+    def close(self):
+        self.icecube.releaseInterface(0)
+        self.icecube.close()
+
     def __exit__(self, type, value, traceback):
         self.icecube.releaseInterface(0)
         self.icecube.close()
