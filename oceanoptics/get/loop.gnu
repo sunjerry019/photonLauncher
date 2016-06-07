@@ -7,8 +7,8 @@ if( file_notempty(".temp") ) {
     set ylabel 'Arbitrary Intensity /unit'
     pause 0.5
     replot
-    reread
 } else {
     pause 0.5
-    reread
 }
+
+reread
