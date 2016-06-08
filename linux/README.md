@@ -34,10 +34,12 @@ Use ```nohup``` to prevent autossh from dying should the parent spawning process
 Use ```screen``` to prevent processes from ending prematurely should the ssh tunnel die. This is important especially when running updates.
 
 Usage of ```screen``` is as such: <br>
-```screen -S "[screen name]"```         Start a screen with *[screen name]* <br>
-```screen -ls```                        List all screens <br>
-```screen -r [name]```                  Attach to *[name]* screen
-```screen -dRR```                       Reattach  a  session  and if necessary detach or create it. Use the first session if more than one session is available.
+```
+screen -S "[screen name]"         Start a screen with *[screen name]*
+screen -ls                        List all screens
+screen -r [name]                  Attach to *[name]* screen
+screen -dRR                       Reattach  a  session  and if necessary detach or create it. Use the first session if more than one session is available.
+```
 
 For more, read ```man screen```
 
