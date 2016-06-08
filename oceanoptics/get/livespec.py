@@ -19,7 +19,7 @@ def gen():
             except KeyboardInterrupt:
                 print " --- EXITING ---"
                 cube.__exit__()
-                with open("{}.dat".format(time.strftime("%M%S")) as g:
+                with open("{}.dat".format(time.strftime("%M%S"))) as g:
                     for _ in spec:
                         g.write("{}\t{}\n".format(_[0], _[1]))
 def plot():
