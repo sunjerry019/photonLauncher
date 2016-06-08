@@ -38,7 +38,8 @@ Usage of ```screen``` is as such: <br>
 screen -S "[screen name]"         Start a screen with *[screen name]*
 screen -ls                        List all screens
 screen -r [name]                  Attach to *[name]* screen
-screen -dRR                       Reattach  a  session  and if necessary detach or create it. Use the first session if more than one session is available.
+screen -dRR                       Reattach  a  session  and if necessary detach or create it.
+                                  Use the first session if more than one session is available.
 ```
 
 For more, read ```man screen```
