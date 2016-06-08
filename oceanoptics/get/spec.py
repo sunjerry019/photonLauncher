@@ -22,6 +22,11 @@ class specterm(cmd.Cmd):
                     f.write("{}\t{}\n".format(i[0], i[1]))
             time.sleep(1)
 
+    def do_capture(self,fp="/mnt/photonics/spectra/".format("%Y%m%d_%H%M"), n = 1):
+        self.spec = self.cube.getSpectra()
+        with open(fp):
+
+
     def do_EOF(self, line):
         print("\n Exiting specterm prompt.")
         self.cube.close()
