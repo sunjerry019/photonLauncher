@@ -4,7 +4,7 @@
 192.168.2.133	robin		robin
 192.168.2.205	freedommill	mill
 192.168.2.169   quanta      roadrunner
-192.168.2.208   finch       photonics
+192.168.2.210   finch       photonics
 
 # Fedora
 192.168.2.197	freedombarn	localhost
