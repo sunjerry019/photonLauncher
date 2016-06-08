@@ -8,10 +8,12 @@ with Icecube() as cube:
     cube.setIntegrationTime(10)
     while True:
         try:
+            st = time.time()
             spec = cube.getSpectra()
             with open('.temp', 'w') as f:
                 for i in spec:
                     f.write("{}\t{}\n".format(i[0], i[1]))
+            print time.time() - st
             time.sleep(1)
         except KeyboardInterrupt:
             print "Saving..."
