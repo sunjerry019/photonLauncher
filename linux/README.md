@@ -29,9 +29,9 @@ As the server will end the ssh session should it be inactive, ```ServerAliveInte
 
 Since the school network is temperamental: ```autossh -M 0 -vv -f -N -R 2222:localhost:22 hcphotonics@infocommsociety.com```
 
-### In the SSH Session
+Use ```nohup``` to prevent autossh from dying should the parent spawning process (e.g. ```cron```) die (when for e.g. it is being updated).
 
-Use ```nohup``` to prevent autossh from dying should the parent spawning process (e.g. ```cron```) die.
+### In the SSH Session
 
 Use ```screen``` to prevent processes from ending prematurely should the ssh tunnel die. This is important especially when running updates.
 
