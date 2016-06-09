@@ -52,7 +52,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('bn', type = str, help = "Path to base file")
     parser.add_argument('sn', type = str, help = "Path to of sample file")
-    parser.add_argument('normalised_type', type = str, help = "Normalise by division or subtraction. 'div' and 'sub' respectively")
+    parser.add_argument('ntype', type = str, help = "Normalise by division or subtraction. 'div' and 'sub' respectively")
     parser.add_argument('-d', '--dataformat', type = str, help = "Defaults to raw, choose json to process.json files", default = "raw")
     parser.add_argument('-r', '--rawfile', action = 'store_true', help = "True to output raw, plottable ascii file", default = None)
     args = parser.parse_args()
