@@ -1,14 +1,13 @@
-file_notempty(file) = system("[ -s '".file."' ] && echo '1' || echo '0'") + 0
+set origin 0.05,0.05
+set tics font ",18"
+set xtics 100
+set size 0.9,0.9
 
-if( file_notempty(".temp") ) {
-    set xrange [400:1000]
-    #set yrange [0:600000]
-    set xlabel 'Wavelength/nm'
-    set ylabel 'Arbitrary Intensity /unit'
-    pause 0.5
-    replot
-} else {
-    pause 0.5
-}
+set xrange [400:1000]
 
+set xlabel 'Wavelength/nm'
+set ylabel 'Arbitrary Intensity /unit'
+
+plot ".temp" u 1:2 w ps 0.2 pt 7 lc rgb '#212121' notitle
+pause 1
 reread
