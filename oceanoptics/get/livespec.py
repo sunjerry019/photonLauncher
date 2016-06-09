@@ -4,30 +4,53 @@ from getSpectra import Icecube
 from time import sleep
 from threading import Thread
 import subprocess
+import argparse
+import os
 
+def main(n, plot):
+    def gen(n):
+        with Icecube() as cube:
+            cube.setIntegrationTime(10)
+            foldername = time.strftime("%Y%m%d_%M%S")
+            while True:
+                try:
+                    spec = cube.getSpectra()
+                    with open('.temp', 'w') as f:
+                        for i in spec:
+                            f.write("{}\t{}\n".format(i[0], i[1]))
 
-def gen():
-    with Icecube() as cube:
-        cube.setIntegrationTime(10)
-        while True:
-            try:
-                spec = cube.getSpectra()
-                with open('.temp', 'w') as f:
-                    for i in spec:
-                        f.write("{}\t{}\n".format(i[0], i[1]))
-                sleep(1)
-            except KeyboardInterrupt:
-                print " --- EXITING ---"
-                cube.__exit__()
-                with open("{}.dat".format(time.strftime("%M%S"))) as g:
-                    for _ in spec:
-                        g.write("{}\t{}\n".format(_[0], _[1]))
-def plot():
-    subprocess.call(["gnuplot", "loop.gnu"])
+                    sleep(1)
+                    n -= 1
 
-t = Thread(target=gen)
-u = Thread(target=plot)
+                    if n == 0:
+                        break
+                    else if n > 0:
+                        with open(os.path.join(foldername, n ), 'w') as f:
+                            for i in spec:
+                                f.write("{}\t{}\n".format(i[0], i[1]))
+                                
+                except KeyboardInterrupt:
+                    print " --- EXITING ---"
+                    cube.__exit__()
+                    with open("{}.dat".format(time.strftime("%M%S"))) as g:
+                        for _ in spec:
+                            g.write("{}\t{}\n".format(_[0], _[1]))
+    def plot():
+        subprocess.call(["gnuplot", "loop.gnu"])
 
-t.start()
-sleep(0.1)
-u.start()
+    t = Thread(target=gen, args=(n))
+    u = Thread(target=plot)
+
+    t.start()
+    sleep(0.1)
+    if plot:
+        u.start()
+
+def init():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('n', type = int, help = "no. of readings to take. -1 for infinite")
+    parser.add_argument('-p','--plot', action = 'store_true', help = "flag to enable plotting")
+    args = parser.parse_args()
+
+    main(args.n, args.p)
+init()
