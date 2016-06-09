@@ -24,7 +24,7 @@ class norm():
                 fp = output
             else:
                 fp = "./normspectra{}".format(time.strftime("%Y%m%d_%H%M"))
-            with open(fp) as f:
+            with open(fp, "w") as f:
                 for i in result:
                     f.write("{}\t{}\t{}\n".format(i[0], i[1], i[2]))
         else:
