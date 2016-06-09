@@ -55,4 +55,4 @@ if __name__ == '__main__':
     parser.add_argument('-r', '--rawfile', action = 'store_true', help = "True to output raw, plottable ascii file", default = None)
     args = parser.parse_args()
 
-    n = norm(args.bn, args.sn, args.ntype, data_format = args.dataformat, raw = args.rawfile,)
+    n = norm(args.bn, args.sn, args.ntype, raw = args.rawfile,)
