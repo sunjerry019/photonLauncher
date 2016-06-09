@@ -7,7 +7,7 @@ import numpy as np
 import math
 
 class norm():
-    def __init__(self, basefile, samplefile, ntype, raw = True, outpath = ''):
+    def __init__(self, basefile, samplefile, ntype, raw = True, output = ''):
         base = []
         sample = []
         result = []
