@@ -16,9 +16,9 @@ class norm():
 
         for i in xrange(len(base)):
             if ntype == 'div':
-                result.append([base[i][0], (sample[i][1] / base[i][1]), getDivErrorOf([base[i][1], base[i][2]],[sample[i][1], sample[i][2]])])
+                result.append([base[i][0], (sample[i][1] / base[i][1]), self.getDivErrorOf([base[i][1], base[i][2]],[sample[i][1], sample[i][2]])])
             elif ntype == 'sub':
-                result.append([base[i][0], (sample[i][1] - base[i][1]), getSubErrorOf([base[i][1], base[i][2]],[sample[i][1], sample[i][2]])])
+                result.append([base[i][0], (sample[i][1] - base[i][1]), self.getSubErrorOf([base[i][1], base[i][2]],[sample[i][1], sample[i][2]])])
         if raw:
             with open(join(dirname(samplefile), "norm{}_{}".format(basename(sample), basename(basefile)))) as f:
                 for i in result:
