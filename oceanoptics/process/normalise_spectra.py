@@ -20,8 +20,8 @@ class norm():
             elif ntype == 'sub':
                 result.append([base[i][0], (sample[i][1] - base[i][1]), self.getSubErrorOf([base[i][1], base[i][2]],[sample[i][1], sample[i][2]])])
         if raw:
-            if not outpath == "":
-                fp = outpath
+            if not output == "":
+                fp = output
             else:
                 fp = "./normspectra{}".format(time.strftime("%Y%m%d_%H%M"))
             with open(fp) as f:
