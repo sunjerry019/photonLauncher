@@ -44,6 +44,8 @@ screen -dRR                       Reattach  a  session  and if necessary detach 
                                   Use the first session if more than one session is available.
 ```
 
+While in the screen, to detach it, press ```Ctrl + A D```, which means you hold down ```Ctrl``` and press ```A```, release, and then ```D```.
+
 For more, read ```man screen```
 
 ## users.txt
