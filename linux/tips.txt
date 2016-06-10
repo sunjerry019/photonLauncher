@@ -1,10 +1,20 @@
 
 ## To find the size of a folder ##
-The command du "summarizes disk usage of each FILE, recursively for directories," e.g.,
 
-du -hs /path/to/directory
+    The command du "summarizes disk usage of each FILE, recursively for directories," e.g.,
 
-    -h is to get the numbers "human readable", e.g. get 140M instead of 143260 (size in KBytes)
-    -s is for summary (otherwise you'll get not only the size of the folder but also for everything in the folder separately)
+    du -hs /path/to/directory
+
+        -h is to get the numbers "human readable", e.g. get 140M instead of 143260 (size in KBytes)
+        -s is for summary (otherwise you'll get not only the size of the folder but also for everything in the folder separately)
 
 
+## To forward X ##
+
+    http://askubuntu.com/questions/11307/reverse-x11-forwarding#27235
+
+    ssh -X hcphotonics@infocommsociety.com
+    ssh -X -p 4443 freedommill@localhost
+
+    on freedommill
+    autossh -M 0 -vv -f -N -X -R 4443:localhost:22 hcphotonics@infocommsociety.com
