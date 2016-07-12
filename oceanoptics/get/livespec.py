@@ -11,7 +11,9 @@ def main(n, plot):
     def gen(n):
         with Icecube() as cube:
             cube.setIntegrationTime(10)
-            foldername = time.strftime("%Y%m%d_%M%S")
+            foldername = time.strftime("%Y%m%d_%H%M)"
+            os.mkdir(foldername)
+            data = {}
             while True:
                 try:
                     spec = cube.getSpectra()
@@ -20,15 +22,21 @@ def main(n, plot):
                             f.write("{}\t{}\n".format(i[0], i[1]))
 
                     sleep(1)
-                    n -= 1
-
+            
                     if n == 0:
+                        g = open(os.path.join(foldername, n), 'w')
+                        for i in data:
+                            g.write("{}\t{}\n".format())
+                            
                         break
                     else if n > 0:
-                        with open(os.path.join(foldername, n ), 'w') as f:
-                            for i in spec:
-                                f.write("{}\t{}\n".format(i[0], i[1]))
-                                
+                        for i in spec:
+                            if data[i[0]] == None:
+                                data[i[0]] = [i[1]]
+                            else:
+                                data[i[0]].append([i[1]])
+                        
+                    n -= 1    
                 except KeyboardInterrupt:
                     print " --- EXITING ---"
                     cube.__exit__()
