@@ -6,7 +6,6 @@ light = serial.Serial(port = '/dev/ttyACM0',baudrate = 19200,parity = 'N',stopbi
 ##light.open()
 
 log = True
-
 c = 10e5
 if log:
     f = open("photometer_{}".format(time.strftime("%Y%m%d_%H%M")), 'w')
