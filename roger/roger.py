@@ -15,7 +15,7 @@ while True:
     try:
         x = light.readline()
         x = x.strip()
-        x = float(x)/256
+        x = float(x)
         sys.stdout.flush()        
         sys.stdout.write("\r{}".format(x))
         if log:
