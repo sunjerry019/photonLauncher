@@ -50,3 +50,7 @@ class Icecube():
     def __exit__(self, type, value, traceback):
         self.icecube.releaseInterface(0)
         self.icecube.close()
+if __name__ == '__main__':
+    a = Icecube()
+    print a.getSpectra()
+    a.close()

@@ -8,6 +8,7 @@ set xrange [400:1000]
 set xlabel 'Wavelength/nm'
 set ylabel 'Arbitrary Intensity /unit'
 
-plot ".temp" u 1:2 w p ps 0.2 pt 7 lc rgb '#212121' notitle
-pause 1
+#plot ".temp" u 1:2 w p ps 0.2 pt 7 lc rgb '#212121' notitle
+plot ".temp" u 1:2 w l lc rgb '#212121' notitle
+pause 1.03
 reread

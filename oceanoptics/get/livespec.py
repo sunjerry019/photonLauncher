@@ -14,7 +14,8 @@ def main(n, plot):
 
         cube.setIntegrationTime(10)
         foldername = time.strftime("%Y%m%d_%H%M")
-        os.mkdir(foldername)
+        if not n == -1:
+            os.mkdir(foldername)
         while True:
             try:
 		print n

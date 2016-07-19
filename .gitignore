@@ -60,6 +60,7 @@ target/
 rawdata/
 data/
 parseddata/
+data_*
 
 # getresponse
 getresponse
