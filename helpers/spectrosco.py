@@ -26,6 +26,9 @@ class spec():
 
         #print self.f
         self.output = output
+        if output == None:
+            self.output = os.path.join(foldername, "processed")
+        print self.output
         self.raw = raw
         self.data = {}
     def traverse(self, i):
