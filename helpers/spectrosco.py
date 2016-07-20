@@ -13,12 +13,12 @@ class spec():
         self.fn = foldername
         self.base = basefilename
         self.files = [f for f in listdir(foldername) if isfile(join(foldername, f))]
-
+        print self.files
         # The SpectraSuite application dumps separate readings at certain time intervals in separate files
         # There's an option for a BASEFILENAME which helps to identify which measurement it is
         # The filenames look like "BASEFILENAMEXXX" where XXX refers to the index of the sample.
 
-        if basefilename == "":
+        if basefilename == None:
             print("No base filename indicated, will use all files in directory {}".format(foldername))
         else:
             print("Base filename of {}.".format(basefilename))
@@ -56,10 +56,7 @@ class spec():
 
         mdata = {"raw": self.data, "std": std, "mean": m}
         if self.raw:
-            if self.base == None:
-                rawpath = join(self.fn, "raw")
-            else:
-                rawpath = self.output
+            rawpath = self.output
             with open(rawpath, 'w') as f:
                 f.write("#x\ty\tyerror\n")
                 print self.data
