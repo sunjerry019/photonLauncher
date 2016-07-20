@@ -9,7 +9,7 @@ import numpy as np
 
 class spec():
     """Initialises the class with options."""
-    def __init__(self, foldername, output = None, basefilename = None, raw = None):
+    def __init__(self, foldername, output = None, basefilename = None, raw = None, ):
         self.fn = foldername
         self.base = basefilename
         self.files = [f for f in listdir(foldername) if isfile(join(foldername, f))]
@@ -31,11 +31,9 @@ class spec():
     def traverse(self, i):
         """ Read through data file (files inside directory FOLDERNAME with a BASEFILENAME) """
         with open(join(self.fn, i), 'rb') as f:
-            start_read = False
+
             for line in f:
-                if start_read and line[:2] == ">>":
-                    start_read = False
-                if start_read:
+                    if start_read:
                     try:
                         x = line.rstrip().split("\t")
                         #print x
@@ -46,9 +44,9 @@ class spec():
                             self.data[x[0]].append(x[1])
                     except:
                         print("Error parsing {}, {}".format(i, line))
-                if line[:2] == ">>":
-                    start_read = True
+
     def parse(self):
+        """ Wrapper around traverse() and processes the files with statistics (mean and std)"""
         for i in self.files:
             self.traverse(i) ; sys.stdout.write("\rNow processing {}".format(i))
         std = {}
@@ -80,7 +78,8 @@ if __name__ == '__main__':
     parser.add_argument('-b', '--basename', type = str, help = "Base file name", default = None)
     parser.add_argument('-o', '--outputpath', type = str, help = "File path of ascii output.", default = None)
     parser.add_argument('-r', '--rawfile', action = 'store_true', help = "Use this flag to output raw, plottable ascii file", default = None)
-    #parser.add_argument('-bg', '--backgroundfile', type = str, help = "Background readings to normalise the data", default = None)
+    #parser.add_argument('-t', '--type', type = str, help = "Set to home to not look for the >> that oceanoptics files have. Defaults to home.", default = "home")
+    # parser.add_argument('-bg', '--backgroundfile', type = str, help = "Background readings to normalise the data", default = "home"")
     args = parser.parse_args()
 
     a = spec(args.fn, output = args.outputpath, raw = args.rawfile, basefilename = args.basename)
