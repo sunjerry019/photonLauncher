@@ -5,9 +5,8 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("n", type = int, help = "No. of readings to take")
-parser.add_argument("-f", "--log", action = store_true, help = "Use this flag to enable logging to a file.")
+parser.add_argument("-f", "--log", action = 'store_true', help = "Use this flag to enable logging to a file.")
 args = parser.parse_args()
-
 
 
 light = serial.Serial(port = '/dev/ttyACM0',baudrate = 19200,parity = 'N',stopbits = 1,bytesize = 8)
