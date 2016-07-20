@@ -33,17 +33,17 @@ class spec():
         with open(join(self.fn, i), 'rb') as f:
 
             for line in f:
-                    if start_read:
-                    try:
-                        x = line.rstrip().split("\t")
-                        #print x
-                        x = [float(i) for i in x]
-                        if x[0] not in self.data.keys():
-                            self.data[x[0]] = [x[1]]
-                        else:
-                            self.data[x[0]].append(x[1])
-                    except:
-                        print("Error parsing {}, {}".format(i, line))
+                if start_read:
+                try:
+                    x = line.rstrip().split("\t")
+                    #print x
+                    x = [float(i) for i in x]
+                    if x[0] not in self.data.keys():
+                        self.data[x[0]] = [x[1]]
+                    else:
+                        self.data[x[0]].append(x[1])
+                except:
+                    print("Error parsing {}, {}".format(i, line))
 
     def parse(self):
         """ Wrapper around traverse() and processes the files with statistics (mean and std)"""
