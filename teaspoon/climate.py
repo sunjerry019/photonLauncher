@@ -21,8 +21,8 @@ def main(total, dt,log):
     data =  [0] * 90
 
     teaspoon = Teaspoon()
-
-    for i in range(total/dt):
+    i = total/dt
+    while not i == 0:
 #        f = open("test","w")
 
 #        x = (teaspoon.getTemperature())
@@ -31,8 +31,7 @@ def main(total, dt,log):
         x0 = teaspoon.getTemperatureOnboard()
         x1 = teaspoon.getTemperatureProbe()
         h = teaspoon.getHumidity()
-
-	data.append(x1)
+        data.append(x1)
         data.pop(0)
         print("\r \n Onboard temperature: {} \n External probe temperature: {} \n Onboard humidity: {}".format(x0, x1, h))
 
@@ -45,6 +44,7 @@ def main(total, dt,log):
         if log:
             g.write("{}\t{}\t{}\n".format(x0, x1, h))
         time.sleep(dt)
+        i -= 1
 
 
 init()
