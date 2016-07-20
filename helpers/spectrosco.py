@@ -31,9 +31,7 @@ class spec():
     def traverse(self, i):
         """ Read through data file (files inside directory FOLDERNAME with a BASEFILENAME) """
         with open(join(self.fn, i), 'rb') as f:
-
             for line in f:
-                if start_read:
                 try:
                     x = line.rstrip().split("\t")
                     #print x
