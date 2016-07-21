@@ -22,6 +22,7 @@ def main(total, dt,log):
 
     teaspoon = Teaspoon()
     i = total/dt
+    print("Time\tOnboard Temp./C \t Ext Temp./C \t Onboard humidity\n")
     while not i == 0:
 #        f = open("test","w")
 
@@ -33,7 +34,7 @@ def main(total, dt,log):
         h = teaspoon.getHumidity()
         data.append(x1)
         data.pop(0)
-        sys.stdout.write("\r {} \n Onboard temperature: {} \n External probe temperature: {} \n Onboard humidity: {}".format(time.strftime("%m_%d_%H%M%S"), x0, x1, h))
+        sys.stdout.write("\r {}\t\t{}\t{}\t{}".format(time.strftime("%m_%d_%H%M%S"), x0, x1, h))
         #print("\r \n Onboard temperature: {} \n External probe temperature: {} \n Onboard humidity: {}".format(x0, x1, h))
 
         #print(data)
