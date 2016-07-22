@@ -3,4 +3,5 @@
 for filename in /home/robin/Dropbox/printq/*.pdf; do 
   echo "$filename"
   lpr -o media=a4 -o sides=two-sided-long-edge "$filename"
+  mv "$filename" archive
   
