@@ -5,6 +5,10 @@ This includes scripts, motd, etc.
 
 Mostly for archival and backup purposes.
 
+## specstemplate
+
+Template for specficiations sheets which may be standardised in the lab for all available equipment. 
+
 ## Reverse SSH
 
 Currently, robin is set up to use infocommsociety.com as an intermediary for SSH-ing from the outside world. Use PuTTY for Windows, the terminal for *Nix systems.
