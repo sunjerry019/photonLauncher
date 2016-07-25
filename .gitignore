@@ -69,5 +69,5 @@ getresponse
 .temp
 
 *.aux
-*specs/*/*.pdf
+*specs/*/assets/*.pdf
 *.out
