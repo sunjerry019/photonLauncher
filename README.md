@@ -12,11 +12,7 @@ Some documentation may be unavailable, and we apologise for the inconvenience. C
 
 Use ```sys.path.insert(0, '../helpers/')``` to access libraries in ```helpers```.
 
-Also has tools for system administration in our Linux network.
-
-## Equipment list
-
-Finished:
+## Supported equipment
 
 Location | Equipment name
 --- | ---
@@ -32,6 +28,6 @@ Location | Equipment name
 
 Feel free to add an issue or a pull request. Our emails are open.
 
-Our official email contact is ```photonics@hci.edu.sg```. Alternatively, drop us an email at ```hwachong.photnoics@gmail.com```
+Our official email contact is ```photonics@hci.edu.sg```. Alternatively, drop us an email at ```hwachong.photonics@gmail.com```
 
 Note: naming conventions are still fairly inconsistent, expect them to change.
