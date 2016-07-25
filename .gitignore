@@ -67,3 +67,6 @@ getresponse
 
 # tempfiles
 .temp
+
+*.aux
+*specs/*.pdf
