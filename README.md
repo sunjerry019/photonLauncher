@@ -4,7 +4,7 @@
  >
  > Pale Blue Dot, Carl Sagan
 
-Pseudo-official Github account for the Photonics Lab at Hwa Chong Institution. ~~The school admin doesn't know that this exists, nor do they have to.~~
+Github repo for the Photonics Lab at Hwa Chong Institution. ~~The school admin doesn't know that this exists, nor do they have to.~~
 
 **Documentation for individual scripts / experiments can be found in their respective folders.**
 
@@ -17,13 +17,17 @@ Also has tools for system administration in our Linux network.
 ## Equipment list
 
 Finished:
-- Oscilloscope, Lecroy 9384TM (this is ancient)
-- Thorlabs TDC001 Controller Cube (CR1-Z7, MTS25-Z8)
-- Avalanche Photon Detectors (built at NUS)
+Location | Equipment name
+--- | ---
+```helpers/lecroy.py``` | Oscilloscope, Lecroy 9384TM (this is ancient)
+```helpers/mjolnir.py```| Thorlabs TDC01 Controller Cube (CR1-Z7, MTS50-Z8)
+```usbcounter/arthur2.py```| Avalanche Photon Detectors (built at NUS)
+```oceanoptics/get/icecube.py```| OceanOptics Spectrometer, USB2000 and USB4000 (problems with liveplotting)
+```teaspoon/climate.py```| Thorlabs TSP01 Temperature and Humidity sensor
+```roger/roger.py```| Photometer with Arduino as a voltage sensor
 
-Still in the pipeline:
-- OceanOptics Spectrometer, USB2000 and USB4000
-- TSP001 Temperature and Humidity sensor
+Possible pipeline:
+
 
 ## Contact Us
 
