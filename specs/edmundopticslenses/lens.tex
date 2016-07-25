@@ -3,6 +3,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage{geometry}
+\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
+
  \geometry{
  a4paper,
  left=20mm,
@@ -11,7 +13,7 @@
 
 \DeclareGraphicsExtensions{.png,.pdf}
 
-\title{\vspace{-4cm}datasheet template}
+\title{\vspace{-4cm}25.0mm efl, MgF$_2$ coated, PCX}
 \date{}
 \begin{document}
 
@@ -19,26 +21,31 @@
 
 \vspace{-1cm}
 
+URL: \url{http://www.edmundoptics.com.sg/optics/optical-lenses/plano-convex-pcx-spherical-singlet-lenses/mgf2-coated-plano-convex-pcx-lenses/45098/}
+
 \begin{multicols}{2}
 
 \section{Brief description}
 
-URL: \texttt{}
+PCX lens that are spherical. 25mm diameter, fits in Thorlabs SM1 tubes. 25mm EFL at 587.6 nm
 %What the devil. We can fix anything. Those great big fluffy clouds. We have no limits to our world. We're only limited by our imagination. Put it in, leave it alone. Everything's not great in life, but we can still find beauty in it.
 
 %Just let this happen. We just let this flow right out of our minds. That's why I paint - because I can create the kind of world I want - and I can make this world as happy as I want it. This is the fun part How to paint. That's easy. What to paint. That's much harder.
 
-%\section{Picture}
+\section{Picture}
 
 \section{Technical Specifications}
 
+
 \begin{tabular}{|l|l|}
-Wavelength region & VIS \\
-Design wavelength & 587.6nm \\
-Substrate & N-SF5 \\
-Coating & MgF$_{2}$ \\
-Coating Specification & $R_avg \lequal 1.75\% \@ 400 - 700$ nm
-%& \\
+  Effective focal length & 25.0mm \\
+  Back focal length & 20.22mm\\
+  Wavelength region & VIS \\
+  Design wavelength & 587.6nm \\
+  Substrate & N-SF5 \\
+  Coating & MgF$_{2}$ \\
+  Coating Specification & $R_{avg} \leq 1.75\%$ nm \\
+  Numerical Aperture & 0.50 \\
 \end{tabular}%
 
 \section{Data plots}
@@ -51,8 +58,10 @@ Coating Specification & $R_avg \lequal 1.75\% \@ 400 - 700$ nm
 %\section{Other notes}
 
 \end{multicols}
-\section{Drawing}
-\begin{center}
 
+\begin{center}
+\includegraphics[width=17.2cm]{prnt_45098}
+%Reflectance plot of MgF$_{2}$ AR coating
 \end{center}
+
 \end{document}
