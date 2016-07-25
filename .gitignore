@@ -70,4 +70,5 @@ getresponse
 
 *.aux
 *specs/*/assets/*.pdf
+*specs/*/assets/*.png
 *.out
