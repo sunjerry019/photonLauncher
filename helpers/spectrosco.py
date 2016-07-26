@@ -9,77 +9,68 @@ import numpy as np
 
 class spec():
     """Initialises the class with options."""
-    def __init__(self, foldername, output = None, basefilename = None, raw = None, ):
-        self.fn = foldername
-        self.base = basefilename
-        self.files = [f for f in listdir(foldername) if isfile(join(foldername, f))]
-        print self.files
+    def __init__(self, foldername, outputdir):
+
+        files = [f for f in listdir(foldername) if isfile(join(foldername, f))]
+
         # The SpectraSuite application dumps separate readings at certain time intervals in separate files
         # There's an option for a BASEFILENAME which helps to identify which measurement it is
         # The filenames look like "BASEFILENAMEXXX" where XXX refers to the index of the sample.
 
-        if basefilename == None:
-            print("No base filename indicated, will use all files in directory {}".format(foldername))
-        else:
-            print("Base filename of {}.".format(basefilename))
-            self.files = [x for x in self.files if basefilename == x[:-9]]
+        self.parse(files, outputdir)
 
-        #print self.f
-        self.output = output
-        if output == None:
-            self.output = os.path.join(foldername, "processed")
-        print self.output
-        self.raw = raw
-        self.data = {}
     def traverse(self, i):
         """ Read through data file (files inside directory FOLDERNAME with a BASEFILENAME) """
         with open(join(self.fn, i), 'rb') as f:
+            _data = []
             for line in f:
                 try:
-                    x = line.rstrip().split("\t")
-                    #print x
+                    x = line.strip().split("\t")
                     x = [float(i) for i in x]
-                    if x[0] not in self.data.keys():
-                        self.data[x[0]] = [x[1]]
-                    else:
-                        self.data[x[0]].append(x[1])
+                    _data.append(x[0], x[1])
                 except:
                     print("Error parsing {}, {}".format(i, line))
+        return _data
 
-    def parse(self):
+    def parse(self, files, outputdir):
         """ Wrapper around traverse() and processes the files with statistics (mean and std)"""
-        for i in self.files:
-            self.traverse(i) ; sys.stdout.write("\rNow processing {}".format(i))
+        data = {}
+        for i in files:
+            x = self.traverse(i)
+            sys.stdout.write("\rNow processing {}".format(i))
+
+            for i in x:
+                if data[i[0]] == None:
+                    data[i[0]] = [i[1]]
+                else:
+                    data[i[0]].append(i[1])
         std = {}
         m = {}
-        for wavelength in self.data:
-            wavelengths = np.array(self.data[wavelength])
+        for wavelength in data:
+            wavelengths = np.array(data[wavelength])
             std[wavelength] = np.std(wavelengths, dtype = np.float64)
             m[wavelength] = np.mean(wavelengths, dtype = np.float64)
 
-        mdata = {"raw": self.data, "std": std, "mean": m}
-        if self.raw:
-            rawpath = self.output
-            with open(rawpath, 'w') as f:
-                f.write("#x\ty\tyerror\n")
-                print self.data
-                _data = self.data.keys()
-                _data.sort()
-                for i in _data:
-                    f.write("{}\t{}\t{}\n".format(i, m[i], std[i]))
+        mdata = {"raw": data, "std": std, "mean": m}
+
+        with open(rawpath, 'w') as f:
+            f.write("#x\ty\tyerror\n")
+            _data = data.keys()
+            _data.sort()
+            for i in _data:
+                f.write("{}\t{}\t{}\n".format(i, m[i], std[i]))
 
         return mdata
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('fn', type = str, help = "Folder of data files")
-    parser.add_argument('-b', '--basename', type = str, help = "Base file name", default = None)
-    parser.add_argument('-o', '--outputpath', type = str, help = "File path of ascii output.", default = None)
-    parser.add_argument('-r', '--rawfile', action = 'store_true', help = "Use this flag to output raw, plottable ascii file", default = None)
+    parser.add_argument('-o', '--outputpath', type = str, help = "File path of ascii output. Defaults to current directory. ", default = ".""")
+
     #parser.add_argument('-t', '--type', type = str, help = "Set to home to not look for the >> that oceanoptics files have. Defaults to home.", default = "home")
     # parser.add_argument('-bg', '--backgroundfile', type = str, help = "Background readings to normalise the data", default = "home"")
     args = parser.parse_args()
 
-    a = spec(args.fn, output = args.outputpath, raw = args.rawfile, basefilename = args.basename)
-    a.parse()
+    a = spec(args.fn, output = args.outputpath)
+    #a.parse()
     print(" == Parse complete == \n")
