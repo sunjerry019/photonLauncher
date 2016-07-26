@@ -12,7 +12,7 @@
 
 \DeclareGraphicsExtensions{.png,.pdf}
 
-\title{\vspace{-4cm}datasheet template}
+\title{\vspace{-4cm}Single Mode FC/PC Fiber Optic Patch Cables 633-780nm}
 \date{}
 \begin{document}
 
@@ -22,12 +22,20 @@
 
 Last updated: \today
 
-URL: \url{}
+URL: \url{https://www.thorlabs.com/thorproduct.cfm?partnumber=P1-630A-FC-2}
+
 
 \begin{multicols}{2}
 
 \section{Brief description}
 
+Single mode fiber, operating wavelength 633 to 780 nm, 0.10 to 0.14 NA.  Wavelength range is for HeNe laser operating at 632.8 nm.
+
+Attenuation as a function of wavelength unavailable on Thorlabs page.
+
+SM600 Fiber: \url{https://www.thorlabs.com/thorcat/12600/12606-S01.pdf}
+
+Wavelength range is the spectral region between cutoff wavelength and the bend edge. It represents the region where fiber transmits in the TEM$_{00}$ mode with low attenuation. For this fiber, bend edge wavelength is typically 200nm longer than the cut-off wavelength.
 
 %What the devil. We can fix anything. Those great big fluffy clouds. We have no limits to our world. We're only limited by our imagination. Put it in, leave it alone. Everything's not great in life, but we can still find beauty in it.
 
@@ -38,27 +46,26 @@ URL: \url{}
 \section{Technical Specifications}
 
 \begin{tabular}{|l|l|}
-Wavelength region & VIS \\
-Design wavelength & 587.6nm \\
-Substrate & N-SF5 \\
-Coating & MgF$_{2}$ \\
-Coating Specification & $R_avg \leq 1.75\% \@ 400 - 700$ nm
+Operating wavelength & 633 - 780 nm \\
+Cut-off wavelength & 500 - 600 nm \\
+Numerical aperture & 0.10 - 0.14\\
+Attenuation & $\leq 15$ dB/km at 633 nm \\
+Connectors & FC/PC\\
+Mode-Field Diameter & 3.6 - 5.3$\mu$m at 633 nm\\
+
+
+%Coating Specification & $R_avg \lequal 1.75\% \@ 400 - 700$ nm
 %& \\
 \end{tabular}%
 
 \section{Data plots}
 
-\begin{center}
-\includegraphics[width=8.6cm]{assets/curv_45098}
-%Reflectance plot of MgF$_{2}$ AR coating
-\end{center}
-
+Unavailable on Thorlabs website.
 %\section{Other notes}
 
 \end{multicols}
 \section{Drawing}
 \begin{center}
-%\includegraphics[width=15cm]{assets/}
-%
+\includegraphics[width=15cm]{assets/p1-630acad}
 \end{center}
 \end{document}
