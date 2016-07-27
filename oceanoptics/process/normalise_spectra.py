@@ -12,10 +12,8 @@ class norm():
 
         result = []
         base = self.parse_raw(basefile,base)
-        #sample = []
-        #sample = self.parse_raw(samplefile,sample)
-        #print max(sample)
-        print max(base)
+        sample = []
+        sample = self.parse_raw(samplefile,sample)
 
         normalise_range = (400, 800)
         for i in xrange(len(base)):
@@ -53,7 +51,7 @@ class norm():
     def getDivErrorOf(self, base, sample):
         # base = [mean value, error value]
         # z = sample/base
-        return math.sqrt((1/base[0] * sample[1])**2 + ((sample[0]/(base[0])**-2) * base[1])**2)
+        return math.sqrt((1/base[0] * sample[1])**2 + ((sample[0]/((base[0])**2)) * ba  se[1])**2)
     def getSubErrorOf(self,base,sample):
         # z = sample - base
         return math.sqrt(( sample[1])**2 + (-1 * base[1])**2)
