@@ -13,7 +13,7 @@ def main(n, plot):
         foldername = time.strftime("%Y%m%d_%H%M")
         if not n == -1:
             os.mkdir(foldername)
-        with cube as Icecube():
+        with Icecube() as cube:
             while True:
                 try:
                     spec = cube.getSpectra()
@@ -22,7 +22,7 @@ def main(n, plot):
                         for i in spec:
                             f.write("{}\t{}\n".format(i[0], i[1]))
 
-                    sleep(1)
+                    sleep(0.1)
                     n -= 1
 
                     if n == 0:

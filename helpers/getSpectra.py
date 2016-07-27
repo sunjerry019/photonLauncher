@@ -4,8 +4,8 @@ import usb1
 
 class Icecube():
 
-    @staticmethod
-    def parseWavelengths(x):
+    #@staticmethod
+    def parseWavelengths(self,x):
         with open(x) as f:
             text = f.read()
         text=text.strip().split(",")
@@ -34,11 +34,12 @@ class Icecube():
         return [(self.wavelengths[i], _data[i]) for i in xrange(len(self.wavelengths))]
 
     def __enter__(self):
-        wavelengths = parseWavelengths(".wavelengths")
+        wavelengths = self.parseWavelengths("/home/photon/.wavelength")
         context = usb1.USBContext()
         self.icecube = context.openByVendorIDAndProductID(0x2457, 0x1022, skip_on_error=True)
         self.icecube.claimInterface(0)
         print(self.icecube.bulkWrite(1, '\x01')) # init message
+        self.wavelengths = wavelengths
         return self
 
     def __exit__(self, type, value, traceback):
