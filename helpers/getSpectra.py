@@ -4,7 +4,6 @@ import usb1
 
 class Icecube():
 
-    #@staticmethod
     def parseWavelengths(self,x):
         with open(x) as f:
             text = f.read()
