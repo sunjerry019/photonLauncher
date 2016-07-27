@@ -9,8 +9,10 @@ Cheers
 -zy
 20151107
 """
-import serial
+#import serial
 from __future__ import division
+import serial
+
 import time
 import datetime
 import os, sys
@@ -45,10 +47,13 @@ class Mjolnir():
         with open('./cfg/.mjolnir') as f:
 
             x = f.read()
+            if (len(x) == 0):
+                pass
             x = x.split('\n')
             for i in x:
                 i = i.rstrip()
                 if len(i) > 1:
+                    print i
                     i = i.split('=')
                     cfg[i[0]] = i[1]
                 else:

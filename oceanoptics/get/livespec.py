@@ -44,13 +44,13 @@ def main(n, plot):
         subprocess.call(["gnuplot", "loop.gnu"])
 
 
-    t = Thread(target=gen, args=(n,))
-    u = Thread(target=plot)
-
-    t.start()
-    sleep(0.05)
-    if plot:
-        u.start()
+    #t = Thread(target=gen, args=(n,))
+    #u = Thread(target=plot)
+    gen(n)
+    #t.start()
+    #sleep(0.05)
+    #if plot:
+    #    u.start()
 
 def init():
     parser = argparse.ArgumentParser()
