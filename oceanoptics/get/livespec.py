@@ -8,15 +8,18 @@ import argparse
 import os
 import time
 
-def main(n, plot):
+def main(n, plot, description):
     def gen(n):
         foldername = time.strftime("%Y%m%d_%H%M")
         if not n == -1:
             os.mkdir(foldername)
+            if not description == None:
+                z = open("spectra_log", "a")
+                z.write("{}\t{}\n".format(foldername, description))
         with Icecube() as cube:
             while True:
                 try:
-                    print("\r{}".format(n))
+                    sys.stdout.write("\r{}".format(n))
                     spec = cube.getSpectra()
 
                     with open('.temp', 'w') as f:
@@ -56,7 +59,8 @@ def init():
     parser = argparse.ArgumentParser()
     parser.add_argument('n', type = int, help = "no. of readings to take. -1 for infinite")
     parser.add_argument('-p','--plot', action = 'store_true', help = "flag to enable plotting")
+    parser.add_argument('-d', '--description', type = str, help = "label each acquisition", default = None)
     args = parser.parse_args()
 
-    main(args.n, args.plot)
+    main(args.n, args.plot, args.description)
 init()
