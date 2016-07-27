@@ -25,7 +25,7 @@ class Icecube():
         	data.append(self.icecube.bulkRead(134, 512))
         for _ in xrange(11):
         	data.append(self.icecube.bulkRead(130, 512))
-        print(self.icecube.bulkRead(130, 1))
+        #print(self.icecube.bulkRead(130, 1))
 
         for j in xrange(len(data)):
             for i in xrange(256):
@@ -38,7 +38,7 @@ class Icecube():
         context = usb1.USBContext()
         self.icecube = context.openByVendorIDAndProductID(0x2457, 0x1022, skip_on_error=True)
         self.icecube.claimInterface(0)
-        print(self.icecube.bulkWrite(1, '\x01')) # init message
+        self.icecube.bulkWrite(1, '\x01') # init message
         self.wavelengths = wavelengths
         return self
 
@@ -49,5 +49,5 @@ class Icecube():
 
 if __name__ == '__main__':
     a = Icecube()
-    print a.getSpectra()
+    #print a.getSpectra()
     a.close()

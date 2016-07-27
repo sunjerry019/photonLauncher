@@ -16,6 +16,7 @@ def main(n, plot):
         with Icecube() as cube:
             while True:
                 try:
+                    print("\r{}".format(n))
                     spec = cube.getSpectra()
 
                     with open('.temp', 'w') as f:
@@ -42,7 +43,7 @@ def main(n, plot):
     def plot():
         subprocess.call(["gnuplot", "loop.gnu"])
 
-    
+
     t = Thread(target=gen, args=(n,))
     u = Thread(target=plot)
 
