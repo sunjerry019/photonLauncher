@@ -7,12 +7,19 @@ import os
 import time
 import matplotlib.pyplot as plt
 import numpy as np
+import pwd
+import grp
 
-def main(n, description):
+def main(n, description,intTime):
     c = 0
     foldername = time.strftime("%Y%m%d_%H%M")
+    uid = pwd.getpwnam("photon").pw_uid
+    gid = grp.getgrnam("photon").gr_gid
     if not n == -1:
         os.mkdir(foldername)
+	path = foldername
+	os.chown(path, uid, gid)
+
         if not description == None:
             z = open("spectra_log", "a")
             z.write("{}\t{}\n".format(foldername, description))
@@ -41,7 +48,7 @@ def main(n, description):
 
                 sleep(0.05)
 
-                n -= 1
+                
 
                 if n == 0:
                     break
@@ -49,6 +56,9 @@ def main(n, description):
                     with open("{}/data_{}".format(foldername,n) , 'w') as f:
                         for i in spec:
                             f.write("{}\t{}\n".format(i[0], i[1]))
+		    os.chown("{}/data_{}".format(foldername,n), uid, gid)
+		n -= 1
+
 
             except KeyboardInterrupt:
                 print " --- EXITING --- "
