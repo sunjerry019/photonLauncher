@@ -72,3 +72,6 @@ getresponse
 *specs/*/assets/*.pdf
 *specs/*/assets/*.png
 *.out
+
+# data files for spec
+oceanoptics/get/[0-9]*_[0-9]*/
