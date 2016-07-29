@@ -19,8 +19,8 @@ Location | Equipment name
 ```helpers/lecroy.py``` | Oscilloscope, Lecroy 9384TM (this is ancient)
 ```helpers/mjolnir.py```| Thorlabs TDC01 Controller Cube (CR1-Z7, MTS50-Z8)
 ```usbcounter/arthur2.py```| Avalanche Photon Detectors (built at NUS)
-```oceanoptics/get/icecube.py```| OceanOptics Spectrometer, USB2000 and USB4000 (problems with liveplotting)
-```teaspoon/climate.py```| Thorlabs TSP01 Temperature and Humidity sensor
+```oceanoptics/get/icecube.py```| OceanOptics Spectrometer, USB2000 and USB4000 (liveplotting works!!) 
+```teaspoon/climate.py```| Thorlabs TSP01 Temperature and Humidity sensor (liveplotting not updated yet)
 ```roger/roger.py```| Photometer with Arduino as a voltage sensor
 
 
