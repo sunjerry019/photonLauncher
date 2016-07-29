@@ -1,5 +1,6 @@
 # 29 july
 - added for sm1 tube stuff, including retaining rings
+- added cleaning supplies and fiber caps
 
 # 26 july
 - added for thorlabs single mode fibers, 460 and 630 nm

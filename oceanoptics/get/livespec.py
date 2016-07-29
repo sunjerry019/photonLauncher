@@ -19,7 +19,6 @@ def main(n, description,intTime):
         os.mkdir(foldername)
 	path = foldername
 	os.chown(path, uid, gid)
-
         if not description == None:
             z = open("spectra_log", "a")
             z.write("{}\t{}\n".format(foldername, description))
