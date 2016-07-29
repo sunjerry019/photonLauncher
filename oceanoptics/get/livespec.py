@@ -48,16 +48,14 @@ def main(n, description,intTime):
 
                 sleep(0.05)
 
-                
-
                 if n == 0:
                     break
                 elif n > 0:
                     with open("{}/data_{}".format(foldername,n) , 'w') as f:
                         for i in spec:
                             f.write("{}\t{}\n".format(i[0], i[1]))
-		    os.chown("{}/data_{}".format(foldername,n), uid, gid)
-		n -= 1
+		            os.chown("{}/data_{}".format(foldername,n), uid, gid)
+		            n -= 1
 
 
             except KeyboardInterrupt:
