@@ -1,0 +1,74 @@
+\documentclass{article}
+\usepackage{multicol}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{geometry}
+\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
+
+ \geometry{
+ a4paper,
+ left=20mm,
+ right=20mm
+ }
+
+\DeclareGraphicsExtensions{.png,.pdf}
+
+\title{\vspace{-4cm}Thorlabs SM1 tube construction}
+\date{}
+\begin{document}
+
+\maketitle
+
+\vspace{-1cm}
+
+Last updated: \today
+
+URL: \url{https://www.thorlabs.hk/newgrouppage9.cfm?objectgroup_id=3307}
+
+\begin{multicols}{2}
+
+\section{Brief description}
+
+They all seem to be kind of simliar, so they're all in this document. The SM1 tubes help to hold 1" diameter optical components. These optical components can be locked in position by retaining rings, which are in turn inserted into the SM1 tube by a specialised spanner wrench.
+
+SM1 tubes have 40 rotations per inch, so expect 0.634mm per turn. Human resolution is perhaps an eighth of a turn, so that's about 0.08 mm resolution for collimation.
+
+The travelling tubes are included as they're pretty similar.
+
+As of writing, the lab mostly has half inch long SM1 tubes (SM105) which are awkward to use with the 25mm efl lenses.
+
+SM1V10 is also awkward to use without that many SM1L10 tubes.
+
+\section{Technical Specifications}
+
+SM1 Internal Threading
+
+\begin{tabular}{|l|l|}
+  Min. Major diameter & 1.0350''\\
+  Min. Pitch diameter & 1.0188''\\
+  Max. Pitch diametr & 1.0234'' \\
+  Min. Minor diameter & 1.008''\\
+  Max. Minor diameter & 1.014''
+\end{tabular}%
+
+\noindent SM1V10
+
+\begin{tabular}{|l|l|}
+External thread length & 0.81'' (20.6mm)\\
+Maximum adjustment range & 1.00''
+\end{tabular}%
+
+
+\end{multicols}
+
+\begin{center}
+\includegraphics[width=15cm]{assets/sm1rr} \\
+Retaining ring
+\end{center}
+
+
+\begin{center}
+\includegraphics[width=15cm]{assets/sm1v10}\\
+Travelling tube; awkward to use with SM1L05
+\end{center}
+\end{document}

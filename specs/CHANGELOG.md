@@ -1,3 +1,6 @@
+# 29 july
+- added for sm1 tube stuff, including retaining rings
+
 # 26 july
 - added for thorlabs single mode fibers, 460 and 630 nm
 
