@@ -1,3 +1,6 @@
+# 30 july
+- added baseplates 
+
 # 29 july
 - added for sm1 tube stuff, including retaining rings
 - added cleaning supplies and fiber caps
