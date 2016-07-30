@@ -3,7 +3,8 @@ sys.path.insert(0, '../helpers/')
 from getTeaspoon import Teaspoon
 import argparse
 import time
-from collections import deque
+import matplotlib.pyplot as plt
+import numpy as np
 
 def init():
     parser = argparse.ArgumentParser()
@@ -18,36 +19,51 @@ def init():
 def main(total, dt,log):
     if log:
         g = open("/mnt/photonics/climate/{}".format(time.strftime("%Y%m%d_%M%S")), "w")
-    data =  [0] * 90
+
+    data =  {
+    "tempboard": [0]*90,
+    "tempprobe": [0]*90,
+    "humidity": [0]*90,
+    }
+
+    X = np.linspace(0,89, num=90)
+    plt.ion()
+    f, axarr = plt.subplots(2, sharex=True)
+
+    with plt.style.context('fivethirtyeight'):
+        #plotx0 = axarr[0].plot(X,data["tempboard"], 'r-', label="Onboard")[0]
+        plotx1 = axarr[0].plot(X,data["tempprobe"], 'b-',label="Probe")[0]
+        ploth = axarr[1].plot(X,data["humidty"])[0]
 
     teaspoon = Teaspoon()
+
     zz = total/dt
+
     print("Time\tOnboard Temp./C \t Ext Temp./C \t Onboard humidity\n")
+
     while not zz  == 0:
-#        f = open("test","w")
-
-#        x = (teaspoon.getTemperature())
-#        h = float(teaspoon.getHumidity())
-
         x0 = teaspoon.getTemperatureOnboard()
         x1 = teaspoon.getTemperatureProbe()
         h = teaspoon.getHumidity()
-        data.append(x1)
-        data.pop(0)
+        data["tempboard"].append(x0)
+        data["tempprobe"].append(x1)
+        data["humidity"].append(h)
+
+        for i in data:
+            data[i].pop(0)
+
+        plotx1.set_ydata(data["tempprobe"])
+        ploth.set_ydata(data["humidity"])
+        with plt.style.context('fivethirtyeight'):
+            plt.draw()
+            plt.pause(0.001)
+
         sys.stdout.flush()
         sys.stdout.write("\r{}\t{}\t{}\t{}".format(time.strftime("%m_%d_%H%M%S"), x0, x1, h))
-        #print("\r \n Onboard temperature: {} \n External probe temperature: {} \n Onboard humidity: {}".format(x0, x1, h))
 
-        #print(data)
-        f = open("test", "w")
-        for i in data:
-        	f.write("{}\n".format(i))
-
-        f.close()
         if log:
-            g.write("{}\t{}\t{}\n".format(x0, x1, h))
+            g.write("{}\t{}\t{}\n".format(, x1, h))
         time.sleep(dt)
         zz -= 1
-
 
 init()
