@@ -15,7 +15,7 @@ light = serial.Serial(port = '/dev/ttyACM0',baudrate = 19200,parity = 'N',stopbi
 log = args.log
 
 c = args.n
-
+#print c
 if log:
     f = open("photometer_{}".format(time.strftime("%Y%m%d_%H%M")), 'w')
 
@@ -29,7 +29,7 @@ while True:
         if log:
             f.write("{}\n".format(x))
 #        time.sleep(0.05)
-        if c == 0:
+        if c< 0:
             break
         else:
             c-=1
