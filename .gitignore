@@ -69,8 +69,7 @@ getresponse
 .temp
 
 *.aux
-*specs/*/assets/*.pdf
-*specs/*/assets/*.png
+*specs/*/assets/*
 *.out
 
 # data files for spec
