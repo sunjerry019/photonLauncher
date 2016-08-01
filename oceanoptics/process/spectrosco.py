@@ -11,17 +11,18 @@ class spec():
     """Initialises the class with options."""
     def __init__(self, foldername, outputdir):
 
-        files = [f for f in listdir(foldername) if isfile(join(foldername, f))]
+        files = [join(foldername,f) for f in listdir(foldername) if isfile(join(foldername, f))]
 
         # The SpectraSuite application dumps separate readings at certain time intervals in separate files
         # There's an option for a BASEFILENAME which helps to identify which measurement it is
-        # The filenames look like "BASEFILENAMEXXX" where XXX refers to the index of the sample.
+        # The filenames look like "BASEFILENAMEXXX" where XXX refers to the indexs of the sample.
 
         self.parse(files, outputdir)
 
-    def traverse(self, i):
+    def traverse(self, fn, i):
         """ Read through data file (files inside directory FOLDERNAME with a BASEFILENAME) """
-        with open(join(self.fn, i), 'rb') as f:
+        print(fn)
+        with open(fn[0], 'rb') as f:
             _data = []
             for line in f:
                 try:
@@ -36,7 +37,7 @@ class spec():
         """ Wrapper around traverse() and processes the files with statistics (mean and std)"""
         data = {}
         for i in files:
-            x = self.traverse(i)
+            x = self.traverse(files,i)
             sys.stdout.write("\rNow processing {}".format(i))
 
             for i in x:
@@ -53,7 +54,7 @@ class spec():
 
         mdata = {"raw": data, "std": std, "mean": m}
 
-        with open(rawpath, 'w') as f:
+        with open(outputdir, 'w') as f:
             f.write("#x\ty\tyerror\n")
             _data = data.keys()
             _data.sort()
@@ -65,7 +66,7 @@ class spec():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('fn', type = str, help = "Folder of data files")
-    parser.add_argument('-o', '--outputpath', type = str, help = "File path of ascii output. Defaults to current directory. ", default = ".")
+    parser.add_argument('-o', '--outputpath', type = str, help = "File path of ascii output. Defaults to current directory. ", default = "spectrum_statsputput_{}".format("%y%m%d-%H%M"))
 
     #parser.add_argument('-t', '--type', type = str, help = "Set to home to not look for the >> that oceanoptics files have. Defaults to home.", default = "home")
     # parser.add_argument('-bg', '--backgroundfile', type = str, help = "Background readings to normalise the data", default = "home"")
