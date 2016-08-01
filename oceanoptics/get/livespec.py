@@ -25,7 +25,7 @@ def main(n, description,intTime):
             z.write("{}\t{}\n".format(foldername, description))
 
     with Icecube() as cube:
-        cube.setIntegrationTime(2)
+        cube.setIntegrationTime(intTime)
         while True:
             try:
                 sys.stdout.write("\r{}".format(n))
@@ -70,8 +70,8 @@ def init():
     parser.add_argument('n', type = int, help = "no. of readings to take. -1 for infinite")
     #parser.add_argument('-p','--plot', action = 'store_true', help = "flag to enable plotting")
     parser.add_argument('-d', '--description', type = str, help = "label each acquisition", default = None)
-    parser.add_argument('-t', '--integrationTime', type = int, help = "milliseconds of integration time", default = 2)
+    parser.add_argument('-t', '--intTime', type = float, help = "milliseconds of integration time", default = 2)
     args = parser.parse_args()
 
-    main(args.n, args.description, args.integrationTime)
+    main(args.n, args.description, args.intTime)
 init()
