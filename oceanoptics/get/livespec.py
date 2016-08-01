@@ -22,6 +22,8 @@ def main(n, description,intTime):
         if not description == None:
             z = open("spectra_log", "a")
             z.write("{}\t{}\n".format(foldername, description))
+	    with open("{}/meta.info".format(foldername), 'w') as f:
+	        f.write("{}\t{}\n".format(foldername, description))
 
     with Icecube() as cube:
         cube.setIntegrationTime(intTime)
@@ -55,7 +57,7 @@ def main(n, description,intTime):
                             f.write("{}\t{}\n".format(i[0], i[1]))
 		    os.chown("{}/data_{}".format(foldername,n), uid, gid)
 		    n -= 1
-                    print n
+                    print " now {} readings left".format(n)
 
 
             except KeyboardInterrupt:
