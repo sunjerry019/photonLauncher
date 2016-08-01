@@ -65,12 +65,12 @@ class spec():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('fn', type = str, help = "Folder of data files")
-    parser.add_argument('-o', '--outputpath', type = str, help = "File path of ascii output. Defaults to current directory. ", default = ".""")
+    parser.add_argument('-o', '--outputpath', type = str, help = "File path of ascii output. Defaults to current directory. ", default = ".")
 
     #parser.add_argument('-t', '--type', type = str, help = "Set to home to not look for the >> that oceanoptics files have. Defaults to home.", default = "home")
     # parser.add_argument('-bg', '--backgroundfile', type = str, help = "Background readings to normalise the data", default = "home"")
     args = parser.parse_args()
 
-    a = spec(args.fn, output = args.outputpath)
+    a = spec(args.fn,args.outputpath)
     #a.parse()
     print(" == Parse complete == \n")
