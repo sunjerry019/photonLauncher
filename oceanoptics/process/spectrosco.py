@@ -19,10 +19,10 @@ class spec():
 
         self.parse(files, outputdir)
 
-    def traverse(self, fn, i):
+    def traverse(self, fn):
         """ Read through data file (files inside directory FOLDERNAME with a BASEFILENAME) """
-        
-        with open(fn[0], 'rb') as f:
+
+        with open(fn, 'rb') as f:
             _data = []
             for line in f:
                 try:
@@ -36,18 +36,19 @@ class spec():
     def parse(self, files, outputdir):
         """ Wrapper around traverse() and processes the files with statistics (mean and std)"""
         data = {}
+
         for i in files:
-            x = self.traverse(files,i)
-
+            x = self.traverse(i)
             sys.stdout.write("\rNow processing {}".format(i))
-
             for i in x:
                 if not i[0] in data:
                     data[i[0]] = [i[1]]
                 else:
                     data[i[0]].append(i[1])
+
         std = {}
         m = {}
+        print data
         for wavelength in data:
             wavelengths = np.array(data[wavelength])
             std[wavelength] = np.std(wavelengths, dtype = np.float64)
@@ -69,10 +70,8 @@ if __name__ == '__main__':
     parser.add_argument('fn', type = str, help = "Folder of data files")
     parser.add_argument('-o', '--outputpath', type = str, help = "File path of ascii output. Defaults to current directory. ", default = "spectrum_statsputput_{}".format("%y%m%d-%H%M"))
 
-    #parser.add_argument('-t', '--type', type = str, help = "Set to home to not look for the >> that oceanoptics files have. Defaults to home.", default = "home")
-    # parser.add_argument('-bg', '--backgroundfile', type = str, help = "Background readings to normalise the data", default = "home"")
     args = parser.parse_args()
 
     a = spec(args.fn,args.outputpath)
-    #a.parse()
+
     print(" == Parse complete == \n")
