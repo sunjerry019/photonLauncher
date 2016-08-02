@@ -21,15 +21,15 @@ class spec():
 
     def traverse(self, fn, i):
         """ Read through data file (files inside directory FOLDERNAME with a BASEFILENAME) """
-        print(fn)
+        
         with open(fn[0], 'rb') as f:
             _data = []
             for line in f:
                 try:
                     x = line.strip().split("\t")
                     x = [float(i) for i in x]
-                    _data.append(x[0], x[1])
-                except:
+                    _data.append((x[0], x[1]))
+                except ZeroDivisionError:
                     print("Error parsing {}, {}".format(i, line))
         return _data
 
@@ -38,10 +38,11 @@ class spec():
         data = {}
         for i in files:
             x = self.traverse(files,i)
+
             sys.stdout.write("\rNow processing {}".format(i))
 
             for i in x:
-                if data[i[0]] == None:
+                if not i[0] in data:
                     data[i[0]] = [i[1]]
                 else:
                     data[i[0]].append(i[1])
