@@ -20,8 +20,7 @@ class spec():
         self.parse(files, outputdir)
 
     def traverse(self, fn):
-        """ Read through data file (files inside directory FOLDERNAME with a BASEFILENAME) """
-
+        print "OPENING FILE {}".format(fn)
         with open(fn, 'rb') as f:
             _data = []
             for line in f:
@@ -36,8 +35,9 @@ class spec():
     def parse(self, files, outputdir):
         """ Wrapper around traverse() and processes the files with statistics (mean and std)"""
         data = {}
-
         for i in files:
+            if i.split("/")[-1] == "meta.info": #fk u yudong
+                continue
             x = self.traverse(i)
             sys.stdout.write("\rNow processing {}".format(i))
             for i in x:
