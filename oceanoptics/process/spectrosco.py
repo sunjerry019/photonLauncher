@@ -20,7 +20,6 @@ class spec():
         self.parse(files, outputdir)
 
     def traverse(self, fn):
-        print "OPENING FILE {}".format(fn)
         with open(fn, 'rb') as f:
             _data = []
             for line in f:
