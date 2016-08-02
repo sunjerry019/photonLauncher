@@ -18,7 +18,7 @@ class norm():
         _z = [i[1] for i in base]
         maxbase = max(_z)
         maxindex = _z.index(maxbase)
-        normalise_range = (400, 1000)
+        normalise_range = (350, 1040)
         for i in xrange(len(base)):
             if not(base[i][0] >= normalise_range[0] and base[i][0] <= normalise_range[1]):
                 continue
