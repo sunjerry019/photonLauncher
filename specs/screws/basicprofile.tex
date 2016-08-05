@@ -1,0 +1,87 @@
+\documentclass{article}
+\usepackage{multicol}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{geometry}
+\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
+ \geometry{
+ a4paper,
+ left=20mm,
+ right=20mm
+ }
+
+\DeclareGraphicsExtensions{.png,.pdf}
+
+\title{\vspace{-4cm}Screws Manual}
+\date{}
+\begin{document}
+
+\maketitle
+
+\vspace{-1cm}
+
+Last updated: \today
+
+
+\begin{center}
+\includegraphics[width=15cm]{assets/diagram.png}\\
+Image from WikiCommons
+%
+\end{center}
+
+\begin{multicols}{2}
+
+\section{Brief description}
+
+\begin{enumerate}
+  \item $H$ is the height of the fundamental screw triangle.
+  \item $P$ is the pitch, the length of the fundamental screw triangle
+  \item D is the diameter of the screw at various points
+\end{enumerate}
+
+\section{Naming the screw}
+
+\subsection{Imperial}
+
+Diameter --- Thread per inch --- Length --- Type of screw
+
+e.g. $\frac{1}{4}$''-20 $\frac{5}{8}$'' cap screw
+
+\subsection{Metric}
+
+Diameter --- Pitch --- Lengthh --- Type of screw
+
+e.g. M4-0.7 10mm set screw
+
+\end{multicols}
+
+\section{Imperial Screw Unified Thread Standard}
+\begin{tabular}{@{}lllll@{}}
+\multicolumn{2}{l}{}Major Pitch Diameter $D$ (inch / mm) & Threads per inch & Pitch $P$ (inch / mm) & Preferred cutting tap drill\\
+ \#0 & 0.0600 / 1.5240  & None & None & None \\
+ \#1 &  &  &  &  \\
+ \#2 &  &  &  &  \\
+
+\end{tabular}
+
+
+\section{Metric Screw Unified Thread Standard}
+
+\begin{tabular}{@{}llll@{}}
+ Major diameter $D$/mm & Pitch $P$/mm & Major Diameter $D$/mm & Pitch $P$/mm \\
+ 1 & 0.25 & 12 & 1.75 \\
+ 1.2 & 0.25 & 16 & 2 \\
+ 1.6 & 0.35 & 20 & 2,5\\
+ 2 & 0.4 & 24 & 3 \\
+ 2.5 & 0.45 & 30 & 3.5\\
+ 3 & 0.5 & 36 & 4\\
+ 4 & 0.7 & 42 & 4.5\\
+ 5 & 0.8 & 48 & 5 \\
+ 6 & 1 & 56 & 5.5 \\
+ 8 & 1.25 & 64 & 6 \\
+ 10 & 1.5
+\end{tabular}
+
+
+
+\end{document}
