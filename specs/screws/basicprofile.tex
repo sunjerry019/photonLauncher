@@ -3,6 +3,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage{geometry}
+\usepackage{lscape}
 \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
  \geometry{
  a4paper,
@@ -12,10 +13,10 @@
 
 \DeclareGraphicsExtensions{.png,.pdf}
 
-\title{\vspace{-4cm}Screws Manual}
+\title{\vspace{-2cm}Screws Manual}
 \date{}
 \begin{document}
-
+\begin{landscape}
 \maketitle
 
 \vspace{-1cm}
@@ -24,48 +25,49 @@ Last updated: \today
 
 
 \begin{center}
-\includegraphics[width=15cm]{assets/diagram.png}\\
+\includegraphics[width=20cm]{assets/screws.png}\\
 Image from WikiCommons
 %
 \end{center}
+\end{landscape}
 
 \begin{multicols}{2}
 
 \section{Brief description}
 
 \begin{enumerate}
-  \item $H$ is the height of the fundamental screw triangle.
-  \item $P$ is the pitch, the length of the fundamental screw triangle
-  \item D is the diameter of the screw at various points
+  \item $H$ is the height of the fundamental screw triangle. You don't actually need to measure this.
+  \item $P$ is the pitch, the length of the fundamental screw triangle. use a Vernier Caliper to measure the length of a convenient, integer number of a pitch lengths. Alternatively,
+  \item $D$ is the diameter of the screw at various points. The maximum diameter, $D_{major}$ gives you the relevant diameter that is used to reference the screw.,
 \end{enumerate}
 
 \section{Naming the screw}
 
 \subsection{Imperial}
 
-Diameter --- Thread per inch --- Length --- Type of screw
+Diameter --- Threads per inch --- Length --- Type of screw
 
 e.g. $\frac{1}{4}$''-20 $\frac{5}{8}$'' cap screw
 
 \subsection{Metric}
 
-Diameter --- Pitch --- Lengthh --- Type of screw
+Diameter --- Pitch --- Length --- Type of screw
 
-e.g. M4-0.7 10mm set screw
+e.g. M4x0.7 10mm set screw
 
 \end{multicols}
 
-\section{Imperial Screw Unified Thread Standard}
+\section{Imperial Screw Thread Standard}
 \begin{tabular}{@{}lllll@{}}
-\multicolumn{2}{l}{}Major Pitch Diameter $D$ (inch / mm) & Threads per inch & Pitch $P$ (inch / mm) & Preferred cutting tap drill\\
- \#0 & 0.0600 / 1.5240  & None & None & None \\
- \#1 &  &  &  &  \\
- \#2 &  &  &  &  \\
+\multicolumn{2}{l}{}Major Pitch Diameter $D$ (inch / mm) & Threads per inch & Preferred cutting tap drill\\
+ \#0 & 0.0600 / 1.5240  & None & None \\
+ \#1 &  &  &  \\
+ \#2 &  &  &  \\
 
 \end{tabular}
 
 
-\section{Metric Screw Unified Thread Standard}
+\section{Metric Screw Thread Standard}
 
 \begin{tabular}{@{}llll@{}}
  Major diameter $D$/mm & Pitch $P$/mm & Major Diameter $D$/mm & Pitch $P$/mm \\
