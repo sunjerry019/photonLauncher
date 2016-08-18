@@ -19,13 +19,17 @@ c = args.n
 if log:
     f = open("photometer_{}".format(time.strftime("%Y%m%d_%H%M")), 'w')
 
+#prevtime = time.time()
+
 while True:
     try:
         x = light.readline()
         x = x.strip()
         x = float(x)
-        sys.stdout.flush()
-        sys.stdout.write("\r{}".format(x))
+        if c % 5000 == 0:
+            sys.stdout.flush()
+            sys.stdout.write("\r power reading: {}".format(x))
+#            prevtime = time.time()
         if log:
             f.write("{}\n".format(x))
 #        time.sleep(0.05)
