@@ -15,32 +15,22 @@ import serial
 
 import time
 import datetime
-import os, sys
-import json
-import random
+
 import argparse
 import binascii
 import struct
 
 
 def main():
-    #print Mjolnir.genHeader('\x04\x43', '21', '01')
     m = Mjolnir()
 class Mjolnir():
     def __init__(self):
         self.initConstants()
         self.initSerial()
     def initConstants(self):
-        # wasted my time typing this
-        self.const = {}
-        #self.const['HOST'] = '\x01'
-        #self.const['MBOARD'] = '\x11'
-        #self.const['MOTOR1'] = '\x21'
-        #self.const['MOTOR2'] = '\x22'
-        #self.const['ENCCNT'] = 34304
 
+        self.const = {}
         self.const['LINSCALE'] = 34304
-        #self.const['ROTSCALE'] = ((0.0006)**(-1))/3600
         self.const['ROTSCALE'] = 3600/2.16
     def initSerial(self):
         cfg = {}
@@ -99,5 +89,18 @@ class Mjolnir():
         for i in d:
             x.append(i)
         self.talk(x)
+    def absRotMotor(self,distance):
+        distance *= self.const['ROTSCALE']
+        distance = int(distance)
+        x = ['\x50','\x04','\x06','\x00','\xA2','\x01','\x01','\x00']
+        d = struct.pack('<l', distance)
+        for i in d:
+            x.append(i)
+        self.talk(x)
+    def getAbs(self):
+        x = ['\x51', '\x04', '\x01', '\x00','\xA2', '\x01']
+        self.talk(x)
+    
+    
     def blink(self):
         self.talk([23, 02, 00, 00, 21, 01])
