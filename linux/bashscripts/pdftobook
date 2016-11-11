@@ -1,0 +1,33 @@
+#!/bin/bash
+ 
+# usage: pdf2book 
+ 
+# acroread settings:
+# [x] auto rotate and center
+# [x] choose paper source by pdf page size
+# [x] use custom paper size when needed
+# [x] portrait
+ 
+FILE=$(basename "$1" .pdf)
+ 
+#echo "+ pdfcrop $FILE.pdf --margins 12" \
+#&& pdfcrop "$FILE.pdf" --margins 12 &> /dev/null \
+#\
+cp "$FILE.pdf" "$FILE-crop.pdf" \
+&& echo "+ pdftops $FILE-crop.pdf" \
+&& pdftops "$FILE-crop.pdf" &> /dev/null \
+\
+&& echo "+ psbook $FILE-crop.ps book-$FILE.ps" \
+&& psbook "$FILE-crop.ps" "book-$FILE.ps" &> /dev/null \
+\
+&& echo "+ ps2pdf book-$FILE.ps book-$FILE.pdf" \
+&& ps2pdf "book-$FILE.ps" "book-$FILE.pdf" &> /dev/null \
+\
+&& echo "+ pdfnup book-$FILE.pdf --nup 2x1 --suffix '2x1'" \
+&& pdfnup "book-$FILE.pdf" --nup 2x1 --suffix '2x1' &> /dev/null \
+\
+&& echo "+ pdftk book-$FILE-2x1.pdf cat 1-endE output $FILE-booklet.pdf" \
+&& pdftk "book-$FILE-2x1.pdf" cat 1-endeast output "$FILE-booklet.pdf" \
+\
+&& echo "cleaning..." \
+&& rm "$FILE-crop.pdf" "$FILE-crop.ps" "book-$FILE.ps" "book-$FILE.pdf" "book-$FILE-2x1.pdf"
