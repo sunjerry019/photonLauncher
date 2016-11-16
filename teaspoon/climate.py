@@ -27,14 +27,6 @@ def main(total, dt,log):
     }
 
     X = np.linspace(0,89, num=90)
-    plt.ion()
-    f, axarr = plt.subplots(2, sharex=True)
-
-    with plt.style.context('fivethirtyeight'):
-        #plotx0 = axarr[0].plot(X,data["tempboard"], 'r-', label="Onboard")[0]
-        plotx1 = axarr[0].plot(X,data["tempprobe"], 'b-',label="Probe")[0]
-        ploth = axarr[1].plot(X,data["humidty"])[0]
-
     teaspoon = Teaspoon()
 
     zz = total/dt
@@ -51,18 +43,11 @@ def main(total, dt,log):
 
         for i in data:
             data[i].pop(0)
-
-        plotx1.set_ydata(data["tempprobe"])
-        ploth.set_ydata(data["humidity"])
-        with plt.style.context('fivethirtyeight'):
-            plt.draw()
-            plt.pause(0.001)
-
         sys.stdout.flush()
         sys.stdout.write("\r{}\t{}\t{}\t{}".format(time.strftime("%m_%d_%H%M%S"), x0, x1, h))
-
+        sys.stdout.flush()
         if log:
-            g.write("{}\t{}\t{}\n".format(, x1, h))
+            g.write("{}\t{}\t{}\n".format(zz, x1, h))
         time.sleep(dt)
         zz -= 1
 
