@@ -18,9 +18,9 @@ l.pack()
 parser = argparse.ArgumentParser()
 parser.add_argument("n", type = int, help = "No. of readings to take")
 parser.add_argument("-f", "--log", action = 'store_true', help = "Use this flag to enable logging to a file.")
+parser.add_argument("-fn", "--filename", type = str, help = "Filename")
 parser.add_argument("-d", "--desc", type = str, help = "Description of data reading inside meta.info")
 args = parser.parse_args()
-
 
 light = serial.Serial(port = '/dev/ttyACM0',baudrate = 19200,parity = 'N',stopbits = 1,bytesize = 8)
 ##light.open()
@@ -49,7 +49,7 @@ else:
 print "hi"
 
 a = 0.00890
-b = 0.01	
+b = 0.01
 
 while True:
     try:
@@ -57,7 +57,9 @@ while True:
         x = x.strip()
         x = float(x)
         window.pop(0)
-        x = a * x + b
+
+        x = a * x + b # photometer scaling
+
         window.append(x)
         if c % 10 == 0:
             #pass
