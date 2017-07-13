@@ -35,3 +35,7 @@ $ ls /dev/ | grep ttyUSB
 ```
 
 ## Usage:
+
+```
+$ python brieflysummarise.py n_steps stepsize n_readings
+```
