@@ -1,6 +1,7 @@
 import binascii
 import struct
 import usb1
+import os
 
 class Icecube():
 
@@ -33,7 +34,8 @@ class Icecube():
         return [(self.wavelengths[i], _data[i]) for i in xrange(len(self.wavelengths))]
 
     def __enter__(self):
-        wavelengths = self.parseWavelengths("/home/photon/.wavelength")
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        wavelengths = self.parseWavelengths(dir_path + "/.oceanOpticsWavelength")
         context = usb1.USBContext()
         self.icecube = context.openByVendorIDAndProductID(0x2457, 0x1022, skip_on_error=True)
         self.icecube.claimInterface(0)

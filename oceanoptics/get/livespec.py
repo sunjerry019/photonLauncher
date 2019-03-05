@@ -1,3 +1,13 @@
+#!/usr/bin/env python2
+
+
+"""
+Script to get spectrum from OceanOptics Spectroscope
+
+Things to modify before use:
+- gid and uid of current user
+"""
+
 import sys
 sys.path.insert(0, '../../helpers/')
 from getSpectra import Icecube
@@ -13,17 +23,18 @@ import grp
 def main(n, description,intTime):
     c = 0
     foldername = time.strftime("%Y%m%d_%H%M")
-    uid = pwd.getpwnam("photon").pw_uid
-    gid = grp.getgrnam("photon").gr_gid
+    uid = pwd.getpwnam("sunyudong").pw_uid
+    gid = grp.getgrnam("sunyudong").gr_gid
     if not n == -1:
         os.mkdir(foldername)
-	path = foldername
-	os.chown(path, uid, gid)
+        path = foldername
+        os.chown(path, uid, gid)
         if not description == None:
             z = open("spectra_log", "a")
+            os.chown("spectra_log", uid, gid)
             z.write("{}\t{}\n".format(foldername, description))
-	    with open("{}/meta.info".format(foldername), 'w') as f:
-	        f.write("{}\t{}\n".format(foldername, description))
+        with open("{}/meta.info".format(foldername), 'w') as f:
+            f.write("{}\tintTime = {} ms\t{}\n".format(foldername, intTime, description))
 
     with Icecube() as cube:
         cube.setIntegrationTime(intTime)
@@ -55,15 +66,13 @@ def main(n, description,intTime):
                     with open("{}/data_{}".format(foldername,n) , 'w') as f:
                         for i in spec:
                             f.write("{}\t{}\n".format(i[0], i[1]))
-		    os.chown("{}/data_{}".format(foldername,n), uid, gid)
-		    n -= 1
+                    os.chown("{}/data_{}".format(foldername,n), uid, gid)
+                    n -= 1
                     print " now {} readings left".format(n)
-
 
             except KeyboardInterrupt:
                 print " --- EXITING --- "
                 break
-
 
 def init():
     parser = argparse.ArgumentParser()
