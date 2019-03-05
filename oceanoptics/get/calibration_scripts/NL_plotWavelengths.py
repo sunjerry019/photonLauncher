@@ -5,35 +5,37 @@ from pathlib import Path
 
 class plotWavelengths():
     def __init__(self):
-        self.wavelengths = { 730.0: 1 }
+        self.wavelengths = { 730.0 : 1 , 674.06 : 1, 666.05 : 1, 741.99: 1 }
         self.dataDir = "./"
         self.plotDataFile = "./data.dat"
         self.rawData = {}
+        self.data = {}
         # wavelength > intTime > intensities
         for wv in self.wavelengths:
             self.rawData[wv] = dict()
+            self.data[wv] = dict()
 
-        self.data = dict()
         self.parseData()
         self.writeData()
 
     def writeData(self):
         dataPrintArr = ["{}\t{}"]*len(self.wavelengths) # wavelength <tab> std
         dataPrintStr = "\t".join(dataPrintArr)
-        
+
         with open(self.plotDataFile, "w") as f:
             # Write Comment Desc
             _wvs = self.wavelengths.keys()
             l2 = ["Error"]*len(self.wavelengths)
             commentArr = [val for pair in zip(_wvs, l2) for val in pair]
-            f.write("# intTime\t" + dataPrintStr.format(*commentArr))
+            f.write("# intTime\t" + dataPrintStr.format(*commentArr) + "\n")
 
             for _intT in self.data[next(iter(self.wavelengths))]:
+                # print(_intT)
                 # intensity_1, error_1, ...
                 outputArr = []
                 for _wv in self.wavelengths:
                     outputArr += self.data[_wv][_intT]
-                f.write("{}\t".format(_intT) + dataPrintStr.format(*outputArr))
+                f.write("{}\t".format(_intT) + dataPrintStr.format(*outputArr) + "\n")
 
     def parseData(self):
         dirlist = Path(self.dataDir).glob('**/*.0')
@@ -63,10 +65,9 @@ class plotWavelengths():
                 _e = np.mean(_a, dtype=np.float64)
                 _s = np.std(_a, dtype=np.float64)
                 self.rawData[_wv][_intT] = _a
-                self.data[_wv] = dict()
                 self.data[_wv][_intT] = [_e, _s]
+            # print(self.data)
 
         print("\033[KWavelengths Aggregated")
-
 
 plotWavelengths()
