@@ -20,9 +20,9 @@ import numpy as np
 import pwd
 import grp
 
-def main(n, description,intTime):
+def main(n, description,intTime, noPlot):
     c = 0
-    foldername = time.strftime("%Y%m%d_%H%M")
+    foldername = time.strftime("%Y%m%d_%H%M%S")
     uid = pwd.getpwnam("sunyudong").pw_uid
     gid = grp.getgrnam("sunyudong").gr_gid
     if not n == -1:
@@ -38,40 +38,57 @@ def main(n, description,intTime):
 
     with Icecube() as cube:
         cube.setIntegrationTime(intTime)
+        totalSet = False
         while True:
             try:
-                sys.stdout.write("\r{}".format(n))
-                spec = cube.getSpectra()
-                Y = [i[1] for i in spec]
-
-                if c == 0: #init
-                    X = [i[0] for i in spec]
-                    plt.ion()
-                    with plt.style.context('fivethirtyeight'):
-                        graph = plt.plot(X,Y)[0]
-                        plt.xlabel("Wavelength/nm")
-                        plt.ylabel("Pixel intensity")
-                    c = 1
-                else:
-                    graph.set_ydata(Y)
-                    with plt.style.context('fivethirtyeight'):
-                        plt.draw()
-                        plt.pause(0.01)
-
-                sleep(0.05)
-
+                # sys.stdout.write("\r{}".format(n))
                 if n == 0:
+                    print "\nAcquisition Complete"
                     break
                 elif n > 0:
+                    # http://www.kahfei.com/2011/03/11/print-without-newline-in-python/
+                    if not totalSet:
+                        count = 0
+                        total = n
+                        digits = int(np.floor(np.log10(total)) + 1)
+                        printString = "Acquiring [{:>"+ str(digits) +"}/{}] Left: {}\033[K\r"
+                        totalSet = True
+
+                    count += 1
+                    print printString.format(count, total, n - 1),
+                else:
+                    print "\033[KLive Plotting\r",
+
+                spec = cube.getSpectra()
+
+                if not noPlot:
+                    Y = [i[1] for i in spec]
+                    if c == 0: #init
+                        X = [i[0] for i in spec]
+                        plt.ion()
+                        with plt.style.context('fivethirtyeight'):
+                            graph = plt.plot(X,Y)[0]
+                            plt.xlabel("Wavelength/nm")
+                            plt.ylabel("Pixel intensity")
+                        c = 1
+                    else:
+                        graph.set_ydata(Y)
+                        with plt.style.context('fivethirtyeight'):
+                            plt.draw()
+                            plt.pause(0.01)
+
+                # sleep(0.05)
+
+                if n > 0:
                     with open("{}/data_{}".format(foldername,n) , 'w') as f:
                         for i in spec:
                             f.write("{}\t{}\n".format(i[0], i[1]))
                     os.chown("{}/data_{}".format(foldername,n), uid, gid)
                     n -= 1
-                    print " now {} readings left".format(n)
+                    # print " now {} readings left".format(n)
 
             except KeyboardInterrupt:
-                print " --- EXITING --- "
+                print "\n --- EXITING --- "
                 break
 
 def init():
@@ -80,7 +97,8 @@ def init():
     #parser.add_argument('-p','--plot', action = 'store_true', help = "flag to enable plotting")
     parser.add_argument('-d', '--description', type = str, help = "label each acquisition", default = None)
     parser.add_argument('-t', '--intTime', type = float, help = "milliseconds of integration time", default = 2)
+    parser.add_argument('-p', '--noPlot', action='store_true')
     args = parser.parse_args()
 
-    main(args.n, args.description, args.intTime)
+    main(args.n, args.description, args.intTime, args.noPlot)
 init()
