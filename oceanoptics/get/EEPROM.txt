@@ -1,0 +1,94 @@
+Reading Byte 0
+17
+('\x05', '\x00', 'U', 'S', 'B', '4', 'C', '0', '2', '5', '7', '2', '\x00', '\x00', '\x00', '\x00', '\x00')
+Reading Byte 1
+17
+('\x05', '\x01', '3', '4', '5', '.', '0', '7', '3', '0', '1', '0', '\x00', '\x02', 'p', '\xab', '\x83')
+Reading Byte 2
+17
+('\x05', '\x02', '0', '.', '2', '1', '7', '0', '9', '3', '\x00', '0', '\x00', '\x02', 'p', '\xab', '\x83')
+Reading Byte 3
+17
+('\x05', '\x03', '-', '6', '.', '1', '6', '0', '7', '3', '0', 'e', '-', '0', '0', '6', '\x00')
+Reading Byte 4
+17
+('\x05', '\x04', '-', '3', '.', '1', '2', '4', '4', '9', '0', 'e', '-', '0', '1', '0', '\x00')
+Reading Byte 5
+17
+('\x05', '\x05', '0', '.', '0', '0', '0', '0', '0', '0', 'e', '+', '0', '0', '0', '\x00', '\x00')
+Reading Byte 6
+17
+('\x05', '\x06', '0', '.', '0', '0', '0', '0', '0', '0', 'e', '+', '0', '0', '0', '\x00', '\x00')
+Reading Byte 7
+17
+('\x05', '\x07', '0', '.', '0', '0', '0', '0', '0', '0', 'e', '+', '0', '0', '0', '\x00', '\x00')
+Reading Byte 8
+17
+('\x05', '\x08', '0', '.', '0', '0', '0', '0', '0', '0', 'e', '+', '0', '0', '0', '\x00', '\x00')
+Reading Byte 9
+17
+('\x05', '\t', '0', '.', '0', '0', '0', '0', '0', '0', 'e', '+', '0', '0', '0', '\x00', '\x00')
+Reading Byte 10
+17
+('\x05', '\n', '0', '.', '0', '0', '0', '0', '0', '0', 'e', '+', '0', '0', '0', '\x00', '\x00')
+Reading Byte 11
+17
+('\x05', '\x0b', '0', '.', '0', '0', '0', '0', '0', '0', 'e', '+', '0', '0', '0', '\x00', '\x00')
+Reading Byte 12
+17
+('\x05', '\x0c', '0', '.', '0', '0', '0', '0', '0', '0', 'e', '+', '0', '0', '0', '\x00', '\x00')
+Reading Byte 13
+17
+('\x05', '\r', '0', '.', '0', '0', '0', '0', '0', '0', 'e', '+', '0', '0', '0', '\x00', '\x00')
+Reading Byte 14
+17
+('\x05', '\x0e', '0', '\x00', '0', '0', '0', '0', '0', '0', 'e', '+', '0', '0', '0', '\x00', '\x00')
+Reading Byte 15
+17
+('\x05', '\x0f', '0', '3', ' ', '0', '0', '0', ' ', '0', '2', '5', '\x00', '\xff', '\xff', '\xff', '\xff')
+Reading Byte 16
+17
+('\x05', '\x10', 'P', '3', '1', ' ', 'C', '\x00', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff')
+Reading Byte 17
+17
+('\x05', '\x11', '\x00', '\x00', '1', '@', '\x00', '}', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00')
+Reading Byte 18
+17
+('\x05', '\x12', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff')
+Reading Byte 19
+17
+('\x05', '\x13', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff')
+Reading Byte 20
+17
+('\x05', '\x14', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff')
+Reading Byte 21
+17
+('\x05', '\x15', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff')
+Reading Byte 22
+17
+('\x05', '\x16', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff')
+Reading Byte 23
+17
+('\x05', '\x17', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff')
+Reading Byte 24
+17
+('\x05', '\x18', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff')
+Reading Byte 25
+17
+('\x05', '\x19', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff')
+Reading Byte 26
+17
+('\x05', '\x1a', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff')
+Reading Byte 27
+17
+('\x05', '\x1b', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff')
+Reading Byte 28
+17
+('\x05', '\x1c', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff')
+Reading Byte 29
+17
+('\x05', '\x1d', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff')
+Reading Byte 30
+17
+('\x05', '\x1e', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff')
+27.935712

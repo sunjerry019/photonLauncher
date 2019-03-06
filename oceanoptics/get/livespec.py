@@ -51,13 +51,13 @@ def main(n, description,intTime, noPlot):
                         count = 0
                         total = n
                         digits = int(np.floor(np.log10(total)) + 1)
-                        printString = "Acquiring [{:>"+ str(digits) +"}/{}] Left: {}\033[K\r"
+                        printString = "[{:>10} degC] Acquiring [{:>"+ str(digits) +"}/{}] Left: {}\033[K\r"
                         totalSet = True
 
                     count += 1
-                    print printString.format(count, total, n - 1),
+                    print printString.format(str(cube.getTemp()), count, total, n - 1),
                 else:
-                    print "\033[KLive Plotting\r",
+                    print "[{:>10} degC] Live Plotting\033[K\r".format(str(cube.getTemp())),
 
                 spec = cube.getSpectra()
 
