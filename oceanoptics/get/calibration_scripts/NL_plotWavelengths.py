@@ -2,6 +2,7 @@
 
 import numpy as np
 from pathlib import Path
+import pickle
 
 class plotWavelengths():
     def __init__(self):
@@ -11,12 +12,20 @@ class plotWavelengths():
         self.rawData = {}
         self.data = {}
         # wavelength > intTime > intensities
-        for wv in self.wavelengths:
-            self.rawData[wv] = dict()
-            self.data[wv] = dict()
+        # for wv in self.wavelengths:
+        #     self.rawData[wv] = dict()
+        #     self.data[wv] = dict()
 
         self.parseData()
-        self.writeData()
+        # self.writeData()
+
+    def setWavelengths(self, wavelengths):
+        if wavelengths:
+            self.wavelengths = wavelengths
+
+    def setOutput(self, outputFile):
+        if outputFile:
+            self.plotDataFile = outputFile
 
     def writeData(self):
         dataPrintArr = ["{}\t{}"]*len(self.wavelengths) # wavelength <tab> std
@@ -55,12 +64,18 @@ class plotWavelengths():
                         a = line.split("\t")
                         _wv = float(a[0])
                         _in = float(a[1])
-                        if _wv in self.wavelengths:
-                            if _intT not in self.rawData[_wv]:
-                                self.rawData[_wv][_intT] =[]
-                            self.rawData[_wv][_intT].append(_in)
+                        # if _wv in self.wavelengths:
+                        #     if _intT not in self.rawData[_wv]:
+                        #         self.rawData[_wv][_intT] =[]
+                        #     self.rawData[_wv][_intT].append(_in)
+                        if _wv not in self.rawData:
+                            self.rawData[_wv] = dict()
+                            self.data[_wv] = dict()
+                        if _intT not in self.rawData[_wv]:
+                            self.rawData[_wv][_intT] = []
+                        self.rawData[_wv][_intT].append(_in)
 
-            for _wv in self.wavelengths:
+            for _wv in self.rawData:
                 _a = np.array(self.rawData[_wv][_intT])
                 _e = np.mean(_a, dtype=np.float64)
                 _s = np.std(_a, dtype=np.float64)
@@ -70,4 +85,8 @@ class plotWavelengths():
 
         print("\033[KWavelengths Aggregated")
 
-plotWavelengths()
+if __name__ == '__main__':
+    x = plotWavelengths()
+    with open("model.pkl", 'wb') as handle:
+        pickle.dump(x, handle)
+    x.writeData()
