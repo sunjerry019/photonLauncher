@@ -13,6 +13,7 @@ class Calibrate():
         self.rawData = dict()
         self.data = dict()
         self.darkSubtracted = dict()
+        self.output = "./data.dat"
         # data = struct <typ: <wavelength : np.array(mean, std)>>
 
         # Parse the data
@@ -22,7 +23,13 @@ class Calibrate():
         self.parseData("tung")
 
         self.subtractDark()
-        # self.outputToFile()
+        # self.calibrateWavelengths()
+        self.outputToFile()
+
+    def outputToFile(self):
+        with open(self.output, 'w') as f:
+            for _wv in self.darkSubtracted:
+                f.write('{}\t{}\t{}\n'.format(_wv, self.darkSubtracted[_wv][0], self.darkSubtracted[_wv][1]))
 
     def subtractDark(self):
         for wavelength in self.data["dark"]:
@@ -44,6 +51,8 @@ class Calibrate():
             self.darkSubtracted[wavelength] = [_e, _s]
 
     def parseData(self, typ):
+        # TODO: correct NL before aggregating
+
         self.rawData[typ] = dict()
         self.data[typ] = dict()
 
