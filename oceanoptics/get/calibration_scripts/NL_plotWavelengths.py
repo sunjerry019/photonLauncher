@@ -38,7 +38,7 @@ class plotWavelengths():
             commentArr = [val for pair in zip(_wvs, l2) for val in pair]
             f.write("# intTime\t" + dataPrintStr.format(*commentArr) + "\n")
 
-            for _intT in self.data[next(iter(self.wavelengths))]:
+            for _intT in sorted(self.data[next(iter(self.wavelengths))]):
                 # print(_intT)
                 # intensity_1, error_1, ...
                 outputArr = []
