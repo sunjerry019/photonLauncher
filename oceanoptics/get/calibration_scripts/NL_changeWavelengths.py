@@ -8,6 +8,6 @@ import pickle
 with open("model.pkl", 'rb') as handle:
     x = pickle.load(handle)
 
-x.setWavelengths({ 730.0 : 1 , 674.06 : 1 })
+x.setWavelengths({ 730.0 : 1 , 674.06 : 1 , 738.19: 1, 658.41: 1})
 x.setOutput("data2.dat")
 x.writeData()

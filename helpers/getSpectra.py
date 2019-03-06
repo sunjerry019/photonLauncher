@@ -12,6 +12,17 @@ class Icecube():
         wavelengths = [float(y) for y in text]
         return wavelengths
 
+    def getTemp(self):
+        self.icecube.bulkWrite(1, '\x6C')
+        data = self.icecube.bulkRead(1, 3)
+        startByte = struct.unpack('<c', data[0:1])[0]
+        if startByte == b'\x08':
+            # Read successful
+            ADC = struct.unpack('<h', data[1:])[0]
+            return 0.003906 * ADC
+        else:
+            raise Exception('ADC Read unsuccessful')
+
     """ integrationTime is in milliseconds for convenience """
     def setIntegrationTime(self, x):
         t = struct.pack('<I', x * 1000)
