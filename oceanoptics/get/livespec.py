@@ -1,6 +1,5 @@
 #!/usr/bin/env python2
 
-
 """
 Script to get spectrum from OceanOptics Spectroscope
 
@@ -88,6 +87,8 @@ def main(n, description,intTime, noPlot):
                     # print " now {} readings left".format(n)
 
             except KeyboardInterrupt:
+                cube.releaseInterface(0)
+                cube.close()
                 print "\n --- EXITING --- "
                 break
 
