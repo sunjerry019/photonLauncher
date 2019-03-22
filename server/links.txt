@@ -1,0 +1,12 @@
+# AIM:
+Set up 1 x 1TB + 1 x 3TB = 4TB Btrfs extended device
+Weekly snapshots
+
+# BTRFS Links
+
+http://marc.merlins.org/perso/btrfs/post_2014-05-21_My-Btrfs-Talk-at-Linuxcon-JP-2014.html [ About Btrfs ]
+https://serverfault.com/questions/213861/multi-device-btrfs-filesystem-with-disk-of-different-size
+https://wiki.archlinux.org/index.php/btrfs#Multi-device_file_system [ Arch Linux Wiki ]
+https://gist.github.com/idvoretskyi/9a516921fab0ad4e3ea0 [ Arch Linux step-by-step installation on btrfs ]
+https://btrfs.wiki.kernel.org/index.php/SysadminGuide#Snapshots [ Snapshotting ]
+https://wiki.archlinux.org/index.php/Snapper [ Snapper to Snapshot ]
