@@ -15,6 +15,7 @@ class Icecube():
         return wavelengths
 
     def getAutonulling(self):
+        # Somehow Flame moves the autonulling to post-production, so we have to do this
         _an = struct.unpack("<h", "".join(self.getEEPROM(17)[4:6]))[0]
         return 65535/_an
 
@@ -163,8 +164,6 @@ class Icecube():
             self.autonulling = self.getAutonulling()
 
         self.wavelengths = wavelengths
-
-        print(self.getEEPROM())
 
         return self
 

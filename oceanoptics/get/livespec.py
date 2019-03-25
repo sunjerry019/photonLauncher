@@ -34,8 +34,26 @@ def main(n, description,intTime, noPlot):
             z.write("{}\t{}\n".format(foldername, description))
         with open("{}/meta.info".format(foldername), 'w') as f:
             f.write("{}\tintTime = {} ms\t{}\n".format(foldername, intTime, description))
+        os.chown("{}/meta.info".format(foldername), uid, gid)
 
     with Icecube() as cube:
+        # Write model information into meta.info
+        with open("{}/meta.info".format(foldername), 'w') as f:
+            f.write("Serial ({}) = {}\n".format(cube.type, cube.getSingleEEPROM(0)))
+
+        # Write some metadata about corrections
+        with open("{}/linearity.corr".format(foldername), 'a') as f:
+            f.write("Linearity Correction -> {}th Order Polynomial\n".format(cube.getSingleEEPROM(14)))
+            for i in xrange(6, 14):
+                f.write("{}\t{}\n".format(i - 6, cube.getSingleEEPROM(i)))
+        os.chown("{}/linearity.corr".format(foldername), uid, gid)
+
+        with open("{}/wavelength.corr".format(foldername), 'a') as f:
+            f.write("Wavelength Correction\n")
+            for i in xrange(1, 5):
+                f.write("{}\t{}".format(i - 1, cube.getSingleEEPROM(i)))
+        os.chown("{}/wavelength.corr".format(foldername), uid, gid)
+
         cube.setIntegrationTime(intTime)
         totalSet = False
         while True:
