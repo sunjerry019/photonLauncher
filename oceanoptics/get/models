@@ -1,0 +1,6 @@
+Model       FLAME-S-XR1-ES
+Grating     GRATING_#XR1 - 500 line/mm blased at 250mm
+Bandwidth   200 - 1035 nm
+Options     DET2B-200-1100 Detector, L2Lens, INTSMA-025Slit
+Serial      FLMS14245
+linearity   99.71788
