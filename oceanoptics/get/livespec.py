@@ -38,7 +38,7 @@ def main(n, description,intTime, noPlot):
 
     with Icecube() as cube:
         # Write model information into meta.info
-        with open("{}/meta.info".format(foldername), 'w') as f:
+        with open("{}/meta.info".format(foldername), 'a') as f:
             f.write("Serial ({}) = {}\n".format(cube.type, cube.getSingleEEPROM(0)))
 
         # Write some metadata about corrections
@@ -51,7 +51,7 @@ def main(n, description,intTime, noPlot):
         with open("{}/wavelength.corr".format(foldername), 'a') as f:
             f.write("Wavelength Correction\n")
             for i in xrange(1, 5):
-                f.write("{}\t{}".format(i - 1, cube.getSingleEEPROM(i)))
+                f.write("{}\t{}\n".format(i - 1, cube.getSingleEEPROM(i)))
         os.chown("{}/wavelength.corr".format(foldername), uid, gid)
 
         cube.setIntegrationTime(intTime)
