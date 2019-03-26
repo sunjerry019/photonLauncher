@@ -1,9 +1,4 @@
 from __future__ import division
-from __future__ import print_function
-from builtins import chr
-from builtins import str
-from builtins import range
-from builtins import object
 import binascii
 import struct
 import usb1
@@ -11,7 +6,7 @@ import os
 from collections import deque
 import time
 
-class Icecube(object):
+class Icecube():
     def parseWavelengths(self, x):
         with open(x) as f:
             text = f.read()
@@ -64,7 +59,7 @@ class Icecube(object):
         }
         self.eepromEnd = _end[self.type]
         if idx is None:
-            for i in range(0, self.eepromEnd):
+            for i in xrange(0, self.eepromEnd):
                 _u = self.getSingleEEPROM(i)
                 _eeprom.append(_u)
             return _eeprom
@@ -90,7 +85,7 @@ class Icecube(object):
         try:                                                               # Decode to ascii if possible
             _u = "".join(_u).decode('ascii')
             _u = float(_u)
-        except (UnicodeDecodeError, ValueError) as e:
+        except (UnicodeDecodeError, ValueError), e:
             pass
 
         return _u
@@ -116,21 +111,21 @@ class Icecube(object):
         _data = []
         self.icecube.bulkWrite(self.endpoints["EP1OUT"], '\x09')
         if self.type == "USB4000":
-            for _ in range(4):
+            for _ in xrange(4):
             	data.append(self.icecube.bulkRead(self.endpoints["EP6IN"], 512))
-            for _ in range(11):
+            for _ in xrange(11):
             	data.append(self.icecube.bulkRead(self.endpoints["EP2IN"], 512))
         else:
-            for _ in range(8):
+            for _ in xrange(8):
                 data.append(self.icecube.bulkRead(self.endpoints["EP2IN"], 512))
         # Synchronization Byte
         self.icecube.bulkRead(self.endpoints["EP2IN"], 1)
 
-        for j in range(len(data)):
-            for i in range(256):
+        for j in xrange(len(data)):
+            for i in xrange(256):
                 x = data[j][2*i:(i+1)*2]
                 _data.append(struct.unpack('<h', x)[0])
-        return [(self.wavelengths[i], self.autonulling * _data[i]) for i in range(len(self.wavelengths))]
+        return [(self.wavelengths[i], self.autonulling * _data[i]) for i in xrange(len(self.wavelengths))]
 
     def __enter__(self):
         dir_path = os.path.dirname(os.path.realpath(__file__))
