@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 
 """
 Script to get spectrum from OceanOptics Spectroscope
@@ -6,10 +6,7 @@ Script to get spectrum from OceanOptics Spectroscope
 Things to modify before use:
 - gid and uid of current user
 """
-from __future__ import print_function
 
-from builtins import str
-from builtins import range
 import sys
 sys.path.insert(0, '../../helpers/')
 from getSpectra import Icecube
@@ -48,13 +45,13 @@ def main(n, description,intTime, noPlot):
             # Write some metadata about corrections
             with open("{}/linearity.corr".format(foldername), 'a') as f:
                 f.write("Linearity Correction -> {}th Order Polynomial\n".format(cube.getSingleEEPROM(14)))
-                for i in range(6, 14):
+                for i in xrange(6, 14):
                     f.write("{}\t{}\n".format(i - 6, cube.getSingleEEPROM(i)))
             os.chown("{}/linearity.corr".format(foldername), uid, gid)
 
             with open("{}/wavelength.corr".format(foldername), 'a') as f:
                 f.write("Wavelength Correction\n")
-                for i in range(1, 5):
+                for i in xrange(1, 5):
                     f.write("{}\t{}\n".format(i - 1, cube.getSingleEEPROM(i)))
             os.chown("{}/wavelength.corr".format(foldername), uid, gid)
 
@@ -64,7 +61,7 @@ def main(n, description,intTime, noPlot):
             try:
                 # sys.stdout.write("\r{}".format(n))
                 if n == 0:
-                    print("\nAcquisition Complete")
+                    print "\nAcquisition Complete"
                     break
                 elif n > 0:
                     # http://www.kahfei.com/2011/03/11/print-without-newline-in-python/
@@ -76,9 +73,9 @@ def main(n, description,intTime, noPlot):
                         totalSet = True
 
                     count += 1
-                    print(printString.format(str(cube.getTemp()), count, total, n - 1), end=' ')
+                    print printString.format(str(cube.getTemp()), count, total, n - 1),
                 else:
-                    print("[{:>10} degC] Live Plotting\033[K\r".format(str(cube.getTemp())), end=' ')
+                    print "[{:>10} degC] Live Plotting\033[K\r".format(str(cube.getTemp())),
 
                 spec = cube.getSpectra()
 
@@ -111,7 +108,7 @@ def main(n, description,intTime, noPlot):
             except KeyboardInterrupt:
                 cube.releaseInterface(0)
                 cube.close()
-                print("\n --- EXITING --- ")
+                print "\n --- EXITING --- "
                 break
 
 def init():
