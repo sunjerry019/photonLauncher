@@ -1,6 +1,6 @@
 from __future__ import division
 from __future__ import print_function
-from builtins import chr
+from builtins import bytes
 from builtins import str
 from builtins import range
 from builtins import object
@@ -21,7 +21,7 @@ class Icecube(object):
 
     def getAutonulling(self):
         # Somehow Flame moves the autonulling to post-production, so we have to do this
-        _an = struct.unpack("<h", "".join(self.getEEPROM(17)[4:6]))[0]
+        _an = struct.unpack("<h", b"".join(self.getEEPROM(17)[4:6]))[0]
         return 65535/_an
 
     def getEEPROM(self, idx = None):
@@ -73,7 +73,7 @@ class Icecube(object):
 
     def getSingleEEPROM(self, i):
         # print "Reading Byte " + str(i)
-        self.icecube.bulkWrite(self.endpoints["EP1OUT"], '\x05' + chr(i))
+        self.icecube.bulkWrite(self.endpoints["EP1OUT"], b'\x05' + bytearray((i,)))
         data = self.icecube.bulkRead(self.endpoints["EP1OUT"], 17)
         # bytes = [data[i:i+2] for i in xrange(0, len(data), 2)]
         retCount = len(data)
@@ -87,8 +87,8 @@ class Icecube(object):
         while unpacked and unpacked[0] != b'\x00':                         # Discard everything after \x00
             _u.append(unpacked.popleft())
 
-        try:                                                               # Decode to ascii if possible
-            _u = "".join(_u).decode('ascii')
+        try:
+            _u = b"".join(_u).decode('ascii')
             _u = float(_u)
         except (UnicodeDecodeError, ValueError) as e:
             pass
@@ -96,7 +96,7 @@ class Icecube(object):
         return _u
 
     def getTemp(self):
-        self.icecube.bulkWrite(1, '\x6C')
+        self.icecube.bulkWrite(1, b'\x6C')
         data = self.icecube.bulkRead(1, 3)
         startByte = struct.unpack('<c', data[0:1])[0]
         if startByte == b'\x08':
@@ -108,13 +108,13 @@ class Icecube(object):
 
     """ integrationTime is in milliseconds for convenience """
     def setIntegrationTime(self, x):
-        t = struct.pack('<I', x * 1000)
-        self.icecube.bulkWrite(1, '\x02'+t)
+        t = struct.pack('<I', int(x * 1000))
+        self.icecube.bulkWrite(1, b'\x02'+t)
 
     def getSpectra(self):
         data = []
         _data = []
-        self.icecube.bulkWrite(self.endpoints["EP1OUT"], '\x09')
+        self.icecube.bulkWrite(self.endpoints["EP1OUT"], b'\x09')
         if self.type == "USB4000":
             for _ in range(4):
             	data.append(self.icecube.bulkRead(self.endpoints["EP6IN"], 512))
@@ -161,7 +161,7 @@ class Icecube(object):
                 exit(1)
 
         self.icecube.claimInterface(0)
-        self.icecube.bulkWrite(self.endpoints["EP1OUT"], '\x01') # init message
+        self.icecube.bulkWrite(self.endpoints["EP1OUT"], b'\x01') # init message
 
         if self.type == "FLAME-S":
             # print("Apparently we need 3 seconds to start up")
