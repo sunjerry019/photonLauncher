@@ -44,6 +44,7 @@ def main(n, description,intTime, noPlot):
             # Write model information into meta.info
             with open("{}/meta.info".format(foldername), 'a') as f:
                 f.write("Serial ({}) = {}\n".format(cube.type, cube.getSingleEEPROM(0)))
+                f.write("Autonulling Factor = {}".format(cube.getAutonulling()))
 
             # Write some metadata about corrections
             with open("{}/linearity.corr".format(foldername), 'a') as f:
