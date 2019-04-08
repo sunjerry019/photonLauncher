@@ -112,6 +112,10 @@ class Icecube(object):
         self.icecube.bulkWrite(1, b'\x02'+t)
 
     def getSpectra(self):
+        """
+        We auto multiply the autonulling factor here
+        """
+
         data = []
         _data = []
         self.icecube.bulkWrite(self.endpoints["EP1OUT"], b'\x09')
