@@ -9,13 +9,14 @@ class Calibration():
     def __init__(self, _type, _coefficients):
         self.coefficients = _coefficients
         self.type = _type
+        if self.type == "NL": self.coefficients.insert(0, 0)
+
+        print(self)
 
     def calibrate(self, _value):
         corrFactor = 0
         for i in range(len(self.coefficients)):
             corrFactor += self.coefficients[i] * (_value**i)
-
-        if self.type == "NL": corrFactor *= _value
 
         return corrFactor
 
