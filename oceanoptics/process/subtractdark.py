@@ -11,8 +11,6 @@ class Calibration():
         self.type = _type
         if self.type == "NL": self.coefficients.insert(0, 0)
 
-        print(self)
-
     def calibrate(self, _value):
         corrFactor = 0
         for i in range(len(self.coefficients)):
