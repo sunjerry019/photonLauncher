@@ -101,6 +101,7 @@ class SubtractDark():
                     if wavelength not in self.rawData[typ]:
                         self.rawData[typ][wavelength] = []
                     self.rawData[typ][wavelength].append(val)
+
         print("\033[K[{}] Files Parsed".format(typ))
 
         for wavelength in self.rawData[typ]:
