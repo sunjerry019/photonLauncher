@@ -15,7 +15,7 @@ class Calibration():
         for i in range(len(self.coefficients)):
             corrFactor += self.coefficients[i] * (_value**i)
 
-        if self.type == "NL": corrFactor * _value
+        if self.type == "NL": corrFactor *= _value
 
         return corrFactor
 
