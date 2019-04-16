@@ -113,7 +113,7 @@ def main(n, description,intTime, noPlot):
                 cube.releaseInterface(0)
                 cube.close()
                 print("\n --- EXITING --- ")
-                break
+                sys.exit()
 
 def init():
     parser = argparse.ArgumentParser()
