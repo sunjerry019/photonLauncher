@@ -7,6 +7,7 @@ from scipy.sparse.linalg import spsolve
 import matplotlib.pyplot as plt
 
 ## defines the baseline function used to iteratively process raman data
+## rudimentary form of "fitness" assignment based on comparison between data points and iteratively modified "weight" matrix. IE if peaks are broad, this algorithm will NOT exclude them from fit.  
 def baseline_als(y, lam, p, niter=10):
 	L = len(y)
 	D = sparse.csc_matrix(np.diff(np.eye(L), 2))
@@ -21,14 +22,16 @@ def baseline_als(y, lam, p, niter=10):
 	return z
 
 ##parses through all data files and executes function, plots at the end
-for i in range(10,17):
-	_data = np.loadtxt('data/6ums_{}mWcut_5mWgreenlaserraman_100%_5acquisition.txt'.format(i))
+for i in range(,):
+	_data = np.loadtxt('data{}.txt'.format(i))
 	y = _data[:, 1]
-	y = y[0:2260]
+	##truncate data set if necessary
+	#y = y[0:2260]
 	print('Parsing...done', y)
 	x = _data[:, 0]
-	x = x[0:2260]
+	#x = x[0:2260]
 	print('Parsing...done', x)
+	#enter parameters lam, p and number of iterations
 	z = baseline_als(y, 5*10**7,0.0005,100)
 	print('Cuz you know its all about that base', z)
 
@@ -39,7 +42,7 @@ for i in range(10,17):
 	data = np.append(x, final, axis=1)
 
 	print(data)
-	np.savetxt('BASED_6ums_{}mWcut_5mWgreenlaserraman_100%_5acquisition.txt'.format(i), data, fmt=['%.2f','%.3f'], delimiter='\t')
+	np.savetxt('BASED data{}.txt'.format(i), data, fmt=['%.2f','%.3f'], delimiter='\t')
 
 	plt.plot(x, final)
 	plt.show()
