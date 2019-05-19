@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# allaboutthatbaseMARK-I
+
 import numpy as np
 from scipy import sparse
 from numpy import array
@@ -7,7 +9,7 @@ from scipy.sparse.linalg import spsolve
 import matplotlib.pyplot as plt
 
 ## defines the baseline function used to iteratively process raman data
-## rudimentary form of "fitness" assignment based on comparison between data points and iteratively modified "weight" matrix. IE if peaks are broad, this algorithm will NOT exclude them from fit.  
+## rudimentary form of "fitness" assignment based on comparison between data points and iteratively modified "weight" matrix. IE if peaks are broad, this algorithm will NOT exclude them from fit.
 def baseline_als(y, lam, p, niter=10):
 	L = len(y)
 	D = sparse.csc_matrix(np.diff(np.eye(L), 2))
