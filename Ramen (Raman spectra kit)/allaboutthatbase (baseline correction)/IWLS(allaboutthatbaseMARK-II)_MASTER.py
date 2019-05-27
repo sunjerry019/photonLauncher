@@ -18,28 +18,27 @@ class MyParser(argparse.ArgumentParser):
         sys.exit(2)
 
 parser = MyParser()
+  
+parser.add_argument('polynomial', action='store', type = int, default=[3], help='An integer for the order of polynomial used to fit the spectrum. Usually 3 (cubic polynomial) is just nice. I will also display fits for 2 adjacent order polynomials to be safe :)')
 
+parser.add_argument('-r','--residual', action='store', type = float, default=[0.001], help='Arbitrary parameter for residual acting as a weight to be applied when evaluating new coefficient vector. It is above but close to 0, Usually on the order of 10^-3 (input 0.001), experiment in the neighbourhood of this value (10^-2,  10^-4 etc) for better fits!')
 
-parser.add_argument('polynomial', action='store', type = int, nargs='+', default=[3], help='An integer for the order of polynomial used to fit the spectrum. Usually 3 (cubic polynomial) is just nice. I will also display fits for 2 adjacent order polynomials to be safe :)')
+parser.add_argument('-c','--coarseness', action='store', type = float, default=[0.0001], help='Arbitrary parameter for coarseness acting as a weight to be applied when evaluating new coefficient vector. Usually on the order of 10^-4 (0.0001), experiment in this neighbourhood (10^-3,  10^-5 etc) for better fits!')
 
-parser.add_argument('-r','--residual', action='store', type = float, nargs='+', default=[0.001], help='Arbitrary parameter for residual acting as a weight to be applied when evaluating new coefficient vector. It is above but close to 0, Usually on the order of 10^-3 (input 0.001), experiment in the neighbourhood of this value (10^-2,  10^-4 etc) for better fits!')
+parser.add_argument('-w','--window', action='store', type = int, default=[50], help='size of rolling window parsing through data array to calculate standard deviation of derivative of data. Usual size=50')
 
-parser.add_argument('-c','--coarseness', action='store', type = float, nargs='+', default=[0.0001], help='Arbitrary parameter for coarseness acting as a weight to be applied when evaluating new coefficient vector. Usually on the order of 10^-4 (0.0001), experiment in this neighbourhood (10^-3,  10^-5 etc) for better fits!')
-
-parser.add_argument('-w','--window', action='store', type = int, nargs='+', default=[50], help='size of rolling window parsing through data array to calculate standard deviation of derivative of data. Usual size=50')
-
-parser.add_argument('-niter','--iterations', action='store', type = int, nargs='+', default=[50], help='Number of iterations. Adjust this and other parameters to ensure fit converges.')
+parser.add_argument('-niter','--iterations', action='store', type = int, default=[50], help='Number of iterations. Adjust this and other parameters to ensure fit converges.')
 
 args = parser.parse_args()
-N = args.polynomial[0]
+N = args.polynomial
 print('Polynomial order received = ',N)
-p = args.residual[0]
+p = args.residual
 print('Residual fitness parameter used = ',p)
-z = args.coarseness[0]
+z = args.coarseness
 print('Coarseness fitness parameter used = ',z)
-w = args.window[0]
+w = args.window
 print('Rolling window size = ',w)
-niter = args.iterations[0]
+niter = args.iterations
 print('Max number of iterations = ',niter)
 #Function1: Calculate coarseness c (L x 1) via a rolling window standard deviation of the first derivative. Rolling window automatically diminishes at the end.
 def rocknroll(input, window):
