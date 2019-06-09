@@ -20,6 +20,7 @@ import shutter
 class Stage():
     def __init__(self, stageAsDict = None):
         # WARNING: THIS IS A STATIC OBJECT THAT DOES NOT DO ANY STAGE MANIPULATION
+        # MEANT TO STORE LIMITS AND POSITIONING DATA OF STAGE
         # IF EXCEPTIONS INVOLVING THE STAGE MUST BE HANDLED, PLEASE HANDLE BEFORE PASSING TO THIS
 
         # set some default values
@@ -155,7 +156,7 @@ class Micos():
         try:
             self.stage.setpos(self.stage.x + x, self.stage.y + y) # Note this is not Micos.setpos
             return self.send("{} {} r".format(x, y))
-        except:
+        except Exception as e:
             pass
 
     def move(self, x, y):
@@ -163,7 +164,7 @@ class Micos():
     		raise RuntimeWarning("This function may not work as intended. Please use with caution.")
             self.stage.setpos(x, y) # Note this is not Micos.setpos
             return self.send("{} {} m".format(x, y))
-        except:
+        except Exception as e:
             pass
 
 	def setpos(self, x, y):
