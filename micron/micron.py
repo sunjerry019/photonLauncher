@@ -176,9 +176,10 @@ class Micos():
 
 		self.homed = True
 
-	def rmove(self, x, y):
+	def rmove(self, x, y, *args, **kwargs):
 		# Relative move
 		# Always call self.stage.setpos first to check limits
+		# *args and **kwargs to allow passing in of waitClear
 
 		# assertion checks
 		assert isinstance(x, (int, float)), "x must be integer or float"
@@ -186,13 +187,14 @@ class Micos():
 
         try:
             self.stage.setpos(self.stage.x + x, self.stage.y + y) # Note this is not Micos.setpos
-            return self.send("{} {} r".format(x, y))
+            return self.send("{} {} r".format(x, y), *args, **kwargs)
         except Exception as e:
             pass
 
-    def move(self, x, y):
+    def move(self, x, y, *args, **kwargs):
     	# Absolute move
     	# Always call self.stage.setpos first to check limits
+    	# *args and **kwargs to allow passing in of waitClear
 
     	# assertion checks
 		assert isinstance(x, (int, float)), "x must be integer or float"
@@ -201,7 +203,7 @@ class Micos():
     	try: 
     		warnings.warn("This function may not work as intended. Please use with caution.", RuntimeWarning)
             self.stage.setpos(x, y) # Note this is not Micos.setpos
-            return self.send("{} {} m".format(x, y))
+            return self.send("{} {} m".format(x, y), *args, **kwargs)
         except Exception as e:
             pass
 
