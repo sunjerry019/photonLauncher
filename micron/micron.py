@@ -26,48 +26,48 @@ import warnings
 import shutter
 
 class Stage():
-    def __init__(self, stageAsDict = None):
-        # WARNING: THIS IS A STATIC OBJECT THAT DOES NOT DO ANY STAGE MANIPULATION
-        # MEANT TO STORE LIMITS AND POSITIONING DATA OF STAGE
-        # IF EXCEPTIONS INVOLVING THE STAGE MUST BE HANDLED, PLEASE HANDLE BEFORE PASSING TO THIS
+	def __init__(self, stageAsDict = None):
+		# WARNING: THIS IS A STATIC OBJECT THAT DOES NOT DO ANY STAGE MANIPULATION
+		# MEANT TO STORE LIMITS AND POSITIONING DATA OF STAGE
+		# IF EXCEPTIONS INVOLVING THE STAGE MUST BE HANDLED, PLEASE HANDLE BEFORE PASSING TO THIS
 
-        # set some default values
-        # we assume stage is initialized (homed)
+		# set some default values
+		# we assume stage is initialized (homed)
 
-        # currently only supports 2-axis. To extend to 3 axis, adjust where appropriate
+		# currently only supports 2-axis. To extend to 3 axis, adjust where appropriate
 
-        # stageAsDict = property -> value
-        # e.g.  { "xlim" : [-5,5] } etc.
+		# stageAsDict = property -> value
+		# e.g.  { "xlim" : [-5,5] } etc.
 
-        # Set xlim and ylim to be 2 identical value for it to automatically find the range (USE WITH CAUTION)
+		# Set xlim and ylim to be 2 identical value for it to automatically find the range (USE WITH CAUTION)
 
-        self.xlim = [-10000, 0]
-        self.ylim = [-10000, 0]
-        self.x    = 0
-        self.y    = 0
+		self.xlim = [-10000, 0]
+		self.ylim = [-10000, 0]
+		self.x    = 0
+		self.y    = 0
 
-        if stageAsDict:
-            self.update(stageAsDict)
+		if stageAsDict:
+			self.update(stageAsDict)
 
-    def __repr__(self):
-        return "Stage <x [{},{}], y [{},{}]>".format(self.xlim[0], self.xlim[1], self.ylim[0], self.ylim[1])
+	def __repr__(self):
+		return "Stage <x [{},{}], y [{},{}]>".format(self.xlim[0], self.xlim[1], self.ylim[0], self.ylim[1])
 
-    def update(self, stageAsDict):
-        for k, v in stageAsDict.items():
-            if k.endswith("lim") and type(v) is not list:
-                raise TypeError("Limit must be a list [lower, upper]")
-            setattr(self, k, v)
+	def update(self, stageAsDict):
+		for k, v in stageAsDict.items():
+			if k.endswith("lim") and type(v) is not list:
+				raise TypeError("Limit must be a list [lower, upper]")
+			setattr(self, k, v)
 
-    def setpos(self, x, y):
-        # We keep track of our own coordinates
-        # Coordinates replied from the stage is not very consistent
+	def setpos(self, x, y):
+		# We keep track of our own coordinates
+		# Coordinates replied from the stage is not very consistent
 
-        # Check if x and y are within range and refuse to move if outside range
-        assert self.xlim[0] <= x <= self.xlim[1], "Outside xrange"
-        assert self.ylim[0] <= x <= self.ylim[1], "Outside yrange"
+		# Check if x and y are within range and refuse to move if outside range
+		assert self.xlim[0] <= x <= self.xlim[1], "Outside xrange"
+		assert self.ylim[0] <= x <= self.ylim[1], "Outside yrange"
 
-        self.x = x
-        self.y = y
+		self.x = x
+		self.y = y
 
 class Micos():
 	def __init__(self, stageConfig = None, noCtrlCHandler = False, unit = "um", noHome = False):
@@ -151,7 +151,7 @@ class Micos():
 	def homeStage(self):
 		# return x.send("cal") 		# DO NOT USE CAL ON RUDOLPH => there are some physical/mechanical issues
 		xl = abs(self.stage.xlim[1] - self.stage.xlim[0])
-        yl = abs(self.stage.ylim[1] - self.stage.ylim[0])
+		yl = abs(self.stage.ylim[1] - self.stage.ylim[0])
 
 		if xl > 0 and yl > 0:
 			# we use faster speed to home the stage
@@ -161,7 +161,7 @@ class Micos():
 			# Home the stage
 			self.send("rm") 			# send to maximum
 			self.setpos(0, 0)
-            self.setlimits(self.stage.xlim[0], self.stage.ylim[0], self.stage.xlim[1], self.stage.ylim[1])
+			self.setlimits(self.stage.xlim[0], self.stage.ylim[0], self.stage.xlim[1], self.stage.ylim[1])
 			self.rmove(x = -xl/2, y = -yl/2)
 
 			# we set the speed back
@@ -185,40 +185,40 @@ class Micos():
 		assert isinstance(x, (int, float)), "x must be integer or float"
 		assert isinstance(y, (int, float)), "y must be integer or float"
 
-        try:
-            self.stage.setpos(self.stage.x + x, self.stage.y + y) # Note this is not Micos.setpos
-            return self.send("{} {} r".format(x, y), *args, **kwargs)
-        except Exception as e:
-            pass
+		try:
+			self.stage.setpos(self.stage.x + x, self.stage.y + y) # Note this is not Micos.setpos
+			return self.send("{} {} r".format(x, y), *args, **kwargs)
+		except Exception as e:
+			pass
 
-    def move(self, x, y, *args, **kwargs):
-    	# Absolute move
-    	# Always call self.stage.setpos first to check limits
-    	# *args and **kwargs to allow passing in of waitClear
+	def move(self, x, y, *args, **kwargs):
+		# Absolute move
+		# Always call self.stage.setpos first to check limits
+		# *args and **kwargs to allow passing in of waitClear
 
-    	# assertion checks
+		# assertion checks
 		assert isinstance(x, (int, float)), "x must be integer or float"
 		assert isinstance(y, (int, float)), "y must be integer or float"
 
-    	try: 
-    		warnings.warn("This function may not work as intended. Please use with caution.", RuntimeWarning)
-            self.stage.setpos(x, y) # Note this is not Micos.setpos
-            return self.send("{} {} m".format(x, y), *args, **kwargs)
-        except Exception as e:
-            pass
+		try: 
+			warnings.warn("This function may not work as intended. Please use with caution.", RuntimeWarning)
+			self.stage.setpos(x, y) # Note this is not Micos.setpos
+			return self.send("{} {} m".format(x, y), *args, **kwargs)
+		except Exception as e:
+			pass
 
 	def setpos(self, x, y):
 		# assertion checks
 		assert isinstance(x, (int, float)), "x must be integer or float"
 		assert isinstance(y, (int, float)), "y must be integer or float"
 
-        self.stage.setpos(x, y)
+		self.stage.setpos(x, y)
 		return self.send("{} {} setpos".format(x, y))
 
 	def getpos(self):
-        # IMPT THIS DOES NOT UPDATE INTERNAL TRACKING COORDS
+		# IMPT THIS DOES NOT UPDATE INTERNAL TRACKING COORDS
 		# returns the position as reported by the stage in the form of [x, y]
-        # Empty split will split by whitespace
+		# Empty split will split by whitespace
 		return self.send("p", waitClear = True).strip().split()
 
 	def setlimits(self, xmin, ymin, xmax, ymax):
