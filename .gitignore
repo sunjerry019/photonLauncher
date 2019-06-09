@@ -1,5 +1,7 @@
 # Custom
 spectra_log
+.vscode
+*.sublime*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
