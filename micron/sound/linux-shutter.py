@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# hashbang but it's meant to be run on windows ._.
 
 # Python Helper to control an optical shutter
 # Change code here if the optical shutter set up has changed
@@ -11,7 +10,7 @@
 # Made 2019, Sun Yudong, Wu Mingsong
 # sunyudong [at] outlook [dot] sg, mingsongwu [at] outlook [dot] sg
 
-import winsound
+import playsound
 
 class Shutter():
     def __init__(self):
@@ -19,12 +18,12 @@ class Shutter():
         self.isOpen = False
 
     def close(self):
-        winsound.PlaySound('sounds/OFF.wav', winsound.SND_FILENAME)
+        playsound.playsound('sounds/OFF.wav')
         self.isOpen = True
         return True
 
     def open(self):
-        winsound.PlaySound('sounds/ON.wav', winsound.SND_FILENAME)
+        playsound.playsound('sounds/ON.wav')
         self.isOpen = True
         return True
 
