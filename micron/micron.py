@@ -94,6 +94,7 @@ class Micos():
 			self.stage.update(stageConfig)
 
 		self.units = { "microstep": 0,  "um": 1, "mm": 2, "cm": 3, "m": 4, "in": 5, "mil": 6 }
+		self.axes  = ['x', 'y'] 		# Dictionaries are only ordered from python 3.6 onwards
 
 		try:
 			# BEGIN SERIAL SETUP
@@ -267,7 +268,7 @@ class Micos():
 		return self.read()
 
 	def read(self):
-		time.sleep(1)
+		time.sleep(0.05)
 
 		out = b''
 		while self.dev.inWaiting() > 0:
@@ -279,7 +280,7 @@ class Micos():
 		# we wait until all commands are done running and the stack is empty
 		while self.getStatus(0):
 			print("Waiting for stack to clear...", end="\r")
-			time.sleep(1)
+			time.sleep(0.1)
 		print("Waiting for stack to clear...cleared")
 
 		return True
