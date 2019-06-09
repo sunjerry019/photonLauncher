@@ -14,6 +14,7 @@ import sys, os
 import time
 import signal
 import json
+import warnings
 
 import shutter
 
@@ -53,11 +54,16 @@ class Stage():
     def setpos(self, x, y):
         # We keep track of our own coordinates
         # Coordinates replied from the stage is not very consistent
+
+        # Check if x and y are within range and refuse to move if outside range
+        assert self.xlim[0] <= x <= self.xlim[1], "Outside xrange"
+        assert self.ylim[0] <= x <= self.ylim[1], "Outside yrange"
+
         self.x = x
         self.y = y
 
 class Micos():
-	def __init__(self, stageConfig = None, noCtrlCHandler = False, unit = "um"):
+	def __init__(self, stageConfig = None, noCtrlCHandler = False, unit = "um", noHome = False):
 		# stageConfig can be a dictionary or a json filename
 		# See self.help for documentation
 
@@ -83,6 +89,7 @@ class Micos():
 		self.units = { "microstep": 0,  "um": 1, "mm": 2, "cm": 3, "m": 4, "in": 5, "mil": 6 }
 
 		try:
+			# BEGIN SERIAL SETUP
 			self.dev = serial.Serial(
 					port 		= cfg['port'],
 					baudrate 	= cfg['baudrate'],
@@ -96,17 +103,24 @@ class Micos():
 				self.dev.open()
 
 			time.sleep(2)
-			print("Initalised serial communication...")
+			print("Initalised serial communication")
+			# END SERIAL SETUP
 
 			if not noCtrlCHandler: self.startInterruptHandler()
-
 			self.shutter = shutter.Shutter()
 
+			# BEGIN INITIALIZATION
 			print("Stage Initialization...", end="\r")
 			self.setunits(unit)
 			self.setvel(200)
-			self.homeStage()
+			self.homed = False
+
+			if not noHome: 
+				warnings.warn("Stage will not be homed. Proceed with caution.", RuntimeWarning)
+				self.homeStage()
+
 			print("Stage Initialization Finished")
+			# END INITIALIZATION
 
 		except Exception as e:
 			print(e)
@@ -152,7 +166,11 @@ class Micos():
 			# self.send("rm")
 			# q = self.getpos()
 
+		self.homed = True
+
 	def rmove(self, x, y):
+		# Relative move
+		# Always call self.stage.setpos first to check limits
         try:
             self.stage.setpos(self.stage.x + x, self.stage.y + y) # Note this is not Micos.setpos
             return self.send("{} {} r".format(x, y))
@@ -160,8 +178,10 @@ class Micos():
             pass
 
     def move(self, x, y):
+    	# Absolute move
+    	# Always call self.stage.setpos first to check limits
     	try:
-    		raise RuntimeWarning("This function may not work as intended. Please use with caution.")
+    		warnings.warn("This function may not work as intended. Please use with caution.", RuntimeWarning)
             self.stage.setpos(x, y) # Note this is not Micos.setpos
             return self.send("{} {} m".format(x, y))
         except Exception as e:
