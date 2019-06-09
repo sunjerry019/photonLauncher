@@ -56,7 +56,7 @@ class Stage():
         self.y = y
 
 class Micos():
-	def __init__(self, stageConfig = None, noCtrlCHandler = False):
+	def __init__(self, stageConfig = None, noCtrlCHandler = False, unit = "um"):
 		# stageConfig can be a dictionary or a json filename
 		# See self.help for documentation
 
@@ -100,7 +100,12 @@ class Micos():
 			if not noCtrlCHandler: self.startInterruptHandler()
 
 			self.shutter = shutter.Shutter()
-			self.initialize()
+
+			print("Stage Initialization...", end="\r")
+			self.setunits(unit)
+			self.setvel(200)
+			self.homeStage()
+			print("Stage Initialization Finished")
 
 		except Exception as e:
 			print(e)
@@ -120,22 +125,24 @@ class Micos():
 		sys.exit(1)
 		# use os._exit(1) to avoid raising any SystemExit exception
 
-	def initialize(self):
-		print("Stage Initialization...", end="\r")
-		self.setunits()
-		self.homeStage()
-		print("Stage Initialization Finished")
-
 	def homeStage(self):
 		# return x.send("cal") 		# DO NOT USE CAL ON RUDOLPH => there are some physical/mechanical issues
 		xl = abs(self.stage.xlim[1] - self.stage.xlim[0])
         yl = abs(self.stage.ylim[1] - self.stage.ylim[0])
 
 		if xl > 0 and yl > 0:
+			# we use faster speed to home the stage
+			_oV = self.velocity
+			self.setvel(1000)
+
+			# Home the stage
 			self.send("rm") 			# send to maximum
 			self.setpos(0, 0)
             self.setlimits(self.stage.xlim[0], self.stage.ylim[0], self.stage.xlim[1], self.stage.ylim[1])
 			self.rmove(x = -xl/2, y = -yl/2)
+
+			# we set the speed back
+			self.setvel(_ov)
 		else:
 			raise NotImplementedError("Setting the limits to zero asks the script to find the limits of the stage, which is not implemented yet.")
 			# UNTESTED CODE
@@ -182,11 +189,20 @@ class Micos():
 		# 0 = microstep = 1 motor revolution / 40000 steps, 1 = set to um, 2 = mm, 3 = cm, 4 = m, 5 = in, 6 = mil = 1/1000in
 
 		un = self.units.get(unit, 1) # default to um
+
+		# Just in case it is an invalid unit
+		# If not 1, it must have found an entry in the list
+		self.unit = "um" if un == 1 else unit
+			
 		self.send("{} 1 setunit".format(un)) # x-axis
 		self.send("{} 2 setunit".format(un)) # y-axis
 		self.send("{} 0 setunit".format(un)) # velocity
 
 		return self.send("ge")
+
+	def setvel(self, velocity):
+		self.velocity = velocity
+		return self.send("{} setvel".format(velocity))
 
 	def send(self, cmd, waitClear = False, raw = False):
 		# Writes cmd to the serial channel, returns the data as a list
