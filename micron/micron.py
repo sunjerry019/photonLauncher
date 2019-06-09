@@ -9,6 +9,8 @@
 # IMPT: THIS IS A HELPER FILE
 # RUNNING IT DIRECTLY YIELDS INTERACTIVE TERMINAL
 
+# Errors to be caught: RuntimeError, NotImplementedError, AssertionError
+
 import serial
 import sys, os
 import time
@@ -171,6 +173,11 @@ class Micos():
 	def rmove(self, x, y):
 		# Relative move
 		# Always call self.stage.setpos first to check limits
+
+		# assertion checks
+		assert isinstance(x, (int, float)), "x must be integer or float"
+		assert isinstance(y, (int, float)), "y must be integer or float"
+
         try:
             self.stage.setpos(self.stage.x + x, self.stage.y + y) # Note this is not Micos.setpos
             return self.send("{} {} r".format(x, y))
@@ -180,7 +187,12 @@ class Micos():
     def move(self, x, y):
     	# Absolute move
     	# Always call self.stage.setpos first to check limits
-    	try:
+
+    	# assertion checks
+		assert isinstance(x, (int, float)), "x must be integer or float"
+		assert isinstance(y, (int, float)), "y must be integer or float"
+
+    	try: 
     		warnings.warn("This function may not work as intended. Please use with caution.", RuntimeWarning)
             self.stage.setpos(x, y) # Note this is not Micos.setpos
             return self.send("{} {} m".format(x, y))
@@ -188,6 +200,10 @@ class Micos():
             pass
 
 	def setpos(self, x, y):
+		# assertion checks
+		assert isinstance(x, (int, float)), "x must be integer or float"
+		assert isinstance(y, (int, float)), "y must be integer or float"
+
         self.stage.setpos(x, y)
 		return self.send("{} {} setpos".format(x, y))
 
@@ -200,6 +216,13 @@ class Micos():
 	def setlimits(self, xmin, ymin, xmax, ymax):
 		# -A1, -A2, +A1, +A2
 		# ' '.join("'{0}'".format(n) for n in limits)
+
+		# assertion checks
+		assert isinstance(xmin, (int, float)), "xmin must be integer or float"
+		assert isinstance(ymin, (int, float)), "ymin must be integer or float"
+		assert isinstance(xmax, (int, float)), "xmax must be integer or float"
+		assert isinstance(ymax, (int, float)), "ymax must be integer or float"
+
 		self.stage.update({
 				"xlim": [xmin, xmax],
 				"ylim": [ymin, ymax]
@@ -222,6 +245,9 @@ class Micos():
 		return self.send("ge")
 
 	def setvel(self, velocity):
+		# Set velocity
+		assert isinstance(velocity, (int, float)) , "velocity must be integer or float"
+
 		self.velocity = velocity
 		return self.send("{} setvel".format(velocity))
 
@@ -256,6 +282,8 @@ class Micos():
 	def getStatus(self, digit = None):
 		# Get the status of the controller
 
+		assert digit is None or (isinstance(digit, int) and 0 <= digit <= 8), "Invalid digit"
+
 		self.dev.write("st".encode("ascii") + self.ENTER)
 		time.sleep(1)
 		x = int(self.read())
@@ -283,6 +311,7 @@ class Micos():
 	def abort(self, closeShutter = True):
 		# return x.send("abort")
 		# Send Ctri + C + self.Enter
+		# Set closeShutter to False to not close the shutter when aborting
 		self.send(b"\x03\x0D", raw=True)
 
 		if closeShutter:
