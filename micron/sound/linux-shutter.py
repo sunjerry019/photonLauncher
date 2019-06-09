@@ -19,7 +19,7 @@ class Shutter():
 
     def close(self):
         playsound.playsound('sounds/OFF.wav')
-        self.isOpen = True
+        self.isOpen = False
         return True
 
     def open(self):
