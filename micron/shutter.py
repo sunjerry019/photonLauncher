@@ -18,22 +18,22 @@
 import winsound
 
 class Shutter():
-    def __init__(self):
-        self.close()
-        self.isOpen = False
+	def __init__(self):
+		self.close()
+		self.isOpen = False
 
-    def close(self):
-        winsound.PlaySound('sounds/OFF.wav', winsound.SND_FILENAME)
-        self.isOpen = False
-        return True
+	def close(self):
+		winsound.PlaySound('sounds/OFF.wav', winsound.SND_FILENAME)
+		self.isOpen = False
+		return True
 
-    def open(self):
-        winsound.PlaySound('sounds/ON.wav', winsound.SND_FILENAME)
-        self.isOpen = True
-        return True
+	def open(self):
+		winsound.PlaySound('sounds/ON.wav', winsound.SND_FILENAME)
+		self.isOpen = True
+		return True
 
-    def __enter__(self):
-        return self
+	def __enter__(self):
+		return self
 
-    def __exit__(self, e_type, e_val, traceback):
-        self.close()
+	def __exit__(self, e_type, e_val, traceback):
+		self.close()
