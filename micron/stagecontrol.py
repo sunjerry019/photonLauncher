@@ -14,6 +14,8 @@
 # sunyudong [at] outlook [dot] sg
 # github.com/sunjerry019/photonLauncher
 
+# Change code here if for e.g. sounds needs to be played BEFORE the completion of the raster
+
 import micron
 import playsound
 
@@ -38,7 +40,7 @@ class StageControl():
 		# Play sound to let user know that the action is completed
 		playsound.playsound(self.fn)
 
-	def raster(self, velocity, xDist, yDist, rasterSettings):
+	def raster(self, velocity, xDist, yDist, rasterSettings, returnToOrigin = False):
 		# Raster in a rectangle
 		# rasterSettings = {
 		# 	"direction": "x" || "y" || "xy", 		# Order matters here xy vs yx
@@ -46,8 +48,8 @@ class StageControl():
 		# }
 
 		# xy/yx = Draw a rectangle with sides xDist and yDist
-		# x = horizontal lines will be drawn while scanning down
-		# y = vertical lines will be drawn while scanning 
+		# x = horizontal lines will be drawn while scanning down/up
+		# y = vertical lines will be drawn while scanning right/left
 		# Negative distance to raster in the opposite direction
 		# Step must be positive
 
@@ -78,13 +80,18 @@ class StageControl():
 		# ACTUAL FUNCTION
 		self.controller.setvel(velocity)
 
+		# Get the current position of the stage
+		oX, oY = self.controller.stage.x, self.controller.stage.y
+
+		# Get index of the first direction to raster
+		# We change to axes A and B because it could be xy or yx
+		a = self.controller.axes.index(rasterSettings["direction"][0])
+		b = a ^ 1
+		distances = [xDist, yDist]
+
 		# Check the raster step
 		if len(rasterSettings["direction"]) > 1:
 			# Rastering a square
-			# Get index of the first direction to raster
-			a = self.controller.axes.index(rasterSettings["direction"][0])
-			b = a ^ 1
-			distances = [xDist, yDist]
 
 			# Relative moves are blocking, so we can flood the FIFO stack after we are sure all commands have been cleared
 			self.controller.waitClear()
@@ -108,7 +115,39 @@ class StageControl():
 			self.controller.shutter.close()
 		else:
 			# Normal rastering
-			pass
+			# Since python range doesn't allow for float step sizes, we find the number of times to go raster a line
+			# DO NOTE THAT THIS PROBABLY WILL CAUSE ROUNDING ERRORS
+
+			_lines = abs(distances[b] / rasterSettings["step"])
+			_bDirTime = rasterSettings["step"] / velocity
+			_timeperline = abs(distances[a]) / velocity + _bDirTime
+			_totaltime = _lines * _timeperline - _bDirTime
+
+			_step = -rasterSettings["step"] if distance[b] < 0 else rasterSettings["step"]
+
+			# switch directions for rastering every time
+			self.controller.shutter.open()
+			for i in range(_lines):
+				# If its the first one, don't move B-Axis
+				if i:
+					self.controller.rmove(**{
+						self.controller.axes[a]: 0, 
+						self.controller.axes[b]: _step
+					})
+
+				_q = i % 2
+
+				self.controller.rmove(**{
+					self.controller.axes[a]: distances[a] if _q else -distances[a], 
+					self.controller.axes[b]: 0
+				})
+			self.controller.shutter.close()			
+
+		if returnToOrigin:
+			# we /could/ use self.controller.move() but I don't really trust it
+			# so...relative move
+			cX, cY = self.controller.stage.x, self.controller.stage.y
+			self.controller.rmove(x = oX - cX, y = oY - cY)
 
 		self.finish()
 		
