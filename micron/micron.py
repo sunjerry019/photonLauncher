@@ -5,11 +5,16 @@
 # Microcontroller Model: Micos 1860SMC Basic
 # Made 2019, Sun Yudong
 # sunyudong [at] outlook [dot] sg
+# github.com/sunjerry019/photonLauncher
 
 # IMPT: THIS IS A HELPER FILE
 # RUNNING IT DIRECTLY YIELDS INTERACTIVE TERMINAL
 
 # Errors to be caught: RuntimeError, NotImplementedError, AssertionError
+
+# You can use python-sphinx to generate docs for this, but I mildly no time
+# You can just get a brief idea by opening this in a modern text-editor and minimizing all the functions
+# by clicking the small triangle/arrow at the side
 
 import serial
 import sys, os
