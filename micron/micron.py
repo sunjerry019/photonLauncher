@@ -328,6 +328,36 @@ class Micos():
 	def getError(self):
 		return self.send("ge", waitClear=True)
 
+	def identify(self):
+		# Format [Model] [HW-Rev] [SW-Rev] [Board-Sw] [Dip-Sw]
+		# return Format = { ^Dict in above format }
+		# Dipswitch is hex-encoded see Venus-1_Corvus_2_1.pdf pp. 297
+		# DS  1 2 3 4 5 6 7 8 9 10
+		# ST  1 1 0 0 0 0 1 1 1  1
+		# RE >2 1|8 4 2 1|8 4 2  1<
+		#     \-/ \-----/ \------/
+		#      3     0       F     => 30F
+
+		x = self.send("identify").split()
+
+		ret = Dict()
+
+		ret["model"] = x[0]
+		ret["hw-rev"] = x[1]
+		ret["sw-rev"] = x[2]
+		ret["board-sw"] = x[3]
+		ret["dip-sw"] = bin(int(x[4], 16))[2:]
+
+		return ret
+
+	def getSerial(self):
+		# Format = YY HW SERI
+		# HW = Hardware Revision
+		# SERI = 4-digit serial number
+
+		x = self.send("getserialno")
+		return x if x else None
+
 	def help(self):
 		self.dipswitches = {
 			1: "Baudrate Switch",
