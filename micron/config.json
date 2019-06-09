@@ -1,0 +1,8 @@
+{
+	"port"      : "COM1",
+	"baudrate"  : 9600, 
+	"parity"    : "N", 
+	"stopbits"  : 1,
+	"bytesize"  : 8,
+	"timeout"   : 2
+}
