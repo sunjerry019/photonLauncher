@@ -126,7 +126,6 @@ class StageControl():
 
 			_step = -rasterSettings["step"] if distance[b] < 0 else rasterSettings["step"]
 
-			# switch directions for rastering every time
 			self.controller.shutter.open()
 			for i in range(_lines):
 				# If its the first one, don't move B-Axis
@@ -136,7 +135,7 @@ class StageControl():
 						self.controller.axes[b]: _step
 					})
 
-				_q = i % 2
+				_q = i % 2 # switch directions for rastering every time
 
 				self.controller.rmove(**{
 					self.controller.axes[a]: distances[a] if _q else -distances[a], 
