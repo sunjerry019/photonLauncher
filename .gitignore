@@ -3,6 +3,10 @@ spectra_log
 .vscode
 *.sublime*
 
+# micron frames
+micron/results/*
+micron/videos/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
