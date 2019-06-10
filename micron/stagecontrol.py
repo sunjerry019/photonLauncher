@@ -112,6 +112,7 @@ class StageControl():
 				self.controller.axes[a]: 0, 
 				self.controller.axes[b]: -distances[b]
 			})
+			self.controller.waitClear()
 			self.controller.shutter.close()
 		else:
 			# Normal rastering
@@ -141,6 +142,9 @@ class StageControl():
 					self.controller.axes[a]: distances[a] if _q else -distances[a], 
 					self.controller.axes[b]: 0
 				})
+
+				time.sleep(_timeperline - 1)
+			self.controller.waitClear()
 			self.controller.shutter.close()			
 
 		if returnToOrigin:
