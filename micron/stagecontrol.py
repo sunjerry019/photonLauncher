@@ -24,8 +24,8 @@ class InputError(Exception):
 	pass
 
 class StageControl():
-	def __init__(self):
-		self.controller = micron.Micos()
+	def __init__(self, **kwargs):
+		self.controller = micron.Micos(**kwargs)
 
 		# Generate filename based on the serial number of the model
 		self.serial = self.controller.getSerial()
@@ -39,6 +39,11 @@ class StageControl():
 	def finish(self):
 		# Play sound to let user know that the action is completed
 		playsound.playsound(self.fn)
+
+	def rdiagonal(self, distance, angle):
+		pass
+		# implement drawing of diagonals
+		# implement button for relative move directly
 
 	def raster(self, velocity, xDist, yDist, rasterSettings, returnToOrigin = False):
 		# Raster in a rectangle
@@ -155,7 +160,16 @@ class StageControl():
 		self.finish()
 		
 if __name__ == '__main__':
-	with StageControl() as s:
+	import argparse
+
+	parser = argparse.ArgumentParser()
+	parser.add_argument('-u', '--unit' type = str, help = "Unit, microstep, um, mm, cm, m, in, mil")
+    parser.add_argument('-c', '--noCtrlCHandler', help="No Ctrl C Handler", action='store_true')
+    parser.add_argument('-h', '--noHome', help="noHome", action='store_true')
+    args = parser.parse_args()
+
+
+	with StageControl(noCtrlCHandler = args.noCtrlCHandler, unit = args.unit, noHome = args.noHome) as s:
 		print("s = StageControl(); s.controller for controller movements\n\n")
 		# import pdb; pdb.set_trace()
 		import code; code.interact(local=locals())
