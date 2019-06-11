@@ -154,4 +154,8 @@ class StageControl():
 
 		self.finish()
 		
-		
+if __name__ == '__main__':
+	with StageControl() as s:
+		print("s = StageControl(); s.controller for controller movements\n\n")
+		# import pdb; pdb.set_trace()
+		import code; code.interact(local=locals())
