@@ -25,6 +25,8 @@ import warnings
 
 import shutter
 
+import math
+
 class Stage():
 	def __init__(self, stageAsDict = None):
 		# WARNING: THIS IS A STATIC OBJECT THAT DOES NOT DO ANY STAGE MANIPULATION
@@ -123,8 +125,10 @@ class Micos():
 			self.setvel(200)
 			self.homed = False
 
-			if not noHome: 
+			if noHome: 
 				warnings.warn("Stage will not be homed. Proceed with caution.", RuntimeWarning)
+			else:
+				print("Homing stage")
 				self.homeStage()
 
 			print("Stage Initialization Finished")
@@ -142,8 +146,8 @@ class Micos():
 	def KeyboardInterruptHandler(self, signal, frame):
 		print("^C Detected: Aborting the FIFO stack and closing port.")
 		print("Shutter will be closed as part of the aborting process.")
-		x.abort()
-		x.dev.close()
+		self.abort()
+		self.dev.close()
 		print("Exiting")
 		sys.exit(1)
 		# use os._exit(1) to avoid raising any SystemExit exception
@@ -156,16 +160,18 @@ class Micos():
 		if xl > 0 and yl > 0:
 			# we use faster speed to home the stage
 			_oV = self.velocity
-			self.setvel(1000)
+			self.setvel(2000)
 
 			# Home the stage
 			self.send("rm") 			# send to maximum
+			self.waitClear()
 			self.setpos(0, 0)
 			self.setlimits(self.stage.xlim[0], self.stage.ylim[0], self.stage.xlim[1], self.stage.ylim[1])
 			self.rmove(x = -xl/2, y = -yl/2)
+			self.waitClear()
 
 			# we set the speed back
-			self.setvel(_ov)
+			self.setvel(_oV)
 		else:
 			raise NotImplementedError("Setting the limits to zero asks the script to find the limits of the stage, which is not implemented yet.")
 			# UNTESTED CODE
@@ -176,7 +182,9 @@ class Micos():
 
 		self.homed = True
 
-	def rmove(self, x, y, *args, **kwargs):
+	def rmove(self, x, y, noWait = False, *args, **kwargs):
+		print("Delta = ({}, {})".format(x, y))
+
 		# Relative move
 		# Always call self.stage.setpos first to check limits
 		# *args and **kwargs to allow passing in of waitClear
@@ -187,9 +195,19 @@ class Micos():
 
 		try:
 			self.stage.setpos(self.stage.x + x, self.stage.y + y) # Note this is not Micos.setpos
-			return self.send("{} {} r".format(x, y), *args, **kwargs)
+			ret = self.send("{} {} r".format(x, y), *args, **kwargs)
+
+			if not noWait:
+				# we wait 80% of the time required before returning to the loop
+				distance = math.sqrt(x**2 + y**2) if (x and y) else abs(x + y)
+				time_req = distance / self.velocity
+
+				print("Sleeping", time_req)
+				time.sleep(0.80 * time_req)
+
+			return ret
 		except Exception as e:
-			pass
+			raise RuntimeError(e)
 
 	def move(self, x, y, *args, **kwargs):
 		# Absolute move
@@ -276,11 +294,20 @@ class Micos():
 		while self.dev.inWaiting() > 0:
 			out += self.dev.read(1)
 
-		return out.strip() if len(out) else None
+		out = out.strip().split() if len(out) else ''
+
+		out = out[0] if len(out) else [x.strip() for x in out]
+
+		return out if len(out) else None
 
 	def waitClear(self):
 		# we wait until all commands are done running and the stack is empty
-		while self.getStatus(0):
+		while True:
+			x = self.getStatus(0)
+			if x is not None and x == 0:
+				# print(x, " X is not None")
+				break
+
 			print("Waiting for stack to clear...", end="\r")
 			time.sleep(0.1)
 		print("Waiting for stack to clear...cleared")
@@ -293,8 +320,19 @@ class Micos():
 		assert digit is None or (isinstance(digit, int) and 0 <= digit <= 8), "Invalid digit"
 
 		self.dev.write("st".encode("ascii") + self.ENTER)
-		time.sleep(1)
-		x = int(self.read())
+		time.sleep(0.5)
+		y = self.read()
+
+		# print("GETSTATUS READ = ", y)
+
+		if isinstance(y, list):
+			y = y[-1]
+
+		try:
+			x = int(y)
+		except Exception as e:
+			# print(y, e)
+			return None
 
 		if digit is None:
 			# we return the full status in a string of binary digits
@@ -385,6 +423,6 @@ class Micos():
 
 if __name__ == '__main__':
 	with Micos() as m:
-		print("m = Micos()\n\n")
+		print("\n\nm = Micos()\n\n")
 		# import pdb; pdb.set_trace()
 		import code; code.interact(local=locals())
