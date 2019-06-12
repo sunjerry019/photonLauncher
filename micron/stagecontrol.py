@@ -18,6 +18,9 @@
 
 import micron
 import playsound
+import numpy as np
+import math
+import time
 
 class InputError(Exception):
 	# Error in user input -> To be caught and flagged accordingly
@@ -38,7 +41,8 @@ class StageControl():
 
 	def finish(self):
 		# Play sound to let user know that the action is completed
-		playsound.playsound(self.fn)
+		# playsound.playsound(self.fn)
+		pass
 
 	def rdiagonal(self, distance, angle):
 		pass
@@ -76,8 +80,8 @@ class StageControl():
 				assert len(rasterSettings["direction"]) == 2 and (set(rasterSettings["direction"]) == set(self.controller.axes)), "Invalid raster direction {}".format(rasterSettings["direction"])
 			
 			# Check stage limits
-			assert self.controller.stage.xlim[1] <= self.controller.stage.x + xDist <= self.controller.stage.xlim[1], "x not within limits"
-			assert self.controller.stage.ylim[1] <= self.controller.stage.y + yDist <= self.controller.stage.ylim[1], "y not within limits"
+			assert self.controller.stage.xlim[0] <= self.controller.stage.x + xDist <= self.controller.stage.xlim[1], "x not within limits"
+			assert self.controller.stage.ylim[0] <= self.controller.stage.y + yDist <= self.controller.stage.ylim[1], "y not within limits"
 		except AssertionError as e:
 			raise InputError(e)
 
@@ -120,20 +124,30 @@ class StageControl():
 			self.controller.waitClear()
 			self.controller.shutter.close()
 		else:
+			import datetime
 			# Normal rastering
 			# Since python range doesn't allow for float step sizes, we find the number of times to go raster a line
 			# DO NOTE THAT THIS PROBABLY WILL CAUSE ROUNDING ERRORS
+			# Floats are ROUNDED UP!
 
-			_lines = abs(distances[b] / rasterSettings["step"])
+			_lines = math.ceil(abs(distances[b] / rasterSettings["step"]))
 			_bDirTime = rasterSettings["step"] / velocity
 			_timeperline = abs(distances[a]) / velocity + _bDirTime
 			_totaltime = _lines * _timeperline - _bDirTime
+			print("Total Time = ", _totaltime)
+			# _sleepTime = _timeperline - 1 if _timeperline > 1 else _timeperline
+			# _sleepTime = 0.85 * _timeperline # Arbitrary, will be a problem if/when the difference adds up to 1 full command
 
-			_step = -rasterSettings["step"] if distance[b] < 0 else rasterSettings["step"]
+			print("Lines = ", _lines)
+			print("Time/line = ", _timeperline)
+
+			_step = -rasterSettings["step"] if distances[b] < 0 else rasterSettings["step"]
 
 			self.controller.shutter.open()
+			t0 = datetime.datetime.now()
 			for i in range(_lines):
-				# If its the first one, don't move B-Axis
+				print("Rastering line ", i)
+				# If its not the first one, move B-Axis
 				if i:
 					self.controller.rmove(**{
 						self.controller.axes[a]: 0, 
@@ -143,12 +157,20 @@ class StageControl():
 				_q = i % 2 # switch directions for rastering every time
 
 				self.controller.rmove(**{
-					self.controller.axes[a]: distances[a] if _q else -distances[a], 
+					# First one moves right	
+					self.controller.axes[a]: distances[a] if not _q else -distances[a], 
 					self.controller.axes[b]: 0
 				})
+				# self.controller.waitClear()
+				# time.sleep(_sleepTime if not i else _sleepTime - _bDirTime)
+				# MOVED SLEEP TO RMOVE
 
-				time.sleep(_timeperline - 1)
+			t1 = datetime.datetime.now()
 			self.controller.waitClear()
+			t2 = datetime.datetime.now()
+
+			print("\nTimes = {}, {}".format(t1 - t0, t2 - t0))
+			print("\nSTATUS = ",self.controller.getStatus(),"\n")
 			self.controller.shutter.close()			
 
 		if returnToOrigin:
@@ -159,23 +181,31 @@ class StageControl():
 
 		self.finish()
 
+<<<<<<< HEAD
 	def drawElipse(self, x0, y0, h, k):
 		# 1 = (x-x0)^2 / h^2 + (y-y0)^2 / k^2
 		# Implement this somehow...?
 
 		pass
+=======
+	def __enter__(self):
+		return self
+
+	def __exit__(self, e_type, e_val, traceback):
+		self.controller.dev.close()
+>>>>>>> 12806939dda92f0d7a11abf8c121c54a784fe57a
 		
 if __name__ == '__main__':
 	import argparse
 
 	parser = argparse.ArgumentParser()
-	parser.add_argument('-u', '--unit' type = str, help = "Unit, microstep, um, mm, cm, m, in, mil")
-    parser.add_argument('-c', '--noCtrlCHandler', help="No Ctrl C Handler", action='store_true')
-    parser.add_argument('-h', '--noHome', help="noHome", action='store_true')
-    args = parser.parse_args()
+	parser.add_argument('-u', '--unit', type = str, help = "Unit, microstep, um, mm, cm, m, in, mil")
+	parser.add_argument('-c', '--noCtrlCHandler', help="No Ctrl C Handler", action='store_true')
+	parser.add_argument('-H', '--noHome', help="noHome", action='store_true')
+	args = parser.parse_args()
 
 
 	with StageControl(noCtrlCHandler = args.noCtrlCHandler, unit = args.unit, noHome = args.noHome) as s:
-		print("s = StageControl(); s.controller for controller movements\n\n")
+		print("\n\ns = StageControl(); s.controller for controller movements\n\n")
 		# import pdb; pdb.set_trace()
 		import code; code.interact(local=locals())
