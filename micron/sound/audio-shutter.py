@@ -10,6 +10,7 @@
 # Made 2019, Sun Yudong, Wu Mingsong
 # sunyudong [at] outlook [dot] sg, mingsongwu [at] outlook [dot] sg
 
+#independent python package for sound playing. Need to test on Windows.
 import playsound
 
 class Shutter():
