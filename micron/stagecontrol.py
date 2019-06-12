@@ -158,6 +158,12 @@ class StageControl():
 			self.controller.rmove(x = oX - cX, y = oY - cY)
 
 		self.finish()
+
+	def drawElipse(self, x0, y0, h, k):
+		# 1 = (x-x0)^2 / h^2 + (y-y0)^2 / k^2
+		# Implement this somehow...?
+
+		pass
 		
 if __name__ == '__main__':
 	import argparse
