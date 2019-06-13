@@ -1,0 +1,187 @@
+Option Explicit
+Dim xDisp As Integer
+Dim yDisp As Integer
+Dim penDown As Boolean
+
+
+Private Sub CommandButton1_Click()
+    
+    'this one is a horizontal scan thingum
+    Cells.Select
+    Selection.Interior.Color = QBColor(15)
+    
+    Dim CC As Integer
+    
+    
+    Dim curRow As Integer
+    Dim curCol As Integer
+    
+    Dim minRow As Integer
+    Dim minCol As Integer
+    
+    Dim maxRow As Integer
+    Dim maxCol As Integer
+    
+    Dim scaleFactor As Single
+    
+    minCol = 2
+    maxCol = 201
+    
+    minRow = 39
+    maxRow = 238
+    
+    scaleFactor = 1
+        
+    
+    
+    Dim continue As Boolean
+    Dim mCount As Integer
+    Dim wRow, wCol As Integer
+    
+    Dim tRow, tCol, tSign As Integer
+    
+
+    
+    
+    Dim xD, yD As Integer
+    
+    Dim sign As Integer
+    
+    Dim tCont As Boolean
+    
+    sign = 1
+    
+
+    wRow = curRow
+    wCol = curCol
+    
+    Dim cRow, cCol As Integer
+    
+    Open ThisWorkbook.Path & "\" & Range("A2").Value For Output As #1
+    
+    xD = 0
+    yD = 0
+    
+    CC = -1
+    For cRow = minRow To maxRow
+    For cCol = minCol To maxCol
+        If Cells(cRow, cCol).Interior.Color = QBColor(15) And Trim(Cells(cRow, cCol).Value) <> "x" Then
+            curRow = cRow
+            curCol = cCol
+            wRow = cRow
+            wCol = cCol
+            
+            CC = CC + 1
+            If CC = 7 Then CC = 8
+            If CC = 15 Then CC = 0
+            
+            Print #1, "upPen"
+            Print #1, "mvXY " + Trim(Str(CInt((cCol - xD) * scaleFactor))) + "," + Trim(Str(CInt((cRow - yD) * scaleFactor)))
+            Print #1, "downPen"
+            xD = curCol
+            yD = curRow
+            Do
+        
+                
+                
+                
+                'scan to the right
+                Cells(wRow, wCol).Interior.Color = QBColor(CC)
+                Dim xs As String
+                xs = Trim(Cells(wRow, wCol + sign * 1).Value)
+                
+                While (Trim(Cells(wRow, wCol + sign * 1).Value) <> "x" And (wCol + sign) <= maxCol And (wCol + sign) >= minCol And Cells(wRow, wCol + sign * 1).Interior.Color = QBColor(15))
+                    wCol = wCol + 1 * sign
+                    mCount = mCount + 1
+                    Cells(wRow, wCol).Interior.Color = QBColor(CC)
+                Wend
+                
+                'mCount = 0
+                If mCount > 0 Then
+                    
+                    Print #1, "mvXY " + Trim(Str(CInt((wCol - xD) * scaleFactor))) + "," + Trim(Str(CInt((wRow - yD) * scaleFactor)))
+                    xD = wCol
+                    yD = wRow
+                End If
+                
+                'scan to the oppposite direction, see if got anything unfilled in this row
+                tSign = sign * -1
+           
+                Dim ufC As Integer 'unfilled count
+                ufC = 0
+                tRow = wRow
+                tCol = wCol
+                mCount = 0
+                
+                
+                tCont = True
+                
+                'scan till a boundary or until first unfilled cell is hit
+                While (Trim(Cells(tRow, tCol + tSign * 1).Value) <> "x" And (tCol + tSign) <= maxCol And (tCol + tSign) >= minCol And Cells(tRow, tCol + tSign * 1).Interior.Color <> QBColor(15))
+                    tCol = tCol + 1 * tSign
+                Wend
+                'then continue scanning as long as unfilled cells are encountered
+                While (Trim(Cells(tRow, tCol + tSign * 1).Value) <> "x" And (tCol + tSign) <= maxCol And (tCol + tSign) >= minCol And Cells(tRow, tCol + tSign * 1).Interior.Color = QBColor(15))
+                    tCol = tCol + 1 * tSign
+                    mCount = mCount + 1
+                    If Cells(tRow, tCol).Interior.Color = QBColor(15) Then
+                        ufC = ufC + 1
+                        Cells(tRow, tCol).Interior.Color = QBColor(CC)
+                    End If
+                Wend
+                
+                
+                If ufC <> 0 Then
+                    sign = tSign
+                    wCol = tCol
+                    
+                    Print #1, "mvXY " + Trim(Str(CInt((wCol - xD) * scaleFactor))) + "," + Trim(Str(CInt((wRow - yD) * scaleFactor)))
+                    xD = wCol
+                    yD = wRow
+                
+                End If
+                
+                
+                sign = sign * -1
+                wRow = wRow + 1
+                mCount = 0
+                
+                'scan next line
+                If wRow <= maxRow Then
+                    While (Trim(Cells(wRow, wCol).Value) = "x" And wCol < maxCol And wCol > minCol And Trim(Cells(wRow - 1, wCol).Value) <> "x")
+                        wCol = wCol + 1 * sign
+                        'Cells(wRow, wCol).Interior.Color = QBColor(5)
+                        mCount = mCount + 1
+                    Wend
+                    
+                    If (wCol <= maxCol And wCol >= minCol) And (Trim(Cells(wRow, wCol).Value <> "x") And Cells(wRow, wCol).Interior.Color = QBColor(15)) Then
+                        curRow = wRow
+                        curCol = wCol
+                        continue = True
+                        Print #1, "mvXY 0," + Trim(Str(CInt(scaleFactor)))
+                        yD = wRow
+                        If mCount > 0 Then
+                            Print #1, "mvXY " + Trim(Str(CInt((wCol - xD) * scaleFactor))) + "," + Trim(Str(CInt((wRow - yD) * scaleFactor)))
+                            xD = wCol
+                            yD = wRow
+                        End If
+                    Else
+                        continue = False
+                    End If
+                    
+                Else
+                    continue = False
+                End If
+                
+            Loop Until continue = False
+            
+        End If
+    Next cCol
+    Next cRow
+    Close #1
+    
+    
+End Sub
+
+
+
