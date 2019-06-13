@@ -202,8 +202,10 @@ class Micos():
 				distance = math.sqrt(x**2 + y**2) if (x and y) else abs(x + y)
 				time_req = distance / self.velocity
 
+				time_req *= 1.0
+
 				print("Sleeping", time_req)
-				time.sleep(0.80 * time_req)
+				time.sleep(time_req)
 
 			return ret
 		except Exception as e:
