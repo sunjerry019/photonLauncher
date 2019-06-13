@@ -19,16 +19,17 @@ class Shutter():
         self.isOpen = False
 
     def close(self):
-        playsound.playsound('sounds/OFF.wav')
+        playsound.playsound('position1.wav')
         self.isOpen = False
         return True
 
     def open(self):
-        playsound.playsound('sounds/ON.wav')
+        playsound.playsound('position2.wav')
         self.isOpen = True
         return True
 
-    def pulse(self)
+    #def pulse(self):
+        #playsound.playsound('pulsed.wav')
 
 
     def __enter__(self):
