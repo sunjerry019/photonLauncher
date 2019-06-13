@@ -5,7 +5,7 @@
 # Abstraction yo
 
 # Advanced level functions combining multiple basic functions are to be implemented here
-# Methods involving multiple functions in this script should generally be implemented 
+# Methods involving multiple functions in this script should generally be implemented
 # in a separate script and not implemented here, unless it is a very common function
 
 # stage-control to interact with the NanoLab Microcontroller
@@ -70,7 +70,7 @@ class StageControl():
 			assert isinstance(rasterSettings, dict)   , "rasterSettings must be a dictionary"
 			assert "direction" in rasterSettings      , "Raster direction must be in rasterSettings"
 			assert isinstance(rasterSettings["direction"], str), "Invalid raster direction: {}".format(rasterSettings["direction"])
-			
+
 			# rastering x or y
 			if len(rasterSettings["direction"]) == 1:
 				assert rasterSettings["direction"] in self.controller.axes, "Invalid raster direction: {}".format(rasterSettings["direction"])
@@ -78,7 +78,7 @@ class StageControl():
 				assert rasterSettings["step"] > 0     , "Step size must be positive"
 			else:
 				assert len(rasterSettings["direction"]) == 2 and (set(rasterSettings["direction"]) == set(self.controller.axes)), "Invalid raster direction {}".format(rasterSettings["direction"])
-			
+
 			# Check stage limits
 			assert self.controller.stage.xlim[0] <= self.controller.stage.x + xDist <= self.controller.stage.xlim[1], "x not within limits"
 			assert self.controller.stage.ylim[0] <= self.controller.stage.y + yDist <= self.controller.stage.ylim[1], "y not within limits"
@@ -106,11 +106,11 @@ class StageControl():
 			self.controller.waitClear()
 			self.controller.shutter.open()
 			self.controller.rmove(**{
-				self.controller.axes[a]: distances[a], 
+				self.controller.axes[a]: distances[a],
 				self.controller.axes[b]: 0
 			})
 			self.controller.rmove(**{
-				self.controller.axes[a]: 0, 
+				self.controller.axes[a]: 0,
 				self.controller.axes[b]: distances[b]
 			})
 			self.controller.rmove(**{
@@ -118,7 +118,7 @@ class StageControl():
 				self.controller.axes[b]: 0
 			})
 			self.controller.rmove(**{
-				self.controller.axes[a]: 0, 
+				self.controller.axes[a]: 0,
 				self.controller.axes[b]: -distances[b]
 			})
 			self.controller.waitClear()
@@ -150,15 +150,15 @@ class StageControl():
 				# If its not the first one, move B-Axis
 				if i:
 					self.controller.rmove(**{
-						self.controller.axes[a]: 0, 
+						self.controller.axes[a]: 0,
 						self.controller.axes[b]: _step
 					})
 
 				_q = i % 2 # switch directions for rastering every time
 
 				self.controller.rmove(**{
-					# First one moves right	
-					self.controller.axes[a]: distances[a] if not _q else -distances[a], 
+					# First one moves right
+					self.controller.axes[a]: distances[a] if not _q else -distances[a],
 					self.controller.axes[b]: 0
 				})
 				# self.controller.waitClear()
@@ -171,7 +171,7 @@ class StageControl():
 
 			print("\nTimes = {}, {}".format(t1 - t0, t2 - t0))
 			print("\nSTATUS = ",self.controller.getStatus(),"\n")
-			self.controller.shutter.close()			
+			self.controller.shutter.close()
 
 		if returnToOrigin:
 			# we /could/ use self.controller.move() but I don't really trust it
@@ -181,20 +181,18 @@ class StageControl():
 
 		self.finish()
 
-<<<<<<< HEAD
 	def drawElipse(self, x0, y0, h, k):
 		# 1 = (x-x0)^2 / h^2 + (y-y0)^2 / k^2
 		# Implement this somehow...?
 
 		pass
-=======
+
 	def __enter__(self):
 		return self
 
 	def __exit__(self, e_type, e_val, traceback):
 		self.controller.dev.close()
->>>>>>> 12806939dda92f0d7a11abf8c121c54a784fe57a
-		
+
 if __name__ == '__main__':
 	import argparse
 
