@@ -16,7 +16,7 @@ import numpy as np
 import argparse
 import os, sys
 
-from matplotlib import cm # For coloring of the cutting lines
+# from matplotlib import cm # For coloring of the cutting lines
 
 import pickle
 
@@ -166,7 +166,8 @@ class PicConv():
 				_max = np.max(self.output)
 				_output = self.output / _max if _max != 0 else self.output
 
-				_im = Image.fromarray(np.uint8(cm.gist_ncar(_output)*255))
+				# _im = Image.fromarray(np.uint8(cm.gist_ncar(_output)*255))
+				_im = Image.fromarray(np.uint8((_output)*255))
 				_im.save("test.png")
 				# https://stackoverflow.com/questions/10965417/how-to-convert-numpy-array-to-pil-image-applying-matplotlib-colormap
 
@@ -192,7 +193,7 @@ class PicConv():
 			# We first set the cell as visited
 			self.imageArray[startPt] = self.dontcut
 			self.output[startPt] = lineNo
-			currLine.append()
+			currLine.append(startPt)
 
 			# We start to crawl from this pixel
 			# For each pixel, we find the closest neighbour in order of priority
@@ -217,11 +218,15 @@ class PicConv():
 		if self.simulate:
 			os.system("./generateMovie.sh")
 
-	def print(self, **kwargs):
+	def print(self, velocity, **kwargs):
+		assert isinstance(velocity, (int, float)), "velocity must be int or float"
+
 		import micron
 
 		# initialize the stage
 		self.controller = micron.Micos(**kwargs)
+
+		self.controller.setvel(velocity)
 
 		self.controller.shutter.close()
 
@@ -251,17 +256,22 @@ class PicConv():
 
 		# then we print
 		for cmd in self.commands:
+			print(cmd)
 			state  = cmd[0]
 			rmoves = cmd[1]
 
 			if state:
 				self.controller.shutter.open()
+			else:
+				self.controller.setvel(400)
 
 			for rmove in rmoves:
-				self.controller.rmove(y = rmove[0], x = rmove[1]
-)
+				self.controller.rmove(y = rmove[0], x = rmove[1])
+
 			if state:
 				self.controller.shutter.close()
+			else:
+				self.controller.setvel(velocity)
 
 	def save(self, variable, outputFile, protocol = pickle.HIGHEST_PROTOCOL):
 		# save self.lines into a pickle file
@@ -292,19 +302,26 @@ class PicConv():
 			# line = each segment that doesnt require laser to be closed
 			# Points are in the format (y, x)
 
+			# print(i, line)
+
 			if i: 
 				# This is the 2nd line onwards
 				# We need to move the laser from the previous point to the current point
 				dy, dx = self.lines[i][0][0] - self.lines[i-1][-1][0], self.lines[i][0][1] - self.lines[i-1][-1][1]
-				self.commands.append([0, (dy, dx)])
+				self.commands.append([0, [(dy, dx)]])
 
 			# Greedy algorithm
 			_l = [] # list of rmove commands (y, x)
 			startPt = None
 			prevPt = None
 
-			for point in line:
-				if not len(_l):
+			lineLastCount = len(line) - 1
+			for j, point in enumerate(line):
+				if lineLastCount == 0:
+					# There is only 1 point in the line
+					_l.append([0, 0])
+
+				if startPt is None:
 					# No elements in list yet
 					startPt = point
 				else:
@@ -322,6 +339,15 @@ class PicConv():
 					else:
 						# It is the same line
 						prevPt = point
+
+				# Check if last point
+				# print("j = ", j)
+				if j == lineLastCount and j != 0:
+					# We finish the line and append the rmove command:						
+					rdy, rdx = prevPt[0] - startPt[0], prevPt[1] - startPt[1]
+					_l.append((rdy, rdx))
+
+				# print(point, _l)
 			
 			self.commands.append([1, _l]) 
 
@@ -340,7 +366,7 @@ def _main():
     parser = argparse.ArgumentParser()
     parser.add_argument('f', type = str, help = "Filename of the image")
     parser.add_argument('-s', '--scale', type = float, help = "Scale factor: 1px = how many um", default = 1)
-    parser.add_argument('-c', '--cut', type = int, help = "Which color to cut: 0 = Cut Black, 1 = Cut White", default = 0)
+    parser.add_argument('-c', '--cut', type = int, help = "Which color to cut: 0 = Cut Black, 1 = Cut White, Default 0", default = 0)
     parser.add_argument('-d', '--allowDiagonals', help="Allow Diagonals when searching", action='store_true')
     parser.add_argument('-H', '--flipHorizontally', help="Flip the image horizontally before converting", action='store_true')
     parser.add_argument('-V', '--flipVertically', help="Flip the image vertically before converting", action='store_true')
@@ -362,6 +388,10 @@ def _main():
 	)
     x.convert()
     x.parseLines()
+
+    print("\n\n x = PicConv()\n\n")
+
+    import code; code.interact(local=locals())
 
 if __name__ == '__main__':
 	_main()
