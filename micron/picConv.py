@@ -2,8 +2,8 @@
 
 # Script to print pictures using the NanoLab Microcontroller
 # Microcontroller Model: Micos 1860SMC Basic
-# Made 2019, Sun Yudong
-# sunyudong [at] outlook [dot] sg
+# Made 2019, Sun Yudong, with a little assistance from Wu Mingsong
+# sunyudong [at] outlook [dot] sg, mingsongwu [at] outlook [dot] sg
 # github.com/sunjerry019/photonLauncher
 
 from PIL import Image
@@ -49,7 +49,7 @@ class PicConv():
 		self.image = Image.open(self.filename)
 
 		# Sanity Checks
-		assert self.image.mode == '1', "Your image has mode {}. Please use a 1-bit indexed image, see https://pillow.readthedocs.io/en/stable/handbook/concepts.html#bands".format(self.image.mode)
+		assert self.image.mode == '1', "Your image has mode {}. Please use a 1-bit indexed image, see https://pillow.readthedocs.io/en/stable/handbook/concepts.html#bands. If using GIMP to convert picture to 1-bit index, ensure 'remove colour from palette' is unchecked".format(self.image.mode)
 		# Check if size is within limits if talking directly stage
 		# TODO
 
