@@ -273,6 +273,8 @@ class PicConv():
 			else:
 				self.controller.setvel(velocity)
 
+		self.controller.shutter.close()
+
 	def save(self, variable, outputFile, protocol = pickle.HIGHEST_PROTOCOL):
 		# save self.lines into a pickle file
 		# variable can be self.lines
