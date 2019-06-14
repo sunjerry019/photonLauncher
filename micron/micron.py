@@ -118,6 +118,7 @@ class Micos():
 
 			if not noCtrlCHandler: self.startInterruptHandler()
 			self.shutter = shutter.Shutter()
+			self.shutter.close()
 
 			# BEGIN INITIALIZATION
 			print("Stage Initialization...", end="\r")
