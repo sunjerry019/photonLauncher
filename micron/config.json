@@ -1,7 +1,9 @@
+# configuration settings for talking to Micos SMC Basic microcontroller box
+
 {
 	"port"      : "COM1",
-	"baudrate"  : 9600, 
-	"parity"    : "N", 
+	"baudrate"  : 9600,
+	"parity"    : "N",
 	"stopbits"  : 1,
 	"bytesize"  : 8,
 	"timeout"   : 2
