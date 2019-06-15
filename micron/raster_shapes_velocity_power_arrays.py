@@ -1,52 +1,41 @@
 #!/usr/bin/env python3
 
-# Unless absolutely necessary, do not use self.controller.send(...)
-# Implement the method in micron.py and call that instead
-# Abstraction yo
-
-# Advanced level functions combining multiple basic functions are to be implemented here
-# Methods involving multiple functions in this script should generally be implemented in a separate script and not implemented here, unless it is a very common function
-
-# stage-control to interact with the NanoLab Microcontroller
+# Script to laser cut raster squares using the Nanomaterials Lab Microcontrollers for research experiments (ie the important stuff)
+# Because WMS is not very good at coding, he will proceed to define the needed functions here until yudong comes, communicates, and cleans the shit up together.
+# Module to provide for raster shapes, sizes, in situ auto laser power adjustments and regular arrays of cut regions
 # Microcontroller Model: Micos 1860SMC Basic
-# Made 2019, Sun Yudong
-# sunyudong [at] outlook [dot] sg
+# Made 2019, Wu Mingsong
+# mingsongwu [at] outlook [dot] sg
 # github.com/sunjerry019/photonLauncher
 
-# Change code here if for e.g. sounds needs to be played BEFORE the completion of the raster
 
 import micron
 import playsound
 import numpy as np
 import math
 import time
+import argparse as arg
 
-class InputError(Exception):
-	# Error in user input -> To be caught and flagged accordingly
-	pass
+from extraFunctions import query_yes_no as qyn
 
-class StageControl():
-	def __init__(self, **kwargs):
+# raster machine should have multiple cutting modes:
+# Mode 1: default, horizontal array of squares. Parameters = number of squares, size of squares, raster speed increments, inter-square gap size, raster direction preference (sideways vs up-down).
+# Mode 2:
+
+class Raster():
+
+    def __init__(self, kwargs, mode = 1, ):
 		self.controller = micron.Micos(**kwargs)
 
 		# Generate filename based on the serial number of the model
 		self.serial = self.controller.getSerial()
 		self.fn = self.generateFilename(self.serial)
 
-	def generateFilename(self, cereal):
-		# TODO!
-
-		return "sounds/completed/raster_alarm.wav"
-
 	def finish(self):
 		# Play sound to let user know that the action is completed
 		# playsound.playsound(self.fn)
 		pass
 
-	def rdiagonal(self, distance, angle):
-		pass
-		# implement drawing of diagonals
-		# implement button for relative move directly
 
 	def raster(self, velocity, xDist, yDist, rasterSettings, returnToOrigin = False):
 		# Raster in a rectangle
@@ -186,24 +175,11 @@ class StageControl():
 
 		pass
 
-	def __enter__(self):
-		return self
-
-	def __exit__(self, e_type, e_val, traceback):
-		self.controller.dev.close()
-
-# for WMS's benefit: this allows for interactive interface for this script alone
-if __name__ == '__main__':
-	import argparse
-
-	parser = argparse.ArgumentParser()
-	parser.add_argument('-u', '--unit', type = str, help = "Unit, microstep, um, mm, cm, m, in, mil")
-	parser.add_argument('-c', '--noCtrlCHandler', help="No Ctrl C Handler", action='store_true')
-	parser.add_argument('-H', '--noHome', help="noHome", action='store_true')
-	args = parser.parse_args()
 
 
-	with StageControl(noCtrlCHandler = args.noCtrlCHandler, unit = args.unit, noHome = args.noHome) as s:
-		print("\n\ns = StageControl(); s.controller for controller movements\n\n")
-		# import pdb; pdb.set_trace()
-		import code; code.interact(local=locals())
+
+
+
+
+
+        #
