@@ -2,8 +2,8 @@
 
 # Script to print pictures using the NanoLab Microcontroller
 # Microcontroller Model: Micos 1860SMC Basic
-# Made 2019, Sun Yudong, with a little assistance from Wu Mingsong
-# sunyudong [at] outlook [dot] sg, mingsongwu [at] outlook [dot] sg
+# Made 2019, Sun Yudong
+# sunyudong [at] outlook [dot] sg
 # github.com/sunjerry019/photonLauncher
 
 from PIL import Image
@@ -218,7 +218,7 @@ class PicConv():
 		if self.simulate:
 			os.system("./generateMovie.sh")
 
-	def print(self, velocity, **kwargs):
+	def draw(self, velocity, **kwargs):
 		assert isinstance(velocity, (int, float)), "velocity must be int or float"
 
 		import micron
