@@ -37,17 +37,29 @@ class Shutter():
         self.isOpen = True
         return True
 
-    def out(self, offset):
-        n = round(offset)
-        playsound.playsound(glob.glob('sound/position{}*'.format(n))
+# incremental step control (absolute position) for ND filter rotation control
+    def abpos(self, p):
+        try:
+            if "." in p:
+                val = float(p)
+                val = int(round(val))
+                print(val, "Yes, user input is a float number.")
+            else:
+                val = int(p)
+                print(val, "Yes, input string is an Integer.")
+        except ValueError:
+            print("Did you input a NUMBER? \n For reference, here are the possible positions: \n Position 1 = 1.0ms duty cycle \n Position 1 = 1.0ms duty cycle \n Position 2 = 1.1ms duty cycle \n Position 3 = 1.2ms duty cycle \n Position 4 = 1.3ms duty cycle \n Position 5 = 1.4ms duty cycle \n Position 6 = 1.5ms duty cycle \n Position 7 = 1.6ms duty cycle \n Position 8 = 1.7ms duty cycle \n Position 9 = 1.8ms duty cycle \n Position 10 = 1.9ms duty cycle \n Position 11 = 2.0ms duty cycle \n Position 12 = 3.0ms duty cycle \n")
+        for i in range(1,val):
+            n = glob.glob('sound/position{}_*'.format(val))
+            print('Affirmative, now playing', n[0], '...done.')
+            playsound.playsound(n[0])
 
-    def pulse(self, time):
+    def pulse(self, lag):
         self.close()
         self.open()
-        time.sleep(time*0.001)
+        time.sleep(lag*0.001)
         self.close()
 
-    def
 
     def __enter__(self):
         self.close()
