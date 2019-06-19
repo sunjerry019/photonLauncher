@@ -16,6 +16,16 @@
 # Additional servo = laser power adjustments, via mounting a wheeled neutral density filter (in documentation) we can vary laser power with rotation of filter.
 
 # playsound is an independent python package for sound playing, while pydub uses either ffmpeg or pysound
+10 x aux holder
+60 x chip holder
+40 x mtf jumper cables
+80 x ftf jumper cables
+10 x sg90 360
+10 x lm358n
+10 x microusb head circuit part
+
+
+
 import playsound
 import time
 from pydub import AudioSegment
@@ -24,44 +34,57 @@ from pydub.playback import play
 
 class Pulsegen(SignalGenerator):
 
-    def __init__(self, freq = 50, **kwargs):
-        super(Pulsegen, self).__init__(**kwargs)
+    def __init__(self, duty, polarity = True, freq = 50, duration = 400, **kwargs):
+        super().__init__(**kwargs)
         self.freq = freq
-        print('\n\nPulse Generator initialising...done.')
+        self.duty = duty
+        self.polarity = polarity
+        self.duration = duration
 
-    def gen(self, duty, polarity):
+    def generate(self):
         sample_n = 0
-        print('sample_n = ', sample_n)
+
         # in samples
         cycle_length = self.sample_rate / float(self.freq)
-        pulse_length = cycle_length * duty
+        pulse_length = cycle_length * self.duty
 
         while True:
             if (sample_n % cycle_length) < pulse_length:
                 # in case polarity magnitude isnt 1, we simply take the sign
-                yield 1.0
+                if self.polarity == True:
+                    yield 1.0
+                else
+                    yield -1.0
             else:
                 yield 0
             sample_n += 1
 
-        self.playsound(duration = 400)
-
-    def playsound(self, duration):
-        sound_segment = self.to_audio_segment(duration)
+    def play(self):
+        sound_segment = self.to_audio_segment(self.duration)
         play(sound_segment)
+
+    def __enter__(self):
+        print('\n\nPulse generator initialising...done\n\n')
+        return self
+
+    def __exit__(self, e_type, e_val, traceback):
+        print('\n\n Pulse generator self destructing...done\n\n')
+
+        return
 
 class Shutter():
     def __init__(self):
-        self.pulse = Pulsegen()
         self.close()
         self.isOpen = False
 
-    def absolute(self, duty, polarity = 1):
-        self.pulse.gen(duty, polarity)
+    def absolute(self, duty, polarity, freq = 50, duration = 400):
+        with Pulsegen(duty, polarity, freq, duration) as p:
+
+            p.play()
 
     # This is the "over extended" range of servo (>180 degrees). Reserved for closed state, where 180 degrees would be open, ready for 180-0 degrees scanning
     def close(self):
-        self.absolute(0.15)
+        self.absolute(0.15, 1)
         print("Closing Shutter")
         #playsound.playsound('sound/position1_1.0msduty.wav')
         self.isOpen = False
@@ -69,9 +92,7 @@ class Shutter():
 
     def open(self):
         print("Opening Shutter")
-        # provisional lag since keyboard strokes send a pulse to causing incomplete shutter opening
-        time.sleep(0.5)
-        self.absolute(0.1)
+        self.absolute(0.1, 1)
         #playsound.playsound('sound/position1_1.0msduty.wav')
         self.isOpen = True
         return True
