@@ -9,8 +9,8 @@
 
 # stage-control to interact with the NanoLab Microcontroller
 # Microcontroller Model: Micos 1860SMC Basic
-# Made 2019, Sun Yudong
-# sunyudong [at] outlook [dot] sg
+# Made 2019, Sun Yudong, Wu Mingsong
+# sunyudong [at] outlook [dot] sg, mingonsgwu [at] outlook [dot] sg
 # github.com/sunjerry019/photonLauncher
 
 # Change code here if for e.g. sounds needs to be played BEFORE the completion of the raster
@@ -39,14 +39,31 @@ class StageControl():
 		return "sounds/completed/raster_alarm.wav"
 
 	def finish(self):
-		# Play sound to let user know that the action is completed
-		# playsound.playsound(self.fn)
+		#Play sound to let user know that the action is completed
+		playsound.playsound(self.fn)
 		pass
 
-	def rdiagonal(self, distance, angle):
+	# implement cardinal direction movement definitions
+	def rcardinal(self, direction, distance):
+		if (direction == 'Left') or (direction == 'left') or (direction == 'L') or (direction == 'l'):
+			self.controller.rmove(**{self.controller.axes[a]: 0, self.controller.axes[b]: distances[b]})
+
+		if (direction == 'Right') or (direction == 'right') or (direction == 'R') or (direction == 'r'):
+			self.controller.rmove(**{self.controller.axes[a]: 0, self.controller.axes[b]: distances[b]})
+
+		if (direction == 'Up') or (direction == 'up') or (direction == 'U') or (direction == 'u'):
+			self.controller.rmove(**{self.controller.axes[a]: distances[a]}, self.controller.axes[b]: 0)
+
+		if (direction == 'Down') or (direction == 'down') or (direction == 'D') or (direction == 'd'):
+			self.controller.rmove(**{self.controller.axes[a]: distances[a]}, self.controller.axes[b]: 0)
 		pass
+		
+	def rdiagonal(self, distance, angle):
 		# implement drawing of diagonals
 		# implement button for relative move directly
+
+		self.controller.rmove(**{self.controller.axes[a]: distances[a]}, self.controller.axes[b]: distance[b])
+		pass
 
 	def raster(self, velocity, xDist, yDist, rasterSettings, returnToOrigin = False):
 		# Raster in a rectangle
