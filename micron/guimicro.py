@@ -13,7 +13,7 @@ class Window(QtGui.QMainWindow):
         super(Window, self).__init__()
         self.setGeometry(50, 50, 500, 300)
         self.setWindowTitle("Micos Stage Controller MARK II")
-        self.setWindowIcon(QtGui.QIcon('pythonlogo.png'))
+        self.setWindowIcon(QtGui.QIcon('pictures/fibonacci.bmp'))
         self.show()
 
 
