@@ -22,47 +22,47 @@ from pydub import AudioSegment
 from pydub.generators import SignalGenerator
 from pydub.playback import play
 
-class wmsPulse(SignalGenerator):
-    def __init__(self, duty = 0.1, freq = 50, **kwargs):
-        super().__init__(**kwargs)
+class Pulsegen(SignalGenerator):
+
+    def __init__(self, freq = 50, **kwargs):
+        super(Pulsegen, self).__init__(**kwargs)
         self.freq = freq
-        self.duty_cycle = duty
+        print('\n\nPulse Generator initialising...done.')
 
-    def generate(self):
+    def gen(self, duty, polarity):
         sample_n = 0
-
+        print('sample_n = ', sample_n)
         # in samples
         cycle_length = self.sample_rate / float(self.freq)
-        pulse_length = cycle_length * self.duty_cycle
+        pulse_length = cycle_length * duty
 
         while True:
             if (sample_n % cycle_length) < pulse_length:
+                # in case polarity magnitude isnt 1, we simply take the sign
                 yield 1.0
-
             else:
                 yield 0
             sample_n += 1
 
-    def audiomechano(self, duty, freq = 50, duration = 400):
-        sound = wmsPulse(duty, freq)
-        sound_segment = sound.to_audio_segment(duration)
-        play(sound_segment)
+        self.playsound(duration = 400)
 
-pwm = wmsPulse()
+    def playsound(self, duration):
+        sound_segment = self.to_audio_segment(duration)
+        play(sound_segment)
 
 class Shutter():
     def __init__(self):
+        self.pulse = Pulsegen()
         self.close()
         self.isOpen = False
 
-    # absolute positioning depending on duty cycle, effective range -> 0.017 to 0.1, sweeps 180 degrees.
-    def absolute(self, duty_cycle):
-        pwm.audiomechano(duty_cycle)
+    def absolute(self, duty, polarity = 1):
+        self.pulse.gen(duty, polarity)
 
     # This is the "over extended" range of servo (>180 degrees). Reserved for closed state, where 180 degrees would be open, ready for 180-0 degrees scanning
     def close(self):
-        print("Closing Shutter")
         self.absolute(0.15)
+        print("Closing Shutter")
         #playsound.playsound('sound/position1_1.0msduty.wav')
         self.isOpen = False
         return True
@@ -88,7 +88,7 @@ class Shutter():
                 val1, val2 = int(p1), int(p2)
                 print(val1, "_", val2, "Integers accepted.")
         except ValueError:
-            print("Did you input a NUMBER?)
+            print("Did you input a NUMBER?")
         if val1 < val2:
             for i in range(val1,val2+1):
                 dc = 0.1 - (0.002)*(i-1)
@@ -119,6 +119,6 @@ class Shutter():
 
 if __name__ == '__main__':
     with Shutter() as s:
-        print("\n\ns = Shutter();\n\n")
+        print("\n\nUse s as Shutter()\n\n")
         # import pdb; pdb.set_trace()
         import code; code.interact(local=locals())
