@@ -23,6 +23,7 @@ import signal
 import json
 import warnings
 
+# hashtag homemade
 import shutter
 
 import math
