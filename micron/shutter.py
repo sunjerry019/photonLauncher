@@ -11,22 +11,11 @@
 # mingsongwu [at] outlook [dot] sg, sunyudong [at] outlook [dot] sg,
 
 # WAV files are favoured as signal sources as they are lossless as compared to MP3
-# Each WAV file actually contain the data for the rest of the positions as well, no risk of lost data.
-# 1ms and 2ms duty cycle are reserved for on and off for the shutter servo since they are orthogonal positions to each other.
-# Additional servo = laser power adjustments, via mounting a wheeled neutral density filter (in documentation) we can vary laser power with rotation of filter.
+# Additional servo = laser power adjustments, via mounting a rotation graduated neutral density filter (in documentation) we can vary laser power with rotation of filter.
+# We are probably using one of two kinds of servos: SG90 9g, and SG90 9g 360, where the polarity parameter provides for potential 360 degree range for the latter. Else, all PWM generated will have positive (polarity = True) voltage.
+# Sound player module is simpleaudio, which is cross platform, dependency free. It is nested in play(sound_segment) and plays the audio file created in situ before the entire Pulsegen class destructs after each audio command. Wholesome, organic, grass-fed audio solution...
+# For playing saved .wav, we should use python sounddevices to choose the output device first
 
-# playsound is an independent python package for sound playing, while pydub uses either ffmpeg or pysound
-10 x aux holder
-60 x chip holder
-40 x mtf jumper cables
-80 x ftf jumper cables
-10 x sg90 360
-10 x lm358n
-10 x microusb head circuit part
-
-
-
-import playsound
 import time
 from pydub import AudioSegment
 from pydub.generators import SignalGenerator
@@ -50,16 +39,15 @@ class Pulsegen(SignalGenerator):
 
         while True:
             if (sample_n % cycle_length) < pulse_length:
-                # in case polarity magnitude isnt 1, we simply take the sign
                 if self.polarity == True:
                     yield 1.0
-                else
+                else:
                     yield -1.0
             else:
                 yield 0
             sample_n += 1
 
-    def play(self):
+    def playpulse(self):
         sound_segment = self.to_audio_segment(self.duration)
         play(sound_segment)
 
@@ -70,8 +58,6 @@ class Pulsegen(SignalGenerator):
     def __exit__(self, e_type, e_val, traceback):
         print('\n\n Pulse generator self destructing...done\n\n')
 
-        return
-
 class Shutter():
     def __init__(self):
         self.close()
@@ -79,21 +65,18 @@ class Shutter():
 
     def absolute(self, duty, polarity, freq = 50, duration = 400):
         with Pulsegen(duty, polarity, freq, duration) as p:
+            p.playpulse()
 
-            p.play()
-
-    # This is the "over extended" range of servo (>180 degrees). Reserved for closed state, where 180 degrees would be open, ready for 180-0 degrees scanning
+    # This is the "over extended" range of 180 degree servo (>180 degrees). Reserved for closed state, where 180 degrees would be open, ready for 180-0 degrees scanning
     def close(self):
         self.absolute(0.15, 1)
         print("Closing Shutter")
-        #playsound.playsound('sound/position1_1.0msduty.wav')
         self.isOpen = False
         return True
 
     def open(self):
         print("Opening Shutter")
         self.absolute(0.1, 1)
-        #playsound.playsound('sound/position1_1.0msduty.wav')
         self.isOpen = True
         return True
 
@@ -127,7 +110,7 @@ class Shutter():
     def flicker(self, lag):
         self.close()
         self.open()
-        time.sleep(lag*0.001)
+        time.sleep(lag / 1000)
         self.close()
 
 

@@ -43,21 +43,21 @@ class StageControl():
 		playsound.playsound(self.fn)
 		pass
 
-	# implement cardinal direction movement definitions
+	# implement cardinal direction movement definitions, this isnt actually necessary once we have buttons paired to commands on guimicro
 	def rcardinal(self, direction, distance):
 		if (direction == 'Left') or (direction == 'left') or (direction == 'L') or (direction == 'l'):
 			self.controller.rmove(**{self.controller.axes[a]: 0, self.controller.axes[b]: distances[b]})
 
-		if (direction == 'Right') or (direction == 'right') or (direction == 'R') or (direction == 'r'):
+		elif (direction == 'Right') or (direction == 'right') or (direction == 'R') or (direction == 'r'):
 			self.controller.rmove(**{self.controller.axes[a]: 0, self.controller.axes[b]: distances[b]})
 
-		if (direction == 'Up') or (direction == 'up') or (direction == 'U') or (direction == 'u'):
+		elif (direction == 'Up') or (direction == 'up') or (direction == 'U') or (direction == 'u'):
 			self.controller.rmove(**{self.controller.axes[a]: distances[a]}, self.controller.axes[b]: 0)
 
-		if (direction == 'Down') or (direction == 'down') or (direction == 'D') or (direction == 'd'):
+		elif (direction == 'Down') or (direction == 'down') or (direction == 'D') or (direction == 'd'):
 			self.controller.rmove(**{self.controller.axes[a]: distances[a]}, self.controller.axes[b]: 0)
 		pass
-		
+
 	def rdiagonal(self, distance, angle):
 		# implement drawing of diagonals
 		# implement button for relative move directly
