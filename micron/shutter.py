@@ -14,7 +14,7 @@
 # Additional servo = laser power adjustments, via mounting a rotation graduated neutral density filter (in documentation) we can vary laser power with rotation of filter.
 # We are probably using one of two kinds of servos: SG90 9g, and SG90 9g 360, where the polarity parameter provides for potential 360 degree range for the latter. Else, all PWM generated will have positive (polarity = True) voltage.
 # Sound player module is simpleaudio, which is cross platform, dependency free. It is nested in play(sound_segment) and plays the audio file created in situ before the entire Pulsegen class destructs after each audio command. Wholesome, organic, grass-fed audio solution...
-# For playing saved .wav, we should use python sounddevices to choose the output device first
+# For playing saved .wav files, we should use python sounddevices to choose the output device first
 
 import time
 from pydub import AudioSegment
