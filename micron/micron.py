@@ -23,6 +23,7 @@ import signal
 import json
 import warnings
 
+# hashtag homemade
 import shutter
 
 import math
@@ -88,11 +89,11 @@ class Micos():
 		self.ENTER = b'\x0D' #chr(13)  # CR
 
 		self.stage = Stage()
-		if stageConfig: 
+		if stageConfig:
 			if type(stageConfig) is str:
 				with open(stageConfig, 'r') as f:
 					stageConfig = json.load(f)
-			
+
 			self.stage.update(stageConfig)
 
 		self.units = { "microstep": 0,  "um": 1, "mm": 2, "cm": 3, "m": 4, "in": 5, "mil": 6 }
@@ -118,6 +119,7 @@ class Micos():
 
 			if not noCtrlCHandler: self.startInterruptHandler()
 			self.shutter = shutter.Shutter()
+			self.shutter.close()
 
 			# BEGIN INITIALIZATION
 			print("Stage Initialization...", end="\r")
@@ -125,7 +127,7 @@ class Micos():
 			self.setvel(200)
 			self.homed = False
 
-			if noHome: 
+			if noHome:
 				warnings.warn("Stage will not be homed. Proceed with caution.", RuntimeWarning)
 			else:
 				print("Homing stage")
@@ -198,7 +200,7 @@ class Micos():
 			ret = self.send("{} {} r".format(x, y), *args, **kwargs)
 
 			if not noWait:
-				# we wait 80% of the time required before returning to the loop
+				# we wait 100% of the time required before returning to the loop
 				distance = math.sqrt(x**2 + y**2) if (x and y) else abs(x + y)
 				time_req = distance / self.velocity
 
@@ -220,7 +222,7 @@ class Micos():
 		assert isinstance(x, (int, float)), "x must be integer or float"
 		assert isinstance(y, (int, float)), "y must be integer or float"
 
-		try: 
+		try:
 			warnings.warn("This function may not work as intended. Please use with caution.", RuntimeWarning)
 			self.stage.setpos(x, y) # Note this is not Micos.setpos
 			return self.send("{} {} m".format(x, y), *args, **kwargs)
@@ -265,7 +267,7 @@ class Micos():
 		# Just in case it is an invalid unit
 		# If not 1, it must have found an entry in the list
 		self.unit = "um" if un == 1 else unit
-			
+
 		self.send("{} 1 setunit".format(un)) # x-axis
 		self.send("{} 2 setunit".format(un)) # y-axis
 		self.send("{} 0 setunit".format(un)) # velocity
