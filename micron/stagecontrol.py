@@ -5,13 +5,12 @@
 # Abstraction yo
 
 # Advanced level functions combining multiple basic functions are to be implemented here
-# Methods involving multiple functions in this script should generally be implemented
-# in a separate script and not implemented here, unless it is a very common function
+# Methods involving multiple functions in this script should generally be implemented in a separate script and not implemented here, unless it is a very common function
 
 # stage-control to interact with the NanoLab Microcontroller
 # Microcontroller Model: Micos 1860SMC Basic
-# Made 2019, Sun Yudong
-# sunyudong [at] outlook [dot] sg
+# Made 2019, Sun Yudong, Wu Mingsong
+# sunyudong [at] outlook [dot] sg, mingonsgwu [at] outlook [dot] sg
 # github.com/sunjerry019/photonLauncher
 
 # Change code here if for e.g. sounds needs to be played BEFORE the completion of the raster
@@ -37,17 +36,34 @@ class StageControl():
 	def generateFilename(self, cereal):
 		# TODO!
 
-		return "sounds/completed/raster.wav"
+		return "sounds/completed/raster_alarm.wav"
 
 	def finish(self):
-		# Play sound to let user know that the action is completed
-		# playsound.playsound(self.fn)
+		#Play sound to let user know that the action is completed
+		playsound.playsound(self.fn)
+		pass
+
+	# implement cardinal direction movement definitions, the input cases arent actually necessary once we have buttons paired to commands on guimicro
+	def rcardinal(self, direction, distance):
+		if (direction == 'Left') or (direction == 'left') or (direction == 'L') or (direction == 'l'):
+			self.controller.rmove(**{self.controller.axes[a]: 0, self.controller.axes[b]: distances[b]})
+
+		elif (direction == 'Right') or (direction == 'right') or (direction == 'R') or (direction == 'r'):
+			self.controller.rmove(**{self.controller.axes[a]: 0, self.controller.axes[b]: distances[b]})
+
+		elif (direction == 'Up') or (direction == 'up') or (direction == 'U') or (direction == 'u'):
+			self.controller.rmove(**{self.controller.axes[a]: distances[a]}, self.controller.axes[b]: 0)
+
+		elif (direction == 'Down') or (direction == 'down') or (direction == 'D') or (direction == 'd'):
+			self.controller.rmove(**{self.controller.axes[a]: distances[a]}, self.controller.axes[b]: 0)
 		pass
 
 	def rdiagonal(self, distance, angle):
-		pass
 		# implement drawing of diagonals
 		# implement button for relative move directly
+
+		self.controller.rmove(**{self.controller.axes[a]: distances[a]}, self.controller.axes[b]: distance[b])
+		pass
 
 	def raster(self, velocity, xDist, yDist, rasterSettings, returnToOrigin = False):
 		# Raster in a rectangle
@@ -193,6 +209,7 @@ class StageControl():
 	def __exit__(self, e_type, e_val, traceback):
 		self.controller.dev.close()
 
+# for WMS's benefit: this allows for interactive interface for this script alone
 if __name__ == '__main__':
 	import argparse
 

@@ -49,7 +49,7 @@ class PicConv():
 		self.image = Image.open(self.filename)
 
 		# Sanity Checks
-		assert self.image.mode == '1', "Your image has mode {}. Please use a 1-bit indexed image, see https://pillow.readthedocs.io/en/stable/handbook/concepts.html#bands".format(self.image.mode)
+		assert self.image.mode == '1', "Your image has mode {}. Please use a 1-bit indexed (mode 1) image, see https://pillow.readthedocs.io/en/stable/handbook/concepts.html#bands. If using GIMP to convert picture to 1-bit index, ensure 'remove colour from palette' is unchecked".format(self.image.mode)
 		# Check if size is within limits if talking directly stage
 		# TODO
 
@@ -218,7 +218,7 @@ class PicConv():
 		if self.simulate:
 			os.system("./generateMovie.sh")
 
-	def print(self, velocity, **kwargs):
+	def draw(self, velocity, **kwargs):
 		assert isinstance(velocity, (int, float)), "velocity must be int or float"
 
 		import micron
@@ -239,7 +239,7 @@ class PicConv():
 		except AssertionError as e:
 			raise AssertionError(e)
 		except Exception as e:
-			raise RuntimeError("Did you forget to to load self.shape in form of y, x? Error: {}".format(e))
+			raise RuntimeError("Did you forget to load self.shape in form of y, x? Error: {}".format(e))
 
 		# do a rmove to the (0,0) of the image and let the user move the sample to match the (0,0) point
 		# checking if the image will exceed limits
@@ -273,6 +273,8 @@ class PicConv():
 			else:
 				self.controller.setvel(velocity)
 
+		self.controller.shutter.close()
+
 	def save(self, variable, outputFile, protocol = pickle.HIGHEST_PROTOCOL):
 		# save self.lines into a pickle file
 		# variable can be self.lines
@@ -294,17 +296,17 @@ class PicConv():
 
 	def parseLines(self):
 		# All rmove commands
-		# List of continuous lines, which are lists of commands in the format of 
+		# List of continuous lines, which are lists of commands in the format of
 		# [bool , [(dy, dx), (dy, dx), ...]] where bool = laser on off state (0 = off, 1 = on)
 		self.commands = []
 
-		for i, line in enumerate(self.lines): 
+		for i, line in enumerate(self.lines):
 			# line = each segment that doesnt require laser to be closed
 			# Points are in the format (y, x)
 
 			# print(i, line)
 
-			if i: 
+			if i:
 				# This is the 2nd line onwards
 				# We need to move the laser from the previous point to the current point
 				dy, dx = self.lines[i][0][0] - self.lines[i-1][-1][0], self.lines[i][0][1] - self.lines[i-1][-1][1]
@@ -329,7 +331,7 @@ class PicConv():
 					if (dy != 0 and dx != 0) and (abs(dy) != abs(dx)):
 						# This is no longer in a horizontal or straight line
 						# This point is also not on a continous diagonal
-						# We finish the line and append the rmove command:						
+						# We finish the line and append the rmove command:
 						rdy, rdx = prevPt[0] - startPt[0], prevPt[1] - startPt[1]
 						_l.append((rdy, rdx))
 
@@ -343,13 +345,13 @@ class PicConv():
 				# Check if last point
 				# print("j = ", j)
 				if j == lineLastCount and j != 0:
-					# We finish the line and append the rmove command:						
+					# We finish the line and append the rmove command:
 					rdy, rdx = prevPt[0] - startPt[0], prevPt[1] - startPt[1]
 					_l.append((rdy, rdx))
 
 				# print(point, _l)
-			
-			self.commands.append([1, _l]) 
+
+			self.commands.append([1, _l])
 
 
 	def estimateTime(self, velocity):
