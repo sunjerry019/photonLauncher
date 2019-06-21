@@ -43,7 +43,7 @@ class StageControl():
 		playsound.playsound(self.fn)
 		pass
 
-	# implement cardinal direction movement definitions, this isnt actually necessary once we have buttons paired to commands on guimicro
+	# implement cardinal direction movement definitions, the input cases arent actually necessary once we have buttons paired to commands on guimicro
 	def rcardinal(self, direction, distance):
 		if (direction == 'Left') or (direction == 'left') or (direction == 'L') or (direction == 'l'):
 			self.controller.rmove(**{self.controller.axes[a]: 0, self.controller.axes[b]: distances[b]})
