@@ -15,9 +15,11 @@ Cblues = [c3, d3sharp, f3, f3sharp, g3, a3sharp, c4, d4sharp, f4, f4sharp, g4, a
 
 # the most basic melody with pentatonics scale should have: tempo, rhythmic forms (triplets, quavers, rests, etc), repetition, where the last 3 can be done randomly within the score.
 
-sound = Sine(freq = 0).to_audio_segment(duration=300)
+# triplet riff for testing. works pretty well.
+sound = Sine(freq = c4).to_audio_segment(duration=270/3)+Sine(freq = d4).to_audio_segment(duration=270/3)+Sine(freq = e4).to_audio_segment(duration=270/3)
+
 import random
-for x in range(50):
+for x in range(25):
     n = random.randint(0,14)
     #allegretto speed
     sound += Sine(freq = Cpent[n]).to_audio_segment(duration=270)
