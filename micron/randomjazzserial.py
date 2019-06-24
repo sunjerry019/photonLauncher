@@ -18,8 +18,14 @@ Cblues = [c3, d3sharp, f3, f3sharp, g3, a3sharp, c4, d4sharp, f4, f4sharp, g4, a
 # triplet riff for testing. works pretty well.
 sound = Sine(freq = c4).to_audio_segment(duration=270/3)+Sine(freq = d4).to_audio_segment(duration=270/3)+Sine(freq = e4).to_audio_segment(duration=270/3)
 
+<<<<<<< HEAD
 for x in range(25):
     n = random2.randint(0,14)
+=======
+import random
+for x in range(25):
+    n = random.randint(0,14)
+>>>>>>> 5d0e97849d762d7ea42ee0245a77fa4ec16d1ff1
     #allegretto speed
     sound += Sine(freq = Cpent[n]).to_audio_segment(duration=270)
     if x % 8 == 0:
