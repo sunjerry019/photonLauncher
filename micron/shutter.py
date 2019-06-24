@@ -12,7 +12,14 @@
 
 # WAV files are favoured as signal sources as they are lossless as compared to MP3
 # Additional servo = laser power adjustments, via mounting a rotation graduated neutral density filter (in documentation) we can vary laser power with rotation of filter.
-# We are probably using one of two kinds of servos: SG90 9g, and SG90 9g 360, where the polarity parameter provides for potential 360 degree range for the latter. Else, all PWM generated will have positive (polarity = True) voltage.
+# We are probably using one of two kinds of servos: SG90 9g, and SG90 9g 360. All PWM generated will have positive (polarity = True) voltage, unless inversion is needed for weird computer soundcards.
+# SG90 9g has a 180 degree range, and uses PWM pulses as signals, so the duty cycle of the 50Hz signal gives the ABSOLUTE position of the shaft (motor will try to move to position as long as pulse duration is long enough)
+# SG90 9g 360 is a modified version of SG90 9g, and uses PWM signals as SPEED indicators, where DURATION and SPEED will determine the precise RELATIVE movement from any position.
+
+# Duty cycle ratios of interest for the servos for 50Hz signal:
+# SG90 9g -> 0.15, 0.1, 0.05
+# SG90 9g 360 -> 0.075 (static), 0.080 (minimum for movement in one direction), 0.070 (minimum for movement in the other)
+
 # Sound player module is simpleaudio, which is cross platform, dependency free. It is nested in play(sound_segment) and plays the audio file created in situ before the entire Pulsegen class destructs after each audio command. Wholesome, organic, grass-fed audio solution...
 # For playing saved .wav files, we should use python sounddevices to choose the output device first
 
@@ -56,28 +63,37 @@ class Pulsegen(SignalGenerator):
         return self
 
     def __exit__(self, e_type, e_val, traceback):
-        print('\n\n Pulse generator self destructing...done\n\n')
+        print('\n\nPulse generator self destructing...done\n\n')
 
 class Shutter():
-    def __init__(self):
-        self.close()
+    def __init__(self, absoluteMode = False):
+        self.absoluteMode = absoluteMode
+        self.homeclose() if not self.absoluteMode else self.close()
         self.isOpen = False
 
-    def absolute(self, duty, polarity, freq = 50, duration = 400):
+    # The most general format for PWM signal control
+    def absolute(self, duty, polarity = True, freq = 50, duration = 400):
         with Pulsegen(duty, polarity, freq, duration) as p:
             p.playpulse()
 
     # This is the "over extended" range of 180 degree servo (>180 degrees). Reserved for closed state, where 180 degrees would be open, ready for 180-0 degrees scanning
     def close(self):
-        self.absolute(0.15, 1)
+        self.absolute(0.15) if self.absoluteMode else self.absolute(0.09, duration = 100)
         print("Closing Shutter")
         self.isOpen = False
         return True
 
     def open(self):
+        self.absolute(0.1) if self.absoluteMode else self.absolute(0.06, duration = 100)
         print("Opening Shutter")
-        self.absolute(0.1, 1)
         self.isOpen = True
+        return True
+
+    # This is for the continuous rotation servo motor shutters. Provides a homing function: motor rotates untill axle hits a physical block where it will stall temporarily. It then rotates in the other direction to closed position.
+    def homeclose(self):
+        self.absolute(0.085, duration = 1400)
+        time.sleep(1)
+        self.absolute(0.06, duration = 300)
         return True
 
 # incremental step scan from one position to another for ND filter rotation control.

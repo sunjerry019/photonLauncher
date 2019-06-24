@@ -26,15 +26,19 @@ class InputError(Exception):
 	pass
 
 class StageControl():
-	def __init__(self, **kwargs):
+	def __init__(self, noinvertx = 1, noinverty = 1, **kwargs):
 		self.controller = micron.Micos(**kwargs)
-
+		self.noinvertx = noinvertx
+		self.noinverty = noinverty
 		# Generate filename based on the serial number of the model
 		self.serial = self.controller.getSerial()
 		self.fn = self.generateFilename(self.serial)
 
+		# define contants
+		self.UP, self.RIGHT, self.DOWN, self.LEFT = 0, 1, 2, 3
+
 	def generateFilename(self, cereal):
-		# TODO!
+		# TODO!                                                                          
 
 		return "sounds/completed/raster_alarm.wav"
 
@@ -45,24 +49,25 @@ class StageControl():
 
 	# implement cardinal direction movement definitions, the input cases arent actually necessary once we have buttons paired to commands on guimicro
 	def rcardinal(self, direction, distance):
-		if (direction == 'Left') or (direction == 'left') or (direction == 'L') or (direction == 'l'):
-			self.controller.rmove(**{self.controller.axes[a]: 0, self.controller.axes[b]: distances[b]})
+		if (direction == self.LEFT):
+			return self.controller.rmove(x = distance * self.noinvertx, y = 0)
 
-		elif (direction == 'Right') or (direction == 'right') or (direction == 'R') or (direction == 'r'):
-			self.controller.rmove(**{self.controller.axes[a]: 0, self.controller.axes[b]: distances[b]})
+		elif (direction == self.RIGHT):
+			return self.controller.rmove(x = -distance * self.noinvertx, y = 0)
 
-		elif (direction == 'Up') or (direction == 'up') or (direction == 'U') or (direction == 'u'):
-			self.controller.rmove(**{self.controller.axes[a]: distances[a]}, self.controller.axes[b]: 0)
+		elif (direction == self.UP):
+			return self.controller.rmove(y = distance * self.noinverty, x = 0)
 
-		elif (direction == 'Down') or (direction == 'down') or (direction == 'D') or (direction == 'd'):
-			self.controller.rmove(**{self.controller.axes[a]: distances[a]}, self.controller.axes[b]: 0)
-		pass
+		elif (direction == self.DOWN):
+			return self.controller.rmove(y = distance * self.noinverty, x = 0)
+		else:
+			return False
 
-	def rdiagonal(self, distance, angle):
+	def rdiagonal(self, distance):
 		# implement drawing of diagonals
 		# implement button for relative move directly
-
-		self.controller.rmove(**{self.controller.axes[a]: distances[a]}, self.controller.axes[b]: distance[b])
+		distance /= 1.414213562373095
+		self.controller.rmove(x = distance * self.invertx, y = distance * self.inverty)
 		pass
 
 	def raster(self, velocity, xDist, yDist, rasterSettings, returnToOrigin = False):
