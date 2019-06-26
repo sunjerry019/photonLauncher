@@ -130,6 +130,8 @@ class MicroGui(QtWidgets.QMainWindow):
         def initMicron():
             with redirect_stdout(f):
                 # self.stageControl = stagecontrol.StageControl()
+
+                # Following code is for testing and emulation of homing commands
                 for i in range(2):
                     print("Message number:", i)
                     time.sleep(1)
