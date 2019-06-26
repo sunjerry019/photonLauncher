@@ -20,8 +20,8 @@ Cblues = [c3, d3sharp, f3, f3sharp, g3, a3sharp, c4, d4sharp, f4, f4sharp, g4, a
 # allegretto
 tempo = 250
 probability_unity = 30
-scale = Cpent
-repitition_rate = 13
+scale = Cblues
+repetition_rate = 13
 
 
 sound = Sine(freq = 0).to_audio_segment(duration = tempo)
@@ -176,8 +176,8 @@ for x in range(40):
             sound += Sine(freq = scale[n-3]).to_audio_segment(duration = tempo / 2)
             sound += Sine(freq = scale[n-5]).to_audio_segment(duration = tempo / 2)
 
-    # Provides stacking repitition for *some* structure
-    if x % repitition_rate == 0 and x > 0:
+    # Provides stacking repetition for *some* structure
+    if x % repetition_rate == 0 and x > 0:
         sound += sound
 
 play(sound)
