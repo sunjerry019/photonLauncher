@@ -5,7 +5,7 @@
 # Swapped to PyQt5 from Tkinter, because the former is more powerful/intuitive to implement features
 # microgui will pair functions with commands imported from stagecontrol.py which uses raster in turn
 
-# I'm sorry to whoever has to maintain this GUI code. I tried my best to make it as clear and precise as 
+# I'm sorry to whoever has to maintain this GUI code. I tried my best to make it as clear and precise as
 # possible but it like trying to make a HTML page using pure JavaScript and it's well...messy
 
 # The helper codes used in this are meant to be extensible for any weird scale coding projects that you might want
@@ -26,13 +26,15 @@ import stagecontrol
 class MicroGui(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
+        self.micronInitialized = False
+        self.currentStatus = ""
         self.initUI()
 
     def initUI(self):
-        self.setGeometry(50,50,500,300) # x, t, w, h
-        
+        self.setGeometry(50, 50, 500, 300) # x, y, w, h
+
         moveToCentre(self)
-        
+
         self.setWindowTitle('Micos Stage Controller MARK II 0.01a')
         self.setWindowIcon(QtGui.QIcon('./pictures/icon.bmp'))
 
@@ -88,14 +90,15 @@ class MicroGui(QtWidgets.QMainWindow):
         # We create a blocked window which the user cannot close
         initWindow = QtWidgets.QDialog()
         initWindow.setWindowTitle("Initializing...")
+        self.setOperationStatus("Initializing StageControl()")
         initWindow.setGeometry(50,50,300,200)
-        initWindow.setWindowFlags(QtCore.Qt.WindowType.WindowTitleHint | QtCore.Qt.WindowType.Dialog | QtCore.Qt.WindowType.WindowMaximizeButtonHint | QtCore.Qt.WindowType.CustomizeWindowHint) 
+        initWindow.setWindowFlags(QtCore.Qt.WindowType.WindowTitleHint | QtCore.Qt.WindowType.Dialog | QtCore.Qt.WindowType.WindowMaximizeButtonHint | QtCore.Qt.WindowType.CustomizeWindowHint)
         moveToCentre(initWindow)
 
         initWindow_layout = QtWidgets.QVBoxLayout()
 
         initWindow_wrapper_widget = QtWidgets.QWidget()
-        initWindow_wrapper_layout = QtWidgets.QVBoxLayout()        
+        initWindow_wrapper_layout = QtWidgets.QVBoxLayout()
 
         statusLabel = QtWidgets.QLabel("Initializing...")
         statusLabel.setWordWrap(True)
@@ -103,7 +106,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
         topLabel = QtWidgets.QLabel("--- INITIALIZING STAGECONTROL---")
         topLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        bottomLabel = QtWidgets.QLabel("-- PLEASE DO NOT CLOSE --")
+        bottomLabel = QtWidgets.QLabel("-- PLEASE WAIT AND DO NOT CLOSE --")
         bottomLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
         lineC = QtWidgets.QFrame()
@@ -135,6 +138,9 @@ class MicroGui(QtWidgets.QMainWindow):
                 for i in range(2):
                     print("Message number:", i)
                     time.sleep(1)
+                    
+            self.micronInitialized = True
+            self.setOperationStatus("StageControl Initialized")
 
         def printStuff():
             prevValue = ""
@@ -147,14 +153,14 @@ class MicroGui(QtWidgets.QMainWindow):
 
                     # l.append(status)
                     # initWindow.setWindowTitle(q.split()[-1].strip())
-
+                    self.setOperationStatus(status)
                     statusLabel.setText(status)
 
                 if threading.activeCount() == baselineThreads:
                     # The initialization is done and we quit the initWindow
                     initWindow.close()
                     break
-                
+
                 time.sleep(0.5) # We have to sleep to release the lock on f
 
         thread1 = threading.Thread(target = initMicron, args = ())
@@ -165,7 +171,7 @@ class MicroGui(QtWidgets.QMainWindow):
         thread2.start()
 
         # We need exec so that the event loop is started to show the widgets
-        initWindow.exec() 
+        initWindow.exec()
 
         # We end the initWindow from the thread itself since code below .exec() doesn't actually get run
         # This is because .exec() starts a loop that blocks the process
@@ -193,7 +199,7 @@ class MicroGui(QtWidgets.QMainWindow):
         menu_bar = self.menuBar()
 
         # File Menu
-        file_menu = menu_bar.addMenu("File")        
+        file_menu = menu_bar.addMenu("File")
 
         settings = QtWidgets.QAction("Settings", self)
         settings.setShortcut("Ctrl+,")
@@ -208,7 +214,7 @@ class MicroGui(QtWidgets.QMainWindow):
         file_menu.addAction(quit)
 
         # Help Menu
-        help_menu = menu_bar.addMenu("Help")    
+        help_menu = menu_bar.addMenu("Help")
 
         about = QtWidgets.QAction("About", self)
         about.setStatusTip('About this application')
@@ -306,6 +312,11 @@ class MicroGui(QtWidgets.QMainWindow):
         _drawpic_layout.addWidget(QtWidgets.QLabel("Draw Pic Layout"))
 
         return _drawpic_layout
+
+    def setOperationStatus(self, status):
+        self.currentStatus = status
+
+        # Do some updating of the status bar or something
 
 # Status Bar
 
