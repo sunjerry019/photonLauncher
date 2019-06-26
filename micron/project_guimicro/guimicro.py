@@ -78,6 +78,9 @@ class MicroGui(QtWidgets.QMainWindow):
 
         self.initializeDevice()
 
+        # Set to the last menu item
+        self.showPage(self.main_widget.count() - 1)
+
         # Show actual window
         self.show()
 
@@ -126,10 +129,10 @@ class MicroGui(QtWidgets.QMainWindow):
 
         def initMicron():
             with redirect_stdout(f):
-                self.stageControl = stagecontrol.StageControl()
-                # for i in range(4):
-                #     print("Message number:", i)
-                #     time.sleep(1)
+                # self.stageControl = stagecontrol.StageControl()
+                for i in range(2):
+                    print("Message number:", i)
+                    time.sleep(1)
 
         def printStuff():
             prevValue = ""
@@ -228,8 +231,15 @@ class MicroGui(QtWidgets.QMainWindow):
             QtWidgets.QPushButton("Stage Movement")
         ]
 
-        for i, btn in enumerate(_modes):
-            btn.triggered.conenct(lambda: self.showPage(i))
+        # for i, btn in enumerate(_modes):
+        #     _modes[i].clicked.connect(lambda: self.showPage(i))
+
+        # Somehow I cannot dynamic the showpage index
+
+        _modes[0].clicked.connect(lambda: self.showPage(0))
+        _modes[1].clicked.connect(lambda: self.showPage(1))
+        _modes[2].clicked.connect(lambda: self.showPage(2))
+        _modes[3].clicked.connect(lambda: self.showPage(3))
 
         for btn in _modes:
             _mode_layout.addWidget(btn)
@@ -270,17 +280,29 @@ class MicroGui(QtWidgets.QMainWindow):
 
 # second layout
     @make_widget_from_layout
-    def create_single_raster(self):
+    def create_single_raster(self, widget):
+        _single_raster_layout = QtWidgets.QGridLayout()
+
+        _single_raster_layout.addWidget(QtWidgets.QLabel("Single Raster Layout"))
+
         return _single_raster_layout
 
 # third layout
     @make_widget_from_layout
-    def create_array_raster(self):
+    def create_array_raster(self, widget):
+        _array_raster_layout = QtWidgets.QGridLayout()
+
+        _array_raster_layout.addWidget(QtWidgets.QLabel("Array Raster Layout"))
+
         return _array_raster_layout
 
 # fourth layout
     @make_widget_from_layout
-    def create_drawpic(self):
+    def create_drawpic(self, widget):
+        _drawpic_layout = QtWidgets.QGridLayout()
+
+        _drawpic_layout.addWidget(QtWidgets.QLabel("Draw Pic Layout"))
+
         return _drawpic_layout
 
 # Status Bar
