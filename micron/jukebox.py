@@ -19,6 +19,7 @@ Cblues = [c3, d3sharp, f3, f3sharp, g3, a3sharp, c4, d4sharp, f4, f4sharp, g4, a
 
 # allegretto
 tempo = 250
+# around 30 is good
 probability_unity = 30
 scale = Cblues
 repetition_rate = 13
@@ -34,7 +35,7 @@ for x in range(40):
     n = random2.randint(0,int(len(scale)) - 1)
 
     # 0th class: single notes
-    if r < probability_unity - 10:
+    if r < probability_unity - 12:
         sound += Sine(freq = scale[n]).to_audio_segment(duration = tempo)
 
     # 1st class: ascending triplets
@@ -130,7 +131,7 @@ for x in range(40):
 
     # 10th class: ascending in broken thirds
     elif r == probability_unity - 9:
-        if n > int(len(scale)) - 5:
+        if n >= int(len(scale)) - 5:
             sound += Sine(freq = scale[n-5]).to_audio_segment(duration = tempo / 2)
             sound += Sine(freq = scale[n-3]).to_audio_segment(duration = tempo / 2)
             sound += Sine(freq = scale[n-4]).to_audio_segment(duration = tempo / 2)
@@ -176,7 +177,33 @@ for x in range(40):
             sound += Sine(freq = scale[n-3]).to_audio_segment(duration = tempo / 2)
             sound += Sine(freq = scale[n-5]).to_audio_segment(duration = tempo / 2)
 
-    # Provides stacking repetition for *some* structure
+    # 11th class: slow upper trill
+    elif r == probability_unity - 11:
+        if n == int(len(scale)) - 1:
+            sound += Sine(freq = scale[n-1]).to_audio_segment(duration = tempo / 2)
+            sound += Sine(freq = scale[n]).to_audio_segment(duration = tempo / 2)
+            sound += Sine(freq = scale[n-1]).to_audio_segment(duration = tempo / 2)
+            sound += Sine(freq = scale[n]).to_audio_segment(duration = tempo / 2)
+        else:
+            sound += Sine(freq = scale[n]).to_audio_segment(duration = tempo / 2)
+            sound += Sine(freq = scale[n+1]).to_audio_segment(duration = tempo / 2)
+            sound += Sine(freq = scale[n]).to_audio_segment(duration = tempo / 2)
+            sound += Sine(freq = scale[n+1]).to_audio_segment(duration = tempo / 2)
+
+    # 12th class: slow lower trill
+    elif r == probability_unity - 12:
+        if n == 0:
+            sound += Sine(freq = scale[n+1]).to_audio_segment(duration = tempo / 2)
+            sound += Sine(freq = scale[n]).to_audio_segment(duration = tempo / 2)
+            sound += Sine(freq = scale[n+1]).to_audio_segment(duration = tempo / 2)
+            sound += Sine(freq = scale[n]).to_audio_segment(duration = tempo / 2)
+        else:
+            sound += Sine(freq = scale[n]).to_audio_segment(duration = tempo / 2)
+            sound += Sine(freq = scale[n-1]).to_audio_segment(duration = tempo / 2)
+            sound += Sine(freq = scale[n]).to_audio_segment(duration = tempo / 2)
+            sound += Sine(freq = scale[n-1]).to_audio_segment(duration = tempo / 2)
+
+    # Provides stacking repitition for *some* structure
     if x % repetition_rate == 0 and x > 0:
         sound += sound
 
