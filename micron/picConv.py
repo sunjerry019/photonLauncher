@@ -16,6 +16,8 @@ import numpy as np
 import argparse
 import os, sys
 
+import micron
+
 # from matplotlib import cm # For coloring of the cutting lines
 
 import pickle
@@ -24,7 +26,7 @@ from extraFunctions import query_yes_no as qyn
 
 
 class PicConv():
-	def __init__(self, filename, scale = 1, cut = 0, allowDiagonals = False, prioritizeLeft = False, flipHorizontally = False, flipVertically = False ,frames = False, simulate = False):
+	def __init__(self, filename, scale = 1, cut = 0, allowDiagonals = False, prioritizeLeft = False, flipHorizontally = False, flipVertically = False ,frames = False, simulate = False, micronInstance = None):
 		self.filename = filename
 		self.scale = scale
 
@@ -39,6 +41,8 @@ class PicConv():
 
 		self.frames = frames if not simulate else True
 		self.simulate = simulate
+
+		self.controller = micronInstance
 
 		print("Using '{}' at scale {}".format(self.filename, self.scale))
 		print("Cutting {} parts".format(["Black", "White"][self.cut]))
@@ -221,10 +225,9 @@ class PicConv():
 	def draw(self, velocity, **kwargs):
 		assert isinstance(velocity, (int, float)), "velocity must be int or float"
 
-		import micron
-
-		# initialize the stage
-		self.controller = micron.Micos(**kwargs)
+		if not isinstance(self.controller, micron.Micos):
+			# initialize the stage
+			self.controller = micron.Micos(**kwargs)
 
 		self.controller.setvel(velocity)
 
