@@ -23,6 +23,8 @@ import signal
 import json
 import warnings
 
+import platform  	# for auto windows/linux detection
+
 # hashtag homemade
 import shutter
 
@@ -85,6 +87,11 @@ class Micos():
 			"bytesize"  : serial.EIGHTBITS,
 			"timeout"   : 2
 		}
+
+		# https://stackoverflow.com/a/1857/3211506
+		# Windows = Windows, Linux = Linux, Mac = Darwin
+		if platform.system() == "Linux":
+			cfg["port"] = '/dev/ttyUSB0'
 
 		self.ENTER = b'\x0D' #chr(13)  # CR
 
