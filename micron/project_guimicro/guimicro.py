@@ -13,21 +13,28 @@
 # Made 2019, Sun Yudong, Wu Mingsong
 # sunyudong [at] outlook [dot] sg, mingsongwu [at] outlook [dot] sg
 
-import sys
+import sys, os
 from PyQt5 import QtCore, QtGui, QtWidgets
 import time
 
+import argparse
+
 from contextlib import redirect_stdout
 import io, threading
+
+import traceback
 
 sys.path.insert(0, '../')
 import stagecontrol
 
 class MicroGui(QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self, devMode = False):
         super().__init__()
+
         self.micronInitialized = False
         self.currentStatus = ""
+        self.devMode = devMode
+
         self.initUI()
 
     def initUI(self):
@@ -72,6 +79,14 @@ class MicroGui(QtWidgets.QMainWindow):
         # / MAIN WIDGET
         self.window_layout.addWidget(self.main_widget)
 
+        # STATUS BAR WIDGET
+        self.statusBarWidget = QtWidgets.QStatusBar()
+        self._statusbar_label = QtWidgets.QLabel("status")
+        self.setStyleSheet("QStatusBar::item { border: 0px solid black };");            # Remove border around the status
+        self.statusBarWidget.addWidget(self._statusbar_label, stretch = 1)
+        self.setStatusBar(self.statusBarWidget)
+        # / STATUS BAR WIDGET
+
         # / WINDOW_WIDGET
         self.window_widget.setLayout(self.window_layout)
 
@@ -79,6 +94,7 @@ class MicroGui(QtWidgets.QMainWindow):
         self.setCentralWidget(self.window_widget)
 
         self.initializeDevice()
+        self.initEventListeners()
 
         # Set to the last menu item
         self.showPage(self.main_widget.count() - 1)
@@ -91,7 +107,7 @@ class MicroGui(QtWidgets.QMainWindow):
         initWindow = QtWidgets.QDialog()
         initWindow.setWindowTitle("Initializing...")
         self.setOperationStatus("Initializing StageControl()")
-        initWindow.setGeometry(50,50,300,200)
+        initWindow.setGeometry(50, 50, 300, 200)
         initWindow.setWindowFlags(QtCore.Qt.WindowType.WindowTitleHint | QtCore.Qt.WindowType.Dialog | QtCore.Qt.WindowType.WindowMaximizeButtonHint | QtCore.Qt.WindowType.CustomizeWindowHint)
         moveToCentre(initWindow)
 
@@ -132,13 +148,33 @@ class MicroGui(QtWidgets.QMainWindow):
 
         def initMicron():
             with redirect_stdout(f):
-                # self.stageControl = stagecontrol.StageControl()
+                if self.devMode:
+                    # Following code is for testing and emulation of homing commands
+                    for i in range(2):
+                        print("Message number:", i)
+                        time.sleep(1)
+                    self.stageControl = None
 
-                # Following code is for testing and emulation of homing commands
-                for i in range(2):
-                    print("Message number:", i)
-                    time.sleep(1)
-                    
+                else:
+                    try:
+                        self.stageControl = stagecontrol.StageControl(noCtrlCHandler = True)
+                    except RuntimeError as e:
+                        initWindow.close()
+                        msgBox = QtWidgets.QMessageBox()
+                        msgBox.setIcon(QtWidgets.QMessageBox.Critical)
+                        msgBox.setWindowTitle("Oh no!")
+                        msgBox.setText("System has encountered a RuntimeError and will now exit.")
+                        msgBox.setInformativeText("Error: {}".format(e))
+                        moveToCentre(msgBox)
+
+                        # mb.setTextFormat(Qt.RichText)
+                        # mb.setDetailedText(message)
+
+                        msgBox.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextSelectableByMouse)
+
+                        ret = msgBox.exec_()
+                        os._exit(1)             # For the exit to propogate upwards
+
             self.micronInitialized = True
             self.setOperationStatus("StageControl Initialized")
 
@@ -158,6 +194,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
                 if threading.activeCount() == baselineThreads:
                     # The initialization is done and we quit the initWindow
+                    self.updatePositionDisplay()
                     initWindow.close()
                     break
 
@@ -274,15 +311,30 @@ class MicroGui(QtWidgets.QMainWindow):
         # _step_size.setFont(QtGui.QFont("Arial",20))
 
         # need to link to stagecontrol to read position of controllers
-        _lcdx = QtWidgets.QLCDNumber()
-        _lcdy = QtWidgets.QLCDNumber()
+        self._lcdx = QtWidgets.QLCDNumber()
+        self._lcdy = QtWidgets.QLCDNumber()
+
+        self._upArrow    = QtWidgets.QPushButton(u'\u21E7')
+        self._downArrow  = QtWidgets.QPushButton(u'\u21E9')
+        self._leftArrow  = QtWidgets.QPushButton(u'\u21E6')
+        self._rightArrow = QtWidgets.QPushButton(u'\u21E8')
 
         # Create the layout with the child elements
         _stage_layout = QtWidgets.QGridLayout()
+
         # _stage_layout.addWidget(_velocity, 0, 0)
         # _stage_layout.addWidget(_step_size, 0, 1)
-        _stage_layout.addWidget(_lcdx, 0, 0)
-        _stage_layout.addWidget(_lcdy, 0, 1)
+
+        # void QGridLayout::addWidget(QWidget *widget, int row, int column, Qt::Alignment alignment = Qt::Alignment())
+        # void QGridLayout::addWidget(QWidget *widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = Qt::Alignment())
+
+        _stage_layout.addWidget(self._lcdx, 0, 1, 1, 2)
+        _stage_layout.addWidget(self._lcdy, 0, 3, 1, 2)
+
+        _stage_layout.addWidget(self._upArrow, 1, 2, 1, 2)
+        _stage_layout.addWidget(self._downArrow, 2, 2, 1, 2)
+        _stage_layout.addWidget(self._leftArrow, 2, 0, 1, 2)
+        _stage_layout.addWidget(self._rightArrow, 2, 4, 1, 2)
 
         return _stage_layout
 
@@ -313,10 +365,25 @@ class MicroGui(QtWidgets.QMainWindow):
 
         return _drawpic_layout
 
+# INTERACTION FUNCTONS
+
+    def initEventListeners(self):
+        # Change these to self.moveStage to update Position Display
+        self._upArrow.clicked.connect(lambda: self.stageControl.controller.rmove(x = 0, y = 10))
+        self._downArrow.clicked.connect(lambda: self.stageControl.controller.rmove(x = 0, y = -10))
+        self._leftArrow.clicked.connect(lambda: self.stageControl.controller.rmove(x = -10, y = 0))
+        self._rightArrow.clicked.connect(lambda: self.stageControl.controller.rmove(x = 10, y = 0))
+
+    def updatePositionDisplay(self):
+        if self.stageControl is not None:
+            self._lcdx.display(self.stageControl.controller.stage.x)
+            self._lcdy.display(self.stageControl.controller.stage.x)
+
     def setOperationStatus(self, status):
         self.currentStatus = status
 
-        # Do some updating of the status bar or something
+        # Do some updating of the status bar
+        self._statusbar_label.setText(status)
 
 # Status Bar
 
@@ -326,7 +393,7 @@ class aboutPopUp(QtWidgets.QDialog):
         self.initUI()
 
     def initUI(self):
-        lblName = QtWidgets.QLabel("FILL IN SOME ABOUT TEXT HERE", self)
+        lblName = QtWidgets.QLabel("Made by\n\nSun Yudong, Wu Mingsong\n\n2019\n\nsunyudong [at] outlook [dot] sg\n\nmingsongwu[at] outlook [dot] sg", self)
 
 def moveToCentre(QtObj):
     # Get center of the window and move the window to the centre
@@ -337,12 +404,16 @@ def moveToCentre(QtObj):
     _qtRectangle.moveCenter(_centerPoint)
     QtObj.move(_qtRectangle.topLeft())
 
-def main():
+def main(**kwargs):
     app = QtWidgets.QApplication(sys.argv)
-    window = MicroGui()
+    window = MicroGui(**kwargs)
     window.show()
     window.raise_()
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--devMode', help="Use DevMode so that StageControl is not initialized", action='store_true')
+    args = parser.parse_args()
+
+    main(devMode = args.devMode)
