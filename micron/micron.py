@@ -23,6 +23,8 @@ import signal
 import json
 import warnings
 
+import traceback
+
 import platform  	# for auto windows/linux detection
 
 # hashtag homemade
@@ -145,8 +147,8 @@ class Micos():
 
 		except Exception as e:
 			print(e)
-			print("Unable to establish serial communication. Please check port settings and change configuration file accordingly. For more help, consult the documention.")
-			sys.exit(0)
+			raise RuntimeError("Unable to establish serial communication. Please check port settings and change configuration file accordingly. For more help, consult the documention.\n\nConfig: {}\n\n{}: {}\n\n{}".format(cfg, type(e).__name__ , e, traceback.format_exc()))
+			# sys.exit(0)
 
 	def startInterruptHandler(self):
 		# https://stackoverflow.com/a/4205386/3211506
