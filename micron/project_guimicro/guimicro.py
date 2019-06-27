@@ -24,6 +24,8 @@ import io, threading
 
 import traceback
 
+import math
+
 sys.path.insert(0, '../')
 import stagecontrol
 
@@ -35,10 +37,13 @@ class MicroGui(QtWidgets.QMainWindow):
         self.currentStatus = ""
         self.devMode = devMode
 
+        # symboldefs
+        self.MICROSYMBOL = u"\u00B5"
+
         self.initUI()
 
     def initUI(self):
-        self.setGeometry(50, 50, 500, 300) # x, y, w, h
+        self.setGeometry(50, 50, 700, 500) # x, y, w, h
 
         moveToCentre(self)
 
@@ -47,6 +52,9 @@ class MicroGui(QtWidgets.QMainWindow):
 
         # Essentially the steps for the gui works like this
         # Create a widget -> Create a layout -> Add widgets to layout -> Assign layout to widget -> Assign widget to window
+
+        # FONTS AND STYLES
+        # TODO INSERT SOME HERE
 
         # WINDOW_WIDGET
         self.window_widget = QtWidgets.QWidget()
@@ -208,10 +216,11 @@ class MicroGui(QtWidgets.QMainWindow):
         thread2.start()
 
         # We need exec so that the event loop is started to show the widgets
-        initWindow.exec()
+        initWindow.exec_()
 
         # We end the initWindow from the thread itself since code below .exec() doesn't actually get run
         # This is because .exec() starts a loop that blocks the process
+        # exec() and exec_() is equivalent for Py3
 
         # thread1.join()
         # thread2.join()
@@ -262,7 +271,7 @@ class MicroGui(QtWidgets.QMainWindow):
         self.exPopup = aboutPopUp()
         self.exPopup.setGeometry(100, 200, 200, 300)
         self.exPopup.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose)
-        self.exPopup.exec()  # show()
+        self.exPopup.exec_()  # show()
         # buttonReply = QtWidgets.QMessageBox.about(self, 'About', "Made 2019, Sun Yudong, Wu Mingsong\n\nsunyudong [at] outlook [dot] sg\n\nmingsongwu [at] outlook [dot] sg")
 
 # Top row buttons
@@ -302,39 +311,69 @@ class MicroGui(QtWidgets.QMainWindow):
     @make_widget_from_layout
     def create_stage(self, widget):
         # Create all child elements
-        # _velocity = QtWidgets.QLineEdit()
-        # _velocity.setValidator(QtGui.QIntValidator(0,1000))
-        # _velocity.setFont(QtGui.QFont("Arial",20))
-
-        # _step_size = QtWidgets.QLineEdit()
-        # _step_size.setValidator(QtGui.QIntValidator(0.5,1000))
-        # _step_size.setFont(QtGui.QFont("Arial",20))
 
         # need to link to stagecontrol to read position of controllers
+
+        # LCDS
+        _lcdx_label = QtWidgets.QLabel("Current X")
+        _lcdy_label = QtWidgets.QLabel("Current Y")
+        _lcdx_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        _lcdy_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+
         self._lcdx = QtWidgets.QLCDNumber()
         self._lcdy = QtWidgets.QLCDNumber()
+        # TODO: Some styling here for the QLCD number
 
+        # BUTTONS
         self._upArrow    = QtWidgets.QPushButton(u'\u21E7')
         self._downArrow  = QtWidgets.QPushButton(u'\u21E9')
         self._leftArrow  = QtWidgets.QPushButton(u'\u21E6')
         self._rightArrow = QtWidgets.QPushButton(u'\u21E8')
 
+        self.arrowFont = QtGui.QFont("Arial", 30)
+        self.arrowFont.setBold(True)
+
+        self._upArrow.setFont(self.arrowFont); self._downArrow.setFont(self.arrowFont); self._leftArrow.setFont(self.arrowFont); self._rightArrow.setFont(self.arrowFont);
+
+        # SETTINGS AND PARAMS
+        _velocity_label = QtWidgets.QLabel("Velocity ({}m/s)".format(self.MICROSYMBOL))
+        _velocity_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
+        _step_size_label = QtWidgets.QLabel("Step size ({}m)".format(self.MICROSYMBOL))
+
+        self._velocity = QtWidgets.QLineEdit()
+        self._velocity.setValidator(QtGui.QIntValidator(0,10000))
+        # _velocity.setFont(QtGui.QFont("Arial",20))
+
+        self._step_size = QtWidgets.QLineEdit()
+        self._step_size.setValidator(QtGui.QIntValidator(0.5,1000))
+        # _step_size.setFont(QtGui.QFont("Arial",20))
+
         # Create the layout with the child elements
         _stage_layout = QtWidgets.QGridLayout()
-
-        # _stage_layout.addWidget(_velocity, 0, 0)
-        # _stage_layout.addWidget(_step_size, 0, 1)
 
         # void QGridLayout::addWidget(QWidget *widget, int row, int column, Qt::Alignment alignment = Qt::Alignment())
         # void QGridLayout::addWidget(QWidget *widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = Qt::Alignment())
 
-        _stage_layout.addWidget(self._lcdx, 0, 1, 1, 2)
-        _stage_layout.addWidget(self._lcdy, 0, 3, 1, 2)
 
-        _stage_layout.addWidget(self._upArrow, 1, 2, 1, 2)
-        _stage_layout.addWidget(self._downArrow, 2, 2, 1, 2)
-        _stage_layout.addWidget(self._leftArrow, 2, 0, 1, 2)
-        _stage_layout.addWidget(self._rightArrow, 2, 4, 1, 2)
+        # currx, y label
+        _stage_layout.addWidget(_lcdx_label, 0, 1, 1, 2)
+        _stage_layout.addWidget(_lcdy_label, 0, 3, 1, 2)
+
+        _stage_layout.addWidget(self._lcdx, 1, 1, 1, 2)
+        _stage_layout.addWidget(self._lcdy, 1, 3, 1, 2)
+
+        _stage_layout.addWidget(_lcdx_label, 0, 1, 1, 2)
+        _stage_layout.addWidget(_lcdy_label, 0, 3, 1, 2)
+
+        _stage_layout.addWidget(_velocity_label, 2, 0)
+        _stage_layout.addWidget(self._velocity, 2, 1, 1, 2)
+        _stage_layout.addWidget(self._step_size, 2, 3, 1, 2)
+        _stage_layout.addWidget(_step_size_label, 2, 5)
+
+        _stage_layout.addWidget(self._upArrow, 4, 2, 1, 2)
+        _stage_layout.addWidget(self._downArrow, 5, 2, 1, 2)
+        _stage_layout.addWidget(self._leftArrow, 5, 0, 1, 2)
+        _stage_layout.addWidget(self._rightArrow, 5, 4, 1, 2)
 
         return _stage_layout
 
@@ -368,11 +407,33 @@ class MicroGui(QtWidgets.QMainWindow):
 # INTERACTION FUNCTONS
 
     def initEventListeners(self):
-        # Change these to self.moveStage to update Position Display
-        self._upArrow.clicked.connect(lambda: self.stageControl.controller.rmove(x = 0, y = 10))
-        self._downArrow.clicked.connect(lambda: self.stageControl.controller.rmove(x = 0, y = -10))
-        self._leftArrow.clicked.connect(lambda: self.stageControl.controller.rmove(x = -10, y = 0))
-        self._rightArrow.clicked.connect(lambda: self.stageControl.controller.rmove(x = 10, y = 0))
+        self.UP, self.RIGHT, self.DOWN, self.LEFT = (0, 1), (1, 0), (0, -1), (-1, 0)
+
+        self._upArrow.clicked.connect(lambda: self.cardinalMoveStage(self.UP))
+        self._downArrow.clicked.connect(lambda: self.cardinalMoveStage(self.DOWN))
+        self._leftArrow.clicked.connect(lambda: self.cardinalMoveStage(self.LEFT))
+        self._rightArrow.clicked.connect(lambda: self.cardinalMoveStage(self.RIGHT))
+
+    def cardinalMoveStage(self, dir):
+        # Get the distance
+        dist = float(self._step_size.text())
+        vel  = float(self._velocity.text())
+
+        # Move the stage
+        self.moveStage(dir, distance = dist, velocity = vel)
+
+    def moveStage(self, dir, distance, velocity):
+        # dir is a (dx, dy) tuple/vector that defines the direction that gets multiplied by distance
+        if sum(map(abs, dir)) > 1:
+            _mag = math.sqrt(dir[0]**2 + dir[1]**2)
+            dir = dir[0] / _mag , dir[1] / _mag
+
+        if self.stageControl.velocity != velocity:
+            # We reset the velocity if it is different
+            self.stageControl.controller.setvel(velocity)
+
+        self.stageControl.controller.rmove(x = dir[0] * distance, y = dir[1] * distance)
+        self.updatePositionDisplay()
 
     def updatePositionDisplay(self):
         if self.stageControl is not None:
