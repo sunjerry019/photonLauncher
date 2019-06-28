@@ -341,10 +341,12 @@ class MicroGui(QtWidgets.QMainWindow):
         _step_size_label = QtWidgets.QLabel("Step size ({}m)".format(self.MICROSYMBOL))
 
         self._velocity = QtWidgets.QLineEdit()
+        self._velocity.setText('100')
         self._velocity.setValidator(QtGui.QIntValidator(0,10000))
         # _velocity.setFont(QtGui.QFont("Arial",20))
 
         self._step_size = QtWidgets.QLineEdit()
+        self._step_size.setText('10')
         self._step_size.setValidator(QtGui.QIntValidator(0.5,1000))
         # _step_size.setFont(QtGui.QFont("Arial",20))
 
@@ -428,7 +430,7 @@ class MicroGui(QtWidgets.QMainWindow):
             _mag = math.sqrt(dir[0]**2 + dir[1]**2)
             dir = dir[0] / _mag , dir[1] / _mag
 
-        if self.stageControl.velocity != velocity:
+        if self.stageControl.controller.velocity != velocity:
             # We reset the velocity if it is different
             self.stageControl.controller.setvel(velocity)
 
@@ -438,7 +440,7 @@ class MicroGui(QtWidgets.QMainWindow):
     def updatePositionDisplay(self):
         if self.stageControl is not None:
             self._lcdx.display(self.stageControl.controller.stage.x)
-            self._lcdy.display(self.stageControl.controller.stage.x)
+            self._lcdy.display(self.stageControl.controller.stage.y)
 
     def setOperationStatus(self, status):
         self.currentStatus = status
