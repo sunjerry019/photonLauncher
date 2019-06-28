@@ -55,7 +55,15 @@ class Pulsegen(SignalGenerator):
             sample_n += 1
 
     def playpulse(self):
+
+        # TODO! implement from_file_using_temporary_files method from pydub
         sound_segment = self.to_audio_segment(self.duration)
+        # pan function is volume equaliser: -1 = 100% left, 1 = 100% right
+        sound_segment = sound_segment.pan(1)
+
+        # setting channels instead is possible, but using stereo output effectively sends mono signal through both channel contacts = stereo output
+
+        #sound_segment = sound_segment.set_channels(1)
         play(sound_segment)
 
     def __enter__(self):

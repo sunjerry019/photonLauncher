@@ -15,7 +15,7 @@ Cpent = [c3, d3, e3, g3, a3, c4, d4, e4, g4, a4, c5, d5, e5, g5, a5]
 Cblues = [c3, d3sharp, f3, f3sharp, g3, a3sharp, c4, d4sharp, f4, f4sharp, g4, a4sharp, c5, d5sharp, f5, f5sharp, g5, a5sharp]
 
 
-# the most basic melody with pentatonics scale should have: tempo, rhythmic forms (triplets, quavers, rests, etc), repetition, where the last 3 can be done randomly within the score.
+# the most basic melody with pentatonics scale should have: tempo, rhythmic forms (triplets, quavers, rests, etc), ornaments, repetition, where the last 4 can be done randomly within the score.
 
 # allegretto
 tempo = 250
