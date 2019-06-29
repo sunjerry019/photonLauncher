@@ -3,12 +3,9 @@
 # Python Helper to control an optical shutter
 
 # Current setup involves sending a mono audio PWM signal from the left (or right) channel to control a microservo
-# We use a USB soundcard/default audio jack to output audio waveform, but since it is usually 2V peak, we need an Op-Amp circuit to boost to ~5V
+# We use a USB soundcard/default audio jack to output audio waveform, but since it is usually 2V peak DC, we need an Op-Amp circuit to boost to ~5V
 # The other mono channel is left for playing an alarm sound when rastering is almost done
 # Please check documentation for USB powered circuit powering servo and op amp circuit
-
-# Made 2019, Wu Mingsong, Sun Yudong
-# mingsongwu [at] outlook [dot] sg, sunyudong [at] outlook [dot] sg,
 
 # WAV files are favoured as signal sources as they are lossless as compared to MP3
 # Additional servo = laser power adjustments, via mounting a rotation graduated neutral density filter (in documentation) we can vary laser power with rotation of filter.
@@ -20,13 +17,36 @@
 # SG90 9g -> 0.15, 0.1, 0.05
 # SG90 9g 360 -> 0.075 (static), 0.080 (minimum for movement in one direction), 0.070 (minimum for movement in the other)
 
-# Sound player module is simpleaudio, which is cross platform, dependency free. It is nested in play(sound_segment) and plays the audio file created in situ before the entire Pulsegen class destructs after each audio command. Wholesome, organic, grass-fed audio solution...
+# Sound player module fallback is ffmpeg, but for windows systems it is better to install PYAUDIO, since it does not need to access restricted folders to generate a temporary wav file for playing.
+
+# To install pyaudio, some helper packages are needed first: libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0 ffmpeg. Hopefully this means it plays the audio file created in situ before the entire Pulsegen class destructs after each audio command. Wholesome, organic, grass-fed audio solution...
+
 # For playing saved .wav files, we should use python sounddevices to choose the output device first
 
+# Made 2019, Wu Mingsong, Sun Yudong
+# mingsongwu [at] outlook [dot] sg, sunyudong [at] outlook [dot] sg,
+
+###
+from ctypes import *
+from contextlib import contextmanager
 import time
 from pydub import AudioSegment
 from pydub.generators import SignalGenerator
 from pydub.playback import play
+
+
+## removing buggy/useless ALSA pyaudio errors. Does not affect audio output
+ERROR_HANDLER_FUNC = CFUNCTYPE(None, c_char_p, c_int, c_char_p, c_int, c_char_p)
+def py_error_handler(filename, line, function, err, fmt):
+    pass
+c_error_handler = ERROR_HANDLER_FUNC(py_error_handler)
+@contextmanager
+def noALSAerror():
+    asound = cdll.LoadLibrary('libasound.so')
+    asound.snd_lib_error_set_handler(c_error_handler)
+    yield
+    asound.snd_lib_error_set_handler(None)
+##
 
 class Pulsegen(SignalGenerator):
 
@@ -56,25 +76,26 @@ class Pulsegen(SignalGenerator):
 
     def playpulse(self):
 
-        # TODO! implement from_file_using_temporary_files method from pydub
         sound_segment = self.to_audio_segment(self.duration)
-        # pan function is volume equaliser: -1 = 100% left, 1 = 100% right
+        ## pan function is volume equaliser: -1 = 100% left, 1 = 100% right
         sound_segment = sound_segment.pan(1)
-
-        # setting channels instead is possible, but using stereo output effectively sends mono signal through both channel contacts = stereo output
-
+        ## setting channels instead is possible, but using stereo output effectively sends mono signal through both channel contacts = stereo output
         #sound_segment = sound_segment.set_channels(1)
-        play(sound_segment)
+        with noALSAerror():
+            play(sound_segment)
 
     def __enter__(self):
-        print('\n\nPulse generator initialising...done\n\n')
+        print('\nPulse generator initialising...done\n')
         return self
 
     def __exit__(self, e_type, e_val, traceback):
-        print('\n\nPulse generator self destructing...done\n\n')
+        print('\nPulse generator self destructing...done')
+
+
 
 class Shutter():
     def __init__(self, absoluteMode = False):
+        print('\n\nABSOLUTE MODE IS', absoluteMode,'\n')
         self.absoluteMode = absoluteMode
         self.homeclose() if not self.absoluteMode else self.close()
         self.isOpen = False
