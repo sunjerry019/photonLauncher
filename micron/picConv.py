@@ -157,7 +157,12 @@ class PicConv():
 				_max = np.max(self.output)
 				_output = self.output / _max if _max != 0 else self.output
 
-				_im = Image.fromarray(np.uint8((_output)*255)) # cm.gist_ncar
+				try:
+					_im = Image.fromarray(np.uint8(cm.gist_ncar(_output)*255))
+				except NameError as e:
+					_im = Image.fromarray(np.uint8((_output)*255))
+
+
 				if not final:
 					_im.save("results/test-{}.png".format(self.resultCount))
 				else:
