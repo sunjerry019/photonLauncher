@@ -50,12 +50,18 @@ def noALSAerror():
 
 class Pulsegen(SignalGenerator):
 
-    def __init__(self, duty, polarity = True, freq = 50, duration = 400, **kwargs):
+    PANLEFT = -1
+    PANRIGHT = 1
+
+    def __init__(self, duty, polarity = True, freq = 50, duration = 400, pan = -1, **kwargs):
         super().__init__(**kwargs)
         self.freq = freq
         self.duty = duty
         self.polarity = polarity
         self.duration = duration
+
+        ## pan function is volume equaliser: -1 = 100% left, 1 = 100% right
+        self.pan = pan
 
     def generate(self):
         sample_n = 0
@@ -78,11 +84,14 @@ class Pulsegen(SignalGenerator):
 
         sound_segment = self.to_audio_segment(self.duration)
         ## pan function is volume equaliser: -1 = 100% left, 1 = 100% right
-        sound_segment = sound_segment.pan(1)
+        sound_segment = sound_segment.pan(self.pan)
         ## setting channels instead is possible, but using stereo output effectively sends mono signal through both channel contacts = stereo output
         #sound_segment = sound_segment.set_channels(1)
         with noALSAerror():
             play(sound_segment)
+
+    def setPan(self, pan):
+        self.pan = pan
 
     def __enter__(self):
         print('\nPulse generator initialising...done\n')
@@ -94,15 +103,37 @@ class Pulsegen(SignalGenerator):
 
 
 class Shutter():
-    def __init__(self, absoluteMode = False):
+    LEFTCH = -1
+    RIGHTCH = 1
+
+    def __init__(self, absoluteMode = False, channel = -1):
         print('\n\nABSOLUTE MODE IS', absoluteMode,'\n')
+
+        self.channel = channel
+
+        print('Channel: ', self.human_channel)
+
         self.absoluteMode = absoluteMode
         self.homeclose() if not self.absoluteMode else self.close()
         self.isOpen = False
 
+    @property
+    def channel(self):
+        return self._channel
+
+    @channel.setter
+    def channel(self, channel):
+        self._channel = channel
+        if channel == self.LEFTCH:
+            self.human_channel = "Left Channel"
+        elif channel == self.RIGHTCH:
+            self.human_channel = "Right Channel"
+        else:
+            self.human_channel = "Pan = {}".format(channel)
+
     # The most general format for PWM signal control
     def absolute(self, duty, polarity = True, freq = 50, duration = 400):
-        with Pulsegen(duty, polarity, freq, duration) as p:
+        with Pulsegen(duty, polarity, freq, duration, pan = self.channel) as p:
             p.playpulse()
 
     # This is the "over extended" range of 180 degree servo (>180 degrees). Reserved for closed state, where 180 degrees would be open, ready for 180-0 degrees scanning
@@ -167,7 +198,7 @@ class Shutter():
         self.close()
 
 if __name__ == '__main__':
-    with Shutter() as s:
+    with Shutter(channel = Shutter.LEFTCH, absoluteMode = True) as s:
         print("\n\nUse s as Shutter()\n\n")
         # import pdb; pdb.set_trace()
         import code; code.interact(local=locals())
