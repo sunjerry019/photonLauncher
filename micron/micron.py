@@ -77,7 +77,7 @@ class Stage():
 		self.y = y
 
 class Micos():
-	def __init__(self, stageConfig = None, noCtrlCHandler = False, unit = "um", noHome = False):
+	def __init__(self, stageConfig = None, noCtrlCHandler = False, unit = "um", noHome = False, shutterAbsolute = False):
 		# stageConfig can be a dictionary or a json filename
 		# See self.help for documentation
 
@@ -127,7 +127,7 @@ class Micos():
 			# END SERIAL SETUP
 
 			if not noCtrlCHandler: self.startInterruptHandler()
-			self.shutter = shutter.Shutter()
+			self.shutter = shutter.Shutter(absoluteMode = shutterAbsolute)
 			self.shutter.close()
 
 			# BEGIN INITIALIZATION
@@ -435,7 +435,14 @@ class Micos():
 		self.dev.close()
 
 if __name__ == '__main__':
-	with Micos() as m:
+	import argparse
+
+	parser = argparse.ArgumentParser()
+	parser.add_argument('-H', '--noHome', help="Do not home the stage", action='store_true')
+	parser.add_argument('-A', '--shutterAbsolute', help="Shutter uses absolute servo", action='store_true')
+	args = parser.parse_args()
+
+	with Micos(noHome = args.noHome, shutterAbsolute = args.shutterAbsolute) as m:
 		print("\n\nm = Micos()\n\n")
 		# import pdb; pdb.set_trace()
 		import code; code.interact(local=locals())
