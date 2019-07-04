@@ -160,13 +160,14 @@ class Shutter():
 # as convention, lets take position 0 (0.15 duty) as closed, position 1 - position n as the increments from 180 degrees to 0.
     def scan(self, p1, p2):
         try:
-            if "." in str(p1) and "." in str(p2):
-                val1, val2 = float(p1), float(p2)
+            if (isinstance(p1, float) and isinstance(p2, float)) or ("." in str(p1) and "." in str(p2)):
+                val1, val2 = float(p1), float(p2) if (isinstance(p1, str) or isinstance(p2, str)) else p1, p2
                 val1, val2 = int(round(val1)), int(round(val2))
                 print(val1, "_", val2, "I rounded to nearest integers!")
             else:
-                val1, val2 = int(p1), int(p2)
+                val1, val2 = p1, p2 if (isinstance(p1, int) and isinstance(p2, int)) else int(p1), int(p2)
                 print(val1, "_", val2, "Integers accepted.")
+
         except ValueError:
             print("Did you input a NUMBER?")
         if val1 < val2:
