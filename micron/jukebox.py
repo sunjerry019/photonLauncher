@@ -18,10 +18,10 @@ Cblues = [c3, d3sharp, f3, f3sharp, g3, a3sharp, c4, d4sharp, f4, f4sharp, g4, a
 # the most basic melody with pentatonics scale should have: tempo, rhythmic forms (triplets, quavers, rests, etc), ornaments, repetition, where the last 4 can be done randomly within the score.
 
 # allegretto
-tempo = 250
+tempo = 300
 # around 30 is good
 probability_unity = 30
-scale = Cblues
+scale = Cpent
 repetition_rate = 13
 
 
