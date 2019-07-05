@@ -209,11 +209,7 @@ class Micos():
 			ret = self.send("{} {} r".format(x, y), *args, **kwargs)
 
 			if not noWait:
-				# we wait 100% of the time required before returning to the loop
-				distance = math.sqrt(x**2 + y**2) if (x and y) else abs(x + y)
-				time_req = distance / self.velocity
-
-				time_req *= 1.0
+				time_req = self.getDeltaTime(x = x, y = y, velocity = self.velocity)
 
 				print("Sleeping", time_req)
 				time.sleep(time_req)
@@ -433,6 +429,16 @@ class Micos():
 	def __exit__(self, e_type, e_val, traceback):
 		# self.abort()
 		self.dev.close()
+
+	@staticmethod
+	def getDeltaTime(x, y, velocity):
+		# we wait 100% of the time required before returning to the loop
+		distance = math.sqrt(x**2 + y**2) if (x and y) else abs(x + y)
+		time_req = distance / velocity
+
+		# time_req *= 1.0
+
+		return time_req
 
 if __name__ == '__main__':
 	import argparse
