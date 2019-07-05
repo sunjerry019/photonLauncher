@@ -27,9 +27,11 @@ import pickle
 
 from extraFunctions import query_yes_no as qyn
 
+import datetime
+
 
 class PicConv():
-	def __init__(self, filename, scale = 1, cut = 0, allowDiagonals = False, prioritizeLeft = False, flipHorizontally = False, flipVertically = False ,frames = False, simulate = False, micronInstance = None):
+	def __init__(self, filename, scale = 1, cut = 0, allowDiagonals = False, prioritizeLeft = False, flipHorizontally = False, flipVertically = False ,frames = False, simulate = False, micronInstance = None, shutterTime = 0.8):
 		self.filename = filename
 		self.scale = scale
 
@@ -52,11 +54,16 @@ class PicConv():
 		if self.allowDiagonals:
 			print("Allow Diagonals")
 
+		self.fast_velocity = 400
+		self.estimatedTime = None
+		self.estimatedVelocity = None
+		self.shutterTime = shutterTime
+
 	def convert(self):
 		self.image = Image.open(self.filename)
 
 		# Sanity Checks
-		assert self.image.mode == '1', "Your image has mode {}. Please use a 1-bit indexed (mode 1) image, see https://pillow.readthedocs.io/en/stable/handbook/concepts.html#bands. If using GIMP to convert picture to 1-bit index, ensure 'remove colour from palette' is unchecked".format(self.image.mode)
+		assert self.image.mode == '1', "Your image has mode {}. Please use a 1-bit indexed (mode 1) image, see https://pillow.readthedocs.io/en/stable/handbook/concepts.html#bands. If using GIMP to convert picture to 1-bit index, ensure 'remove colour from palette' is unchecked. ".format(self.image.mode)
 		# Check if size is within limits if talking directly stage
 		# TODO
 
@@ -239,7 +246,7 @@ class PicConv():
 			# initialize the stage
 			self.controller = micron.Micos(**kwargs)
 
-		self.controller.setvel(velocity)
+		self.controller.setvel(self.fast_velocity)
 
 		self.controller.shutter.close()
 
@@ -263,9 +270,24 @@ class PicConv():
 			print("Exiting...")
 			sys.exit(1)
 
+		# Estimate time if not yet estimated
+		if self.estimatedTime is None and velocity == self.estimatedVelocity:
+			self.estimateTime(velocity = velocity)
+
+		now = datetime.datetime.now()
+		print("Printing starting now \t {}".format(now.strftime('%Y-%m-%d %H:%M:%S')))
+
+		deltaTime = datetime.timedelta(seconds = self.estimatedTime)
+		finish = now + deltaTime
+
+		print("Given {} sec / shutter movement:\nEstimated time required  \t {}".format(self.shutterTime, deltaTime))
+		print("Esimated to finish at \t {}".format(finish.strftime('%Y-%m-%d %H:%M:%S')))
+
 		# do a rmove to the first point of self.lines from (0,0) of the image
 		dy, dx = self.lines[0][0][0], self.lines[0][0][1]
 		self.controller.rmove(x = dx, y = dy)
+
+		self.controller.setvel(velocity)
 
 		# then we print
 		for cmd in self.commands:
@@ -276,7 +298,7 @@ class PicConv():
 			if state:
 				self.controller.shutter.open()
 			else:
-				self.controller.setvel(400)
+				self.controller.setvel(self.fast_velocity)
 
 			for rmove in rmoves:
 				self.controller.rmove(y = rmove[0], x = rmove[1])
@@ -373,7 +395,38 @@ class PicConv():
 
 		# close shutter and open shutter needs to wait clear
 
-		self.velocity = velocity
+		# parselines must be run first
+		# WARNING: DOES NOT TAKE INTO ACCOUNT REAL TIME TO OPEN/CLOSE SHUTTER
+		# WARNING: Shutter time estimated to be 1 second
+
+		# Calculate time from the (0, 0) of the image
+
+		assert isinstance(velocity, (int, float)), "velocity must be int or float"
+
+		totalTIme = 0
+
+		# do a rmove to the first point of self.lines from (0,0) of the image
+		dy, dx = self.lines[0][0][0], self.lines[0][0][1]
+		totalTIme += micron.Micos.getDeltaTime(x = dx, y = dy, velocity = self.fast_velocity)
+
+		# then we print
+		prevState = None
+		for cmd in self.commands:
+			state  = cmd[0]
+			rmoves = cmd[1]
+
+			if state != prevState:
+				totalTIme += self.shutterTime # for closing/opening shutter
+				prevState = state
+
+			for rmove in rmoves:
+				vel = self.fast_velocity if not state else velocity
+				totalTIme += micron.Micos.getDeltaTime(y = rmove[0], x = rmove[1], velocity = vel)
+
+		self.estimatedTime = totalTIme
+		self.estimatedVelocity = velocity
+
+		return totalTIme
 
 
 
