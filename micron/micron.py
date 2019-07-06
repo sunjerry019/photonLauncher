@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # hashbang but it's meant to be run on windows ._.
 
-# Python Helper to interact with the NanoLab Microcontroller
+# Python primary Helper to interact with the NanoLab Microcontroller
 # Microcontroller Model: Micos 1860SMC Basic
 # Made 2019, Sun Yudong
 # sunyudong [at] outlook [dot] sg
@@ -28,7 +28,7 @@ import traceback
 import platform  	# for auto windows/linux detection
 
 # hashtag homemade
-import shutter
+import shutterpowerranger
 
 import math
 
