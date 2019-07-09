@@ -206,34 +206,34 @@ class StageControl():
 		self.finish()
 
 	# overpowered, omni-potent rastering solution for both laser power and velocity
-	def arrayraster(self, xDist, yDist, xGap, yGap, rasterSettings, returnToOrigin = False, nrow, ncol, inipower, finxpower, finypower, inivel, finxvel, finyvel):
+	def arrayraster(self, xDist, yDist, xGap, yGap, rasterSettings, nrow, ncol, inipower, finxpower, finypower, inivel, finxvel, finyvel, returnToOrigin = False):
 
-	# cutting in rows
-	xstepvel = abs(finxvel - inivel) / nrow
-	xsteppower = abs(finxpower - inipower) / nrow
-	ystepvel = abs(finyvel - inivel) / ncol
-	ysteppower = abs(finypower - inipower) / ncol
+		# cutting in rows
+		xstepvel = abs(finxvel - inivel) / nrow
+		xsteppower = abs(finxpower - inipower) / nrow
+		ystepvel = abs(finyvel - inivel) / ncol
+		ysteppower = abs(finypower - inipower) / ncol
 
-	for c in range(0, ncol):
-		inivel += ystepvel * c
-		inipower += ysteppower * c
-		if c < (ncol - 1):
-			for r in range(0, nrow):
-				#TODO! row power incremental adjustments
-				if r < (nrow - 1):
-					self.singleraster(inivel + xstepvel * r, xDist, yDist, rasterSettings, returnToOrigin)
-					self.controller.rmove(x = -xGap * self.noinvertx, y = 0)
-				else:
-					self.singleraster(inivel + xstepvel * r, xDist, yDist, rasterSettings, returnToOrigin)
+		for c in range(0, ncol):
+			inivel += ystepvel * c
+			inipower += ysteppower * c
+			if c < (ncol - 1):
+				for r in range(0, nrow):
+					#TODO! row power incremental adjustments
+					if r < (nrow - 1):
+						self.singleraster(inivel + xstepvel * r, xDist, yDist, rasterSettings, returnToOrigin)
+						self.controller.rmove(x = -xGap * self.noinvertx, y = 0)
+					else:
+						self.singleraster(inivel + xstepvel * r, xDist, yDist, rasterSettings, returnToOrigin)
 
-			self.controller.rmove(y = -yGap * self.noinverty, x = 0)
-		else:
-			for r in range(0, nrow):
-				if r < (nrow - 1):
-					self.singleraster(inivel + xstepvel * r, xDist, yDist, rasterSettings, returnToOrigin)
-					self.controller.rmove(x = -xGap * self.noinvertx, y = 0)
-				else:
-					self.singleraster(inivel + xstepvel * r, xDist, yDist, rasterSettings, returnToOrigin)
+				self.controller.rmove(y = -yGap * self.noinverty, x = 0)
+			else:
+				for r in range(0, nrow):
+					if r < (nrow - 1):
+						self.singleraster(inivel + xstepvel * r, xDist, yDist, rasterSettings, returnToOrigin)
+						self.controller.rmove(x = -xGap * self.noinvertx, y = 0)
+					else:
+						self.singleraster(inivel + xstepvel * r, xDist, yDist, rasterSettings, returnToOrigin)
 
 
 		#TODO! column power incremental adjustments

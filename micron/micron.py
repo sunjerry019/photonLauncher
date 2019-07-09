@@ -127,7 +127,7 @@ class Micos():
 			# END SERIAL SETUP
 
 			if not noCtrlCHandler: self.startInterruptHandler()
-			self.shutter = shutter.Shutter(absoluteMode = shutterAbsolute)
+			self.shutter = shutterpowerranger.Servo(absoluteMode = shutterAbsolute)
 			self.shutter.close()
 
 			# BEGIN INITIALIZATION
