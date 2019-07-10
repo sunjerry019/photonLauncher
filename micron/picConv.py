@@ -271,7 +271,7 @@ class PicConv():
 			sys.exit(1)
 
 		# Estimate time if not yet estimated
-		if self.estimatedTime is None and velocity == self.estimatedVelocity:
+		if self.estimatedTime is None or velocity != self.estimatedVelocity:
 			self.estimateTime(velocity = velocity)
 
 		now = datetime.datetime.now()

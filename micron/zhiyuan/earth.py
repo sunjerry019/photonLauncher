@@ -14,12 +14,14 @@ testPic = picConv.PicConv(
     filename = "robinson.bmp",
     allowDiagonals = True,
     prioritizeLeft = True,
-    flipVertically = True
+    # flipVertically = True
 )
 
 testPic.convert()
 testPic.parseLines()
-print(datetime.timedelta(seconds = testPic.estimateTime(velocity = 50)))
+testPic.draw(velocity = 50, shutterAbsolute = True)
+
+# print(datetime.timedelta(seconds = testPic.estimateTime(velocity = 50)))
 
 # testPic.controller = micron.Micos(
 #     stageConfig = {
