@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+# tertiary Helper
 # Unless absolutely necessary, do not use self.controller.send(...)
 # Implement the method in micron.py and call that instead
 # Abstraction yo
@@ -21,6 +22,7 @@ import numpy as np
 import math
 import time
 
+
 class InputError(Exception):
 	# Error in user input -> To be caught and flagged accordingly
 	pass
@@ -38,7 +40,7 @@ class StageControl():
 		self.UP, self.RIGHT, self.DOWN, self.LEFT = 0, 1, 2, 3
 
 	def generateFilename(self, cereal):
-		# TODO!                                                                          
+		# TODO!
 
 		return "sounds/completed/raster_alarm.wav"
 
@@ -59,7 +61,7 @@ class StageControl():
 			return self.controller.rmove(y = distance * self.noinverty, x = 0)
 
 		elif (direction == self.DOWN):
-			return self.controller.rmove(y = distance * self.noinverty, x = 0)
+			return self.controller.rmove(y = -distance * self.noinverty, x = 0)
 		else:
 			return False
 
@@ -70,7 +72,8 @@ class StageControl():
 		self.controller.rmove(x = distance * self.invertx, y = distance * self.inverty)
 		pass
 
-	def raster(self, velocity, xDist, yDist, rasterSettings, returnToOrigin = False):
+	# most basic, single rectangle cut rastering
+	def singleraster(self, velocity, xDist, yDist, rasterSettings, returnToOrigin = False):
 		# Raster in a rectangle
 		# rasterSettings = {
 		# 	"direction": "x" || "y" || "xy", 		# Order matters here xy vs yx
@@ -202,11 +205,47 @@ class StageControl():
 
 		self.finish()
 
+	# overpowered, omni-potent rastering solution for both laser power and velocity
+	def arrayraster(self, xDist, yDist, xGap, yGap, rasterSettings, nrow, ncol, inipower, finxpower, finypower, inivel, finxvel, finyvel, returnToOrigin = False):
+
+		# cutting in rows
+		xstepvel = abs(finxvel - inivel) / nrow
+		xsteppower = abs(finxpower - inipower) / nrow
+		ystepvel = abs(finyvel - inivel) / ncol
+		ysteppower = abs(finypower - inipower) / ncol
+
+		for c in range(0, ncol):
+			inivel += ystepvel * c
+			inipower += ysteppower * c
+			if c < (ncol - 1):
+				for r in range(0, nrow):
+					#TODO! row power incremental adjustments
+					if r < (nrow - 1):
+						self.singleraster(inivel + xstepvel * r, xDist, yDist, rasterSettings, returnToOrigin)
+						self.controller.rmove(x = -xGap * self.noinvertx, y = 0)
+					else:
+						self.singleraster(inivel + xstepvel * r, xDist, yDist, rasterSettings, returnToOrigin)
+
+				self.controller.rmove(y = -yGap * self.noinverty, x = 0)
+			else:
+				for r in range(0, nrow):
+					if r < (nrow - 1):
+						self.singleraster(inivel + xstepvel * r, xDist, yDist, rasterSettings, returnToOrigin)
+						self.controller.rmove(x = -xGap * self.noinvertx, y = 0)
+					else:
+						self.singleraster(inivel + xstepvel * r, xDist, yDist, rasterSettings, returnToOrigin)
+
+
+		#TODO! column power incremental adjustments
+
+
 	def drawElipse(self, x0, y0, h, k):
 		# 1 = (x-x0)^2 / h^2 + (y-y0)^2 / k^2
 		# Implement this somehow...?
 
 		pass
+
+
 
 	def __enter__(self):
 		return self

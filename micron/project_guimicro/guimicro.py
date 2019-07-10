@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Graphical User Interface for stagecontrol.py
+# final level Graphical User Interface for stagecontrol.py
 
 # Swapped to PyQt5 from Tkinter, because the former is more powerful/intuitive to implement features
 # microgui will pair functions with commands imported from stagecontrol.py which uses raster in turn
