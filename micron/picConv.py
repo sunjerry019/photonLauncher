@@ -31,9 +31,12 @@ import datetime
 
 
 class PicConv():
-	def __init__(self, filename, scale = 1, cut = 0, allowDiagonals = False, prioritizeLeft = False, flipHorizontally = False, flipVertically = False ,frames = False, simulate = False, micronInstance = None, shutterTime = 0.8):
+	def __init__(self, filename, xscale = 1, yscale = 1, cut = 0, allowDiagonals = False, prioritizeLeft = False, flipHorizontally = False, flipVertically = False ,frames = False, simulate = False, micronInstance = None, shutterTime = 0.8):
 		self.filename = filename
-		self.scale = scale
+		self.scale = {
+			"x": xscale,
+			"y": yscale
+		}
 
 		assert cut in (0, 1), "Invalid cut value (0 or 1)"
 		self.cut = cut
@@ -264,20 +267,22 @@ class PicConv():
 		# do a rmove to the (0,0) of the image and let the user move the sample to match the (0,0) point
 		# checking if the image will exceed limits
 		dy, dx = self.shape[0] / 2, self.shape[1] / 2
-		self.controller.rmove(x = dx, y = dy)
-
-		if not qyn("This is the (0,0) of the image. Confirm?"):
-			print("Exiting...")
-			sys.exit(1)
+		self.controller.rmove(x = dx * self.scale["x"], y = dy * self.scale["y"])
 
 		# Estimate time if not yet estimated
 		if self.estimatedTime is None or velocity != self.estimatedVelocity:
 			self.estimateTime(velocity = velocity)
 
+		deltaTime = datetime.timedelta(seconds = self.estimatedTime)
+		print("Given {} sec / shutter movement:\nEstimated time required  \t {}".format(self.shutterTime, deltaTime))
+
+		if not qyn("This is the (0,0) of the image. Confirm?"):
+			print("Exiting...")
+			sys.exit(1)
+
 		now = datetime.datetime.now()
 		print("Printing starting now \t {}".format(now.strftime('%Y-%m-%d %H:%M:%S')))
 
-		deltaTime = datetime.timedelta(seconds = self.estimatedTime)
 		finish = now + deltaTime
 
 		print("Given {} sec / shutter movement:\nEstimated time required  \t {}".format(self.shutterTime, deltaTime))
@@ -285,7 +290,7 @@ class PicConv():
 
 		# do a rmove to the first point of self.lines from (0,0) of the image
 		dy, dx = self.lines[0][0][0], self.lines[0][0][1]
-		self.controller.rmove(x = dx, y = dy)
+		self.controller.rmove(x = dx * self.scale["x"], y = dy * self.scale["y"])
 
 		self.controller.setvel(velocity)
 
@@ -301,7 +306,7 @@ class PicConv():
 				self.controller.setvel(self.fast_velocity)
 
 			for rmove in rmoves:
-				self.controller.rmove(y = rmove[0], x = rmove[1])
+				self.controller.rmove(y = rmove[0] * self.scale["x"], x = rmove[1] * self.scale["y"])
 
 			if state:
 				self.controller.shutter.close()
@@ -407,7 +412,7 @@ class PicConv():
 
 		# do a rmove to the first point of self.lines from (0,0) of the image
 		dy, dx = self.lines[0][0][0], self.lines[0][0][1]
-		totalTIme += micron.Micos.getDeltaTime(x = dx, y = dy, velocity = self.fast_velocity)
+		totalTIme += micron.Micos.getDeltaTime(x = dx * self.scale["x"], y = dy * self.scale["y"], velocity = self.fast_velocity)
 
 		# then we print
 		prevState = None
@@ -421,7 +426,7 @@ class PicConv():
 
 			for rmove in rmoves:
 				vel = self.fast_velocity if not state else velocity
-				totalTIme += micron.Micos.getDeltaTime(y = rmove[0], x = rmove[1], velocity = vel)
+				totalTIme += micron.Micos.getDeltaTime(y = rmove[0] * self.scale["x"], x = rmove[1] * self.scale["y"], velocity = vel)
 
 		self.estimatedTime = totalTIme
 		self.estimatedVelocity = velocity
