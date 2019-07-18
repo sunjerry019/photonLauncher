@@ -15,7 +15,7 @@
 
 import sys, os
 from PyQt5 import QtCore, QtGui, QtWidgets
-import time
+import time, datetime
 
 import argparse
 
@@ -25,6 +25,9 @@ import io, threading
 import traceback
 
 import math
+
+# To catch Ctrl+C
+import signal
 
 sys.path.insert(0, '../')
 import stagecontrol
@@ -87,6 +90,12 @@ class MicroGui(QtWidgets.QMainWindow):
         # / MAIN WIDGET
         self.window_layout.addWidget(self.main_widget)
 
+        # SHUTTER WIDGET
+        self.shutter_widget = self.create_shutter_control()
+        
+
+        # / SHUTTER WIDGET
+
         # STATUS BAR WIDGET
         self.statusBarWidget = QtWidgets.QStatusBar()
         self._statusbar_label = QtWidgets.QLabel("status")
@@ -109,6 +118,28 @@ class MicroGui(QtWidgets.QMainWindow):
 
         # Show actual window
         self.show()
+
+    def startInterruptHandler(self):
+        # Usually not started because signal doesn't work with PyQt anyway
+
+        # https://stackoverflow.com/a/4205386/3211506
+        signal.signal(signal.SIGINT, self.KeyboardInterruptHandler)
+
+    def KeyboardInterruptHandler(self, signal = None, frame = None):
+        # 2 args above for use with signal.signal
+
+        self.setOperationStatus("^C Detected: Aborting the FIFO stack. Shutter will be closed as part of the aborting process.")
+
+        if not self.devMode:
+            self.stageControl.controller.abort()
+            self.StageControl.controller.shutter.close()
+
+            # Some code here to detect printing/array state
+
+        # self.dev.close()
+        # print("Exiting")
+        # sys.exit(1)
+        # use os._exit(1) to avoid raising any SystemExit exception
 
     def initializeDevice(self):
         # We create a blocked window which the user cannot close
@@ -197,7 +228,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
                     # l.append(status)
                     # initWindow.setWindowTitle(q.split()[-1].strip())
-                    self.setOperationStatus(status)
+                    self.setOperationStatus(status, printToTerm = False)
                     statusLabel.setText(status)
 
                 if threading.activeCount() == baselineThreads:
@@ -307,6 +338,20 @@ class MicroGui(QtWidgets.QMainWindow):
         # Page 3 = Stage Movement
         self.main_widget.setCurrentIndex(page)
 
+# Shutter Control layout
+
+    @make_widget_from_layout
+    def create_shutter_control(self, widget):
+        _shutter_layout = QtWidgets.QHBoxLayout()
+
+        # Shutter controls
+        self._shutter_label = QtWidgets.QLabel("Shutter Controls")
+        self._shutter_state = QtWidgets.QLabel() # Change color
+        self._open_shutter  = QtWidgets.QPushButton("Open")
+        self._close_shutter = QtWidgets.QPushButton("Close")
+
+        return _shutter_layout
+
 # first layout
     @make_widget_from_layout
     def create_stage(self, widget):
@@ -319,6 +364,8 @@ class MicroGui(QtWidgets.QMainWindow):
         _lcdy_label = QtWidgets.QLabel("Current Y")
         _lcdx_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         _lcdy_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        _lcdx_label.setMaximumHeight(20)
+        _lcdy_label.setMaximumHeight(20)
 
         self._lcdx = QtWidgets.QLCDNumber()
         self._lcdy = QtWidgets.QLCDNumber()
@@ -329,6 +376,7 @@ class MicroGui(QtWidgets.QMainWindow):
         self._downArrow  = QtWidgets.QPushButton(u'\u21E9')
         self._leftArrow  = QtWidgets.QPushButton(u'\u21E6')
         self._rightArrow = QtWidgets.QPushButton(u'\u21E8')
+        self._homeBtn    = QtWidgets.QPushButton("Home\nStage")
 
         self.arrowFont = QtGui.QFont("Arial", 30)
         self.arrowFont.setBold(True)
@@ -356,7 +404,6 @@ class MicroGui(QtWidgets.QMainWindow):
         # void QGridLayout::addWidget(QWidget *widget, int row, int column, Qt::Alignment alignment = Qt::Alignment())
         # void QGridLayout::addWidget(QWidget *widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = Qt::Alignment())
 
-
         # currx, y label
         _stage_layout.addWidget(_lcdx_label, 0, 1, 1, 2)
         _stage_layout.addWidget(_lcdy_label, 0, 3, 1, 2)
@@ -376,6 +423,8 @@ class MicroGui(QtWidgets.QMainWindow):
         _stage_layout.addWidget(self._downArrow, 5, 2, 1, 2)
         _stage_layout.addWidget(self._leftArrow, 5, 0, 1, 2)
         _stage_layout.addWidget(self._rightArrow, 5, 4, 1, 2)
+
+        _stage_layout.addWidget(self._homeBtn, 4, 0, 1, 2)
 
         return _stage_layout
 
@@ -415,6 +464,34 @@ class MicroGui(QtWidgets.QMainWindow):
         self._downArrow.clicked.connect(lambda: self.cardinalMoveStage(self.DOWN))
         self._leftArrow.clicked.connect(lambda: self.cardinalMoveStage(self.LEFT))
         self._rightArrow.clicked.connect(lambda: self.cardinalMoveStage(self.RIGHT))
+        self._homeBtn.clicked.connect(lambda: self.homeStage())
+
+    def keyPressEvent(self, evt):
+        # https://www.riverbankcomputing.com/static/Docs/PyQt4/qt.html#Key-enum
+
+        # All Keypress events go here
+        if evt.key() == QtCore.Qt.Key_C and (evt.modifiers() & QtCore.Qt.ControlModifier):
+            self.KeyboardInterruptHandler()
+
+        if evt.key() == QtCore.Qt.Key_Up:
+            self.cardinalMoveStage(self.UP)
+
+        if evt.key() == QtCore.Qt.Key_Down:
+            self.cardinalMoveStage(self.DOWN)
+
+        if evt.key() == QtCore.Qt.Key_Left:
+            self.cardinalMoveStage(self.LEFT)
+
+        if evt.key() == QtCore.Qt.Key_Right:
+            self.cardinalMoveStage(self.RIGHT)
+
+    def homeStage(self):
+        if not self.devMode:
+            self.setOperationStatus("Homing stage...If any error arises, abort immediately with Ctrl + C")
+            self.stageControl.controller.homeStage()
+            self.setOperationStatus("Home stage finished")
+        else:
+            self.setOperationStatus("devMode, not homing...")
 
     def cardinalMoveStage(self, dir):
         # Get the distance
@@ -422,7 +499,8 @@ class MicroGui(QtWidgets.QMainWindow):
         vel  = float(self._velocity.text())
 
         # Move the stage
-        self.moveStage(dir, distance = dist, velocity = vel)
+        if not self.devMode:
+            self.moveStage(dir, distance = dist, velocity = vel)
 
     def moveStage(self, dir, distance, velocity):
         # dir is a (dx, dy) tuple/vector that defines the direction that gets multiplied by distance
@@ -442,9 +520,10 @@ class MicroGui(QtWidgets.QMainWindow):
             self._lcdx.display(self.stageControl.controller.stage.x)
             self._lcdy.display(self.stageControl.controller.stage.y)
 
-    def setOperationStatus(self, status):
+    def setOperationStatus(self, status, printToTerm = True):
         self.currentStatus = status
-
+        if printToTerm:
+            print("[{}]".format(datetime.datetime.now().time()), status)
         # Do some updating of the status bar
         self._statusbar_label.setText(status)
 
@@ -470,6 +549,8 @@ def moveToCentre(QtObj):
 def main(**kwargs):
     app = QtWidgets.QApplication(sys.argv)
     window = MicroGui(**kwargs)
+    # Start the signal handler
+    # window.startInterruptHandler()
     window.show()
     window.raise_()
     sys.exit(app.exec_())
