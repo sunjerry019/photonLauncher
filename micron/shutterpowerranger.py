@@ -18,8 +18,6 @@
 ###
 from pwmaudio import Pulsegen
 
-
-
 class Servo():
     LEFTCH = -1
     RIGHTCH = 1
@@ -31,8 +29,6 @@ class Servo():
         print('Channel:',self.human_channel)
 
         self.absoluteMode = absoluteMode
-        self.homeclose() if not self.absoluteMode else self.close()
-        self.isOpen = False
 
     @property
     def channel(self):
@@ -52,6 +48,20 @@ class Servo():
     def absolute(self, duty, polarity = True, freq = 50, duration = 400):
         with Pulsegen(duty, polarity, freq, duration, pan = self.channel) as p:
             p.playpulse()
+
+    def __enter__(self):
+        #self.close()
+        return self
+
+    def __exit__(self, e_type, e_val, traceback):
+        self.close()
+
+class Shutter(Servo):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.homeclose() if not self.absoluteMode else self.close()
+        self.isOpen = False
 
     ## Shutter servo functions
     # This is the "over extended" range of 180 degree servo (>180 degrees). Reserved for closed state, where 180 degrees would be open, ready for 180-0 degrees scanning
@@ -73,11 +83,14 @@ class Servo():
         time.sleep(1)
         self.absolute(0.06, duration = 300)
         return True
-    ##
 
+class Power(Servo):
     ## Power servo functions
 
-# incremental step scan from one position to another for ND filter rotation control.
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    # incremental step scan from one position to another for ND filter rotation control.
     def scan(self, p1, p2, increment_level):
         try:
             if (isinstance(p1, float) and isinstance(p2, float)) or ("." in str(p1) and "." in str(p2)):
@@ -91,7 +104,7 @@ class Servo():
         except ValueError:
             print("Did you input a NUMBER?")
 
-# for ABSOLUTEMODE: as convention, lets take position 0 (0.15 duty) as closed, position 1 - position n as the increments from 180 degrees to 0.
+        # for ABSOLUTEMODE: as convention, lets take position 0 (0.15 duty) as closed, position 1 - position n as the increments from 180 degrees to 0.
         if self.absolute == True:
             if val1 < val2:
                 for i in range(val1,val2+1):
@@ -104,17 +117,8 @@ class Servo():
                     self.absolute(dc)
                     print("DUTY CYCLE = ", dc)
 
-# for nonABSOLUTE 360 servo:
+        # for nonABSOLUTE 360 servo:
         # else:
-
-    ##
-
-    def __enter__(self):
-        #self.close()
-        return self
-
-    def __exit__(self, e_type, e_val, traceback):
-        self.close()
 
 if __name__ == '__main__':
     with Servo(channel = Servo.LEFTCH, absoluteMode = True) as s:
