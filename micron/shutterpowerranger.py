@@ -18,6 +18,8 @@
 ###
 from pwmaudio import Pulsegen
 
+import time
+
 class Servo():
     LEFTCH = -1
     RIGHTCH = 1

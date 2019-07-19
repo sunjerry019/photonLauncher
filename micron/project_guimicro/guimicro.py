@@ -92,7 +92,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
         # SHUTTER WIDGET
         self.shutter_widget = self.create_shutter_control()
-        
+
 
         # / SHUTTER WIDGET
 
@@ -466,24 +466,60 @@ class MicroGui(QtWidgets.QMainWindow):
         self._rightArrow.clicked.connect(lambda: self.cardinalMoveStage(self.RIGHT))
         self._homeBtn.clicked.connect(lambda: self.homeStage())
 
-    def keyPressEvent(self, evt):
+        self.keyMapping = {
+            QtCore.Qt.Key_Up   : "Up",
+            QtCore.Qt.Key_Down : "Down",
+            QtCore.Qt.Key_Left : "Left",
+            QtCore.Qt.Key_Right: "Right"
+        }
+
+        self.keysPressed = {}
+
+        self.installEventFilter(self)
+
+    # keyPressEvent(self, evt)
+
+    def eventFilter(self, source, evt):
         # https://www.riverbankcomputing.com/static/Docs/PyQt4/qt.html#Key-enum
+        # print(evt)
 
-        # All Keypress events go here
-        if evt.key() == QtCore.Qt.Key_C and (evt.modifiers() & QtCore.Qt.ControlModifier):
-            self.KeyboardInterruptHandler()
+        if isinstance(evt, QtGui.QKeyEvent): #.type() ==
 
-        if evt.key() == QtCore.Qt.Key_Up:
-            self.cardinalMoveStage(self.UP)
+            key = self.keyMapping[evt.key()]
 
-        if evt.key() == QtCore.Qt.Key_Down:
-            self.cardinalMoveStage(self.DOWN)
+            if (evt.type() == QtCore.QEvent.KeyPress):
+                print("KeyPress : {}".format(key))
+                if key not in self.keysPressed:
+                    self.keysPressed[key] = 1
 
-        if evt.key() == QtCore.Qt.Key_Left:
-            self.cardinalMoveStage(self.LEFT)
+            if (evt.type() == QtCore.QEvent.KeyRelease):
+                print("KeyRelease : {}".format(key))
+                if key in self.keysPressed:
+                    del self.keysPressed[key]
 
-        if evt.key() == QtCore.Qt.Key_Right:
-            self.cardinalMoveStage(self.RIGHT)
+            print("\033[K", str(self.keysPressed), end="\r")
+
+            # All Keypress events go here
+            if evt.key() == QtCore.Qt.Key_C and (evt.modifiers() & QtCore.Qt.ControlModifier):
+                self.KeyboardInterruptHandler()
+
+            if evt.key() == QtCore.Qt.Key_Up:
+                # print("Up")
+                self.cardinalMoveStage(self.UP)
+
+            if evt.key() == QtCore.Qt.Key_Down:
+                # print("Down")
+                self.cardinalMoveStage(self.DOWN)
+
+            if evt.key() == QtCore.Qt.Key_Left:
+                # print("Left")
+                self.cardinalMoveStage(self.LEFT)
+
+            if evt.key() == QtCore.Qt.Key_Right:
+                # print("Right")
+                self.cardinalMoveStage(self.RIGHT)
+
+        return QtWidgets.QWidget.eventFilter(self, source, evt)
 
     def homeStage(self):
         if not self.devMode:

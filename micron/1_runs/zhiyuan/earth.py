@@ -11,8 +11,9 @@ import picConv, micron
 import datetime
 
 _velocity = 50
-_MODE = "OSCAR"
-_FILENAME = "./split_big/robinson_big2-3.bmp" #"Australia-NewGuinea.bmp" # , #"robinson_big.bmp", #
+_MODE = "RUDOLPH"
+_FILENAME = "./split/robinson-cropped-1.bmp"
+# _FILENAME = "./split_big/robinson_big2-3.bmp" #"Australia-NewGuinea.bmp" # , #"robinson_big.bmp", #
 
 _ESTIMATEONLY = False
 

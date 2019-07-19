@@ -7,7 +7,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot
 
 sys.path.insert(0, '../')
-import stagecontrol
+# import stagecontrol
 import shutterpowerranger
 
 class Butt(QWidget):
@@ -54,8 +54,10 @@ class Butt(QWidget):
             self.isOpen = True
             self.textbox.setText("You opened the shutter\nWE'RE DOOMED!!")
 
-
-if __name__ == '__main__':
+def main():
     app = QApplication(sys.argv)
     ex = Butt()
     sys.exit(app.exec_())
+
+if __name__ == '__main__':
+    main()
