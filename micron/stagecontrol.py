@@ -28,8 +28,9 @@ class InputError(Exception):
 	pass
 
 class StageControl():
-	def __init__(self, noinvertx = 1, noinverty = 1, **kwargs):
-		self.controller = micron.Micos(**kwargs)
+	def __init__(self, noinvertx = 1, noinverty = 1, GUI_Object = None, **kwargs):
+		self.controller = micron.Micos(GUI_Object = GUI_Object, **kwargs)
+		self.GUI_Object = GUI_Object
 		self.noinvertx = noinvertx
 		self.noinverty = noinverty
 		# Generate filename based on the serial number of the model
@@ -237,6 +238,7 @@ class StageControl():
 
 
 		#TODO! column power incremental adjustments
+		#TODO: Estimate time
 
 
 	def drawElipse(self, x0, y0, h, k):
