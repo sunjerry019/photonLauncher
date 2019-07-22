@@ -83,8 +83,8 @@ class MicroGui(QtWidgets.QMainWindow):
         self.stage_widget = self.create_stage()
 
         self.main_widget.addWidget(self.drawpic_widget)
-        self.main_widget.addWidget(self.single_raster_widget)
         self.main_widget.addWidget(self.array_raster_widget)
+        self.main_widget.addWidget(self.single_raster_widget)
         self.main_widget.addWidget(self.stage_widget)
 
         # / MAIN WIDGET
@@ -188,9 +188,9 @@ class MicroGui(QtWidgets.QMainWindow):
             with redirect_stdout(f):
                 if self.devMode:
                     # Following code is for testing and emulation of homing commands
-                    for i in range(2):
-                        print("Message number:", i)
-                        time.sleep(1)
+                    # for i in range(2):
+                    #     print("Message number:", i)
+                    #     time.sleep(1)
                     self.stageControl = stagecontrol.StageControl(noCtrlCHandler = True, devMode = True, GUI_Object = self)
 
                 else:
@@ -395,9 +395,9 @@ class MicroGui(QtWidgets.QMainWindow):
         _velocity_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
         _step_size_label = QtWidgets.QLabel("Step size ({}m)".format(self.MICROSYMBOL))
 
-        self._velocity = QtWidgets.QLineEdit()
-        self._velocity.setText('100')
-        self._velocity.setValidator(QtGui.QIntValidator(0,10000))
+        self._SL_velocity = QtWidgets.QLineEdit()
+        self._SL_velocity.setText('100')
+        self._SL_velocity.setValidator(QtGui.QIntValidator(0,10000))
         # _velocity.setFont(QtGui.QFont("Arial",20))
 
         self._step_size = QtWidgets.QLineEdit()
@@ -422,7 +422,7 @@ class MicroGui(QtWidgets.QMainWindow):
         _stage_layout.addWidget(_lcdy_label, 0, 3, 1, 2)
 
         _stage_layout.addWidget(_velocity_label, 2, 0)
-        _stage_layout.addWidget(self._velocity, 2, 1, 1, 2)
+        _stage_layout.addWidget(self._SL_velocity, 2, 1, 1, 2)
         _stage_layout.addWidget(self._step_size, 2, 3, 1, 2)
         _stage_layout.addWidget(_step_size_label, 2, 5)
 
@@ -449,7 +449,22 @@ class MicroGui(QtWidgets.QMainWindow):
     def create_array_raster(self, widget):
         _array_raster_layout = QtWidgets.QGridLayout()
 
-        _array_raster_layout.addWidget(QtWidgets.QLabel("Array Raster Layout"))
+        # _array_raster_layout.addWidget(QtWidgets.QLabel("Array Raster Layout"))
+
+        # Velocities, comma separated
+        # Size
+        # Power, comma separated
+
+        # JUMP TO DEF
+        # def arrayraster(self, xDist, yDist, xGap, yGap, rasterSettings, nrow, ncol, inipower, finxpower, finypower, inivel, finxvel, finyvel, returnToOrigin = False):
+
+        # Raster in a rectangle
+		# rasterSettings = {
+		# 	"direction": "x" || "y" || "xy", 		# Order matters here xy vs yx
+		# 	"step": 1								# If set to xy, step is not necessary
+		# }
+
+        _
 
         return _array_raster_layout
 
@@ -481,7 +496,9 @@ class MicroGui(QtWidgets.QMainWindow):
         }
 
         # self.keysPressed = {}
+        # Not implementing due to not being able to obtain keyPress events reliably
 
+        self.stage_widget.installEventFilter(self)
         self.installEventFilter(self)
 
         # Shutter
@@ -498,42 +515,49 @@ class MicroGui(QtWidgets.QMainWindow):
 
         if isinstance(evt, QtGui.QKeyEvent): #.type() ==
             # Check source here
+            evtkey = evt.key()
 
-            key = self.keyMapping[evt.key()]
+            # if (evt.type() == QtCore.QEvent.KeyPress):
+            #     print("KeyPress : {}".format(key))
+            #     if key not in self.keysPressed:
+            #         self.keysPressed[key] = 1
 
-            if (evt.type() == QtCore.QEvent.KeyPress):
-                print("KeyPress : {}".format(key))
-                if key not in self.keysPressed:
-                    self.keysPressed[key] = 1
+                # if key in self.keysPressed:
+                #     del self.keysPressed[key]
+            # print("\033[K", str(self.keysPressed), end="\r")
 
             if (evt.type() == QtCore.QEvent.KeyRelease):
-                print("KeyRelease : {}".format(key))
-                if key in self.keysPressed:
-                    del self.keysPressed[key]
+                # print("KeyRelease : {}".format(evtkey))
 
-            print("\033[K", str(self.keysPressed), end="\r")
+                # All KeyRelease events go here
+                if evtkey == QtCore.Qt.Key_C and (evt.modifiers() & QtCore.Qt.ControlModifier):
+                    # Will work everywhere
+                    self.KeyboardInterruptHandler()
 
-            # All Keypress events go here
-            if evt.key() == QtCore.Qt.Key_C and (evt.modifiers() & QtCore.Qt.ControlModifier):
-                self.KeyboardInterruptHandler()
+                    return True # Prevents further handling
 
-            if evt.key() == QtCore.Qt.Key_Up:
-                # print("Up")
-                self.cardinalMoveStage(self.UP)
+                if evtkey == QtCore.Qt.Key_Space:
+                    self.stageControl.controller.shutter.close() if self.stageControl.controller.shutter.isOpen else self.stageControl.controller.shutter.open()
+                    return True # Prevents further handling
 
-            if evt.key() == QtCore.Qt.Key_Down:
-                # print("Down")
-                self.cardinalMoveStage(self.DOWN)
+                if evtkey == QtCore.Qt.Key_Up and source == self.stage_widget:
+                    # print("Up")
+                    self.cardinalMoveStage(self.UP)
 
-            if evt.key() == QtCore.Qt.Key_Left:
-                # print("Left")
-                self.cardinalMoveStage(self.LEFT)
+                if evtkey == QtCore.Qt.Key_Down and source == self.stage_widget:
+                    # print("Down")
+                    self.cardinalMoveStage(self.DOWN)
 
-            if evt.key() == QtCore.Qt.Key_Right:
-                # print("Right")
-                self.cardinalMoveStage(self.RIGHT)
+                if evtkey == QtCore.Qt.Key_Left and source == self.stage_widget:
+                    # print("Left")
+                    self.cardinalMoveStage(self.LEFT)
 
-        return QtWidgets.QWidget.eventFilter(self, source, evt)
+                if evtkey == QtCore.Qt.Key_Right and source == self.stage_widget:
+                    # print("Right")
+                    self.cardinalMoveStage(self.RIGHT)
+
+        # return QtWidgets.QWidget.eventFilter(self, source, evt)
+        return super(QtWidgets.QWidget, self).eventFilter(source, evt)
 
     def homeStage(self):
         if not self.devMode:
@@ -546,7 +570,7 @@ class MicroGui(QtWidgets.QMainWindow):
     def cardinalMoveStage(self, dir):
         # Get the distance
         dist = float(self._step_size.text())
-        vel  = float(self._velocity.text())
+        vel  = float(self._SL_velocity.text())
 
         # Move the stage
         if not self.devMode:
