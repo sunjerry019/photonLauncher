@@ -100,8 +100,9 @@ class Pulsegen(SignalGenerator):
         self.pan = pan
 
     def __enter__(self):
-        print('\nPulse generator initialising...done\n')
+        # print('\nPulse generator initialising...done\n')
         return self
 
     def __exit__(self, e_type, e_val, traceback):
-        print('\nPulse generator self destructing...done')
+        # print('\nPulse generator self destructing...done')
+        pass
