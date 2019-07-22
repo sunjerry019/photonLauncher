@@ -25,6 +25,8 @@ from pydub import AudioSegment
 from pydub.generators import SignalGenerator
 from pydub.playback import play
 
+import os, sys
+
 
 ## removing buggy/useless ALSA pyaudio errors. Does not affect audio output.
 ERROR_HANDLER_FUNC = CFUNCTYPE(None, c_char_p, c_int, c_char_p, c_int, c_char_p)
@@ -33,10 +35,23 @@ def py_error_handler(filename, line, function, err, fmt):
 c_error_handler = ERROR_HANDLER_FUNC(py_error_handler)
 @contextmanager
 def noALSAerror():
-    asound = cdll.LoadLibrary('libasound.so')
-    asound.snd_lib_error_set_handler(c_error_handler)
-    yield
-    asound.snd_lib_error_set_handler(None)
+    # stackoverflow.com/a/36966379
+    devnull = os.open(os.devnull, os.O_WRONLY)
+    old_stderr = os.dup(2)
+    sys.stderr.flush()
+    os.dup2(devnull, 2)
+    os.close(devnull)
+
+    try:
+        yield
+    finally:
+        os.dup2(old_stderr, 2)
+        os.close(old_stderr)
+
+    # asound = cdll.LoadLibrary('libasound.so')
+    # asound.snd_lib_error_set_handler(c_error_handler)
+    # yield
+    # asound.snd_lib_error_set_handler(None)
 ##
 
 class Pulsegen(SignalGenerator):
