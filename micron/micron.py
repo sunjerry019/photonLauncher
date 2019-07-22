@@ -77,7 +77,7 @@ class Stage():
 		self.y = y
 
 class Micos():
-	def __init__(self, stageConfig = None, noCtrlCHandler = False, unit = "um", noHome = False, shutterAbsolute = False, shutter_label = None, devMode = False):
+	def __init__(self, stageConfig = None, noCtrlCHandler = False, unit = "um", noHome = False, shutterAbsolute = False, GUI_Object = None, devMode = False):
 		# stageConfig can be a dictionary or a json filename
 		# See self.help for documentation
 
@@ -137,7 +137,7 @@ class Micos():
 			warnings.warn("devmode -- No serial device will be used")
 
 		if not noCtrlCHandler: self.startInterruptHandler()
-		self.shutter = shutterpowerranger.Shutter(absoluteMode = shutterAbsolute, shutter_label = shutter_label)
+		self.shutter = shutterpowerranger.Shutter(absoluteMode = shutterAbsolute, GUI_Object = GUI_Object)
 		self.shutter.close()
 
 		# BEGIN INITIALIZATION

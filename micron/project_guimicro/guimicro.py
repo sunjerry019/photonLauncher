@@ -191,11 +191,11 @@ class MicroGui(QtWidgets.QMainWindow):
                     for i in range(2):
                         print("Message number:", i)
                         time.sleep(1)
-                    self.stageControl = stagecontrol.StageControl(noCtrlCHandler = True, devMode = True, shutter_label = self._shutter_state)
+                    self.stageControl = stagecontrol.StageControl(noCtrlCHandler = True, devMode = True, GUI_Object = self)
 
                 else:
                     try:
-                        self.stageControl = stagecontrol.StageControl(noCtrlCHandler = True, shutter_label = self._shutter_state)
+                        self.stageControl = stagecontrol.StageControl(noCtrlCHandler = True, GUI_Object = self)
                     except RuntimeError as e:
                         initWindow.close()
                         msgBox = QtWidgets.QMessageBox()
@@ -324,7 +324,7 @@ class MicroGui(QtWidgets.QMainWindow):
         _modes[1].clicked.connect(lambda: self.showPage(1))
         _modes[2].clicked.connect(lambda: self.showPage(2))
         _modes[3].clicked.connect(lambda: self.showPage(3))
-        
+
         for btn in _modes:
             _mode_layout.addWidget(btn)
 
@@ -350,6 +350,7 @@ class MicroGui(QtWidgets.QMainWindow):
         self._close_shutter = QtWidgets.QPushButton("Close")
 
         self._shutter_state.setStyleSheet("QLabel { background-color: #DF2928; }")
+        self._shutter_state.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
         _shutter_layout.addWidget(self._shutter_label)
         _shutter_layout.addWidget(self._shutter_state)
