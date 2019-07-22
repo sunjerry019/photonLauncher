@@ -59,24 +59,43 @@ class Servo():
         self.close()
 
 class Shutter(Servo):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, shutter_label = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.shutter_label = shutter_label
 
         self.homeclose() if not self.absoluteMode else self.close()
         self.isOpen = False
 
     ## Shutter servo functions
     # This is the "over extended" range of 180 degree servo (>180 degrees). Reserved for closed state, where 180 degrees would be open, ready for 180-0 degrees scanning
-    def close(self):
+    def close(self, shutter_state_label = None):
         self.absolute(0.15) if self.absoluteMode else self.absolute(0.09, duration = 100)
         print("Closing Shutter")
         self.isOpen = False
+
+        if shutter_state_label is None:
+            shutter_state_label = self.shutter_label
+
+        if shutter_state_label is not None:
+            # Qt QLabel Object
+            shutter_state_label.setStyleSheet("QLabel { background-color: #00A151; color: #fff; }")
+            shutter_state_label.setText("Closed")
+
         return True
 
-    def open(self):
+    def open(self, shutter_state_label = None):
         self.absolute(0.1) if self.absoluteMode else self.absolute(0.06, duration = 100)
         print("Opening Shutter")
         self.isOpen = True
+
+        if shutter_state_label is None:
+            shutter_state_label = self.shutter_label
+
+        if shutter_state_label is not None:
+            shutter_state_label.setStyleSheet("QLabel { background-color: #DF2928; color: #fff; }")
+            shutter_state_label.setText("Opened")
+
         return True
 
     # This is for the continuous rotation servo motor shutters. Provides a homing function: motor rotates untill axle hits a physical block where it will stall temporarily. It then rotates in the other direction to closed position.

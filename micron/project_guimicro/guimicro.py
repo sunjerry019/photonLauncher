@@ -92,8 +92,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
         # SHUTTER WIDGET
         self.shutter_widget = self.create_shutter_control()
-
-
+        self.window_layout.addWidget(self.shutter_widget)
         # / SHUTTER WIDGET
 
         # STATUS BAR WIDGET
@@ -192,11 +191,11 @@ class MicroGui(QtWidgets.QMainWindow):
                     for i in range(2):
                         print("Message number:", i)
                         time.sleep(1)
-                    self.stageControl = None
+                    self.stageControl = stagecontrol.StageControl(noCtrlCHandler = True, devMode = True, shutter_label = self._shutter_state)
 
                 else:
                     try:
-                        self.stageControl = stagecontrol.StageControl(noCtrlCHandler = True)
+                        self.stageControl = stagecontrol.StageControl(noCtrlCHandler = True, shutter_label = self._shutter_state)
                     except RuntimeError as e:
                         initWindow.close()
                         msgBox = QtWidgets.QMessageBox()
@@ -325,7 +324,7 @@ class MicroGui(QtWidgets.QMainWindow):
         _modes[1].clicked.connect(lambda: self.showPage(1))
         _modes[2].clicked.connect(lambda: self.showPage(2))
         _modes[3].clicked.connect(lambda: self.showPage(3))
-
+        
         for btn in _modes:
             _mode_layout.addWidget(btn)
 
@@ -349,6 +348,13 @@ class MicroGui(QtWidgets.QMainWindow):
         self._shutter_state = QtWidgets.QLabel() # Change color
         self._open_shutter  = QtWidgets.QPushButton("Open")
         self._close_shutter = QtWidgets.QPushButton("Close")
+
+        self._shutter_state.setStyleSheet("QLabel { background-color: #DF2928; }")
+
+        _shutter_layout.addWidget(self._shutter_label)
+        _shutter_layout.addWidget(self._shutter_state)
+        _shutter_layout.addWidget(self._open_shutter)
+        _shutter_layout.addWidget(self._close_shutter)
 
         return _shutter_layout
 
@@ -473,9 +479,15 @@ class MicroGui(QtWidgets.QMainWindow):
             QtCore.Qt.Key_Right: "Right"
         }
 
-        self.keysPressed = {}
+        # self.keysPressed = {}
 
         self.installEventFilter(self)
+
+        # Shutter
+        self._close_shutter.clicked.connect(lambda: self.stageControl.controller.shutter.close())
+        self._open_shutter.clicked.connect(lambda: self.stageControl.controller.shutter.open())
+
+
 
     # keyPressEvent(self, evt)
 
@@ -484,6 +496,7 @@ class MicroGui(QtWidgets.QMainWindow):
         # print(evt)
 
         if isinstance(evt, QtGui.QKeyEvent): #.type() ==
+            # Check source here
 
             key = self.keyMapping[evt.key()]
 

@@ -77,9 +77,11 @@ class Stage():
 		self.y = y
 
 class Micos():
-	def __init__(self, stageConfig = None, noCtrlCHandler = False, unit = "um", noHome = False, shutterAbsolute = False):
+	def __init__(self, stageConfig = None, noCtrlCHandler = False, unit = "um", noHome = False, shutterAbsolute = False, shutter_label = None, devMode = False):
 		# stageConfig can be a dictionary or a json filename
 		# See self.help for documentation
+
+		self.devMode = devMode
 
 		cfg = {
 			"port"      : "COM1",
@@ -108,47 +110,50 @@ class Micos():
 		self.units = { "microstep": 0,  "um": 1, "mm": 2, "cm": 3, "m": 4, "in": 5, "mil": 6 }
 		self.axes  = ['x', 'y'] 		# Dictionaries are only ordered from python 3.6 onwards
 
-		try:
-			# BEGIN SERIAL SETUP
-			self.dev = serial.Serial(
-					port 		= cfg['port'],
-					baudrate 	= cfg['baudrate'],
-					parity 		= cfg['parity'],
-					stopbits    = cfg['stopbits'],
-					bytesize    = cfg['bytesize'],
-					timeout     = cfg['timeout']
-				)
-			if self.dev.isOpen():
-				self.dev.close()
-				self.dev.open()
+		if not self.devMode:
+			try:
+				# BEGIN SERIAL SETUP
+				self.dev = serial.Serial(
+						port 		= cfg['port'],
+						baudrate 	= cfg['baudrate'],
+						parity 		= cfg['parity'],
+						stopbits    = cfg['stopbits'],
+						bytesize    = cfg['bytesize'],
+						timeout     = cfg['timeout']
+					)
+				if self.dev.isOpen():
+					self.dev.close()
+					self.dev.open()
 
-			time.sleep(2)
-			print("Initalised serial communication")
-			# END SERIAL SETUP
+				time.sleep(2)
+				print("Initalised serial communication")
+				# END SERIAL SETUP
 
-			if not noCtrlCHandler: self.startInterruptHandler()
-			self.shutter = shutterpowerranger.Shutter(absoluteMode = shutterAbsolute)
-			self.shutter.close()
+			except Exception as e:
+				print(e)
+				raise RuntimeError("Unable to establish serial communication. Please check port settings and change configuration file accordingly. For more help, consult the documention.\n\nConfig: {}\n\n{}: {}\n\n{}".format(cfg, type(e).__name__ , e, traceback.format_exc()))
+				# sys.exit(0)
+		else:
+			warnings.warn("devmode -- No serial device will be used")
 
-			# BEGIN INITIALIZATION
-			print("Stage Initialization...", end="\r")
-			self.setunits(unit)
-			self.setvel(200)
-			self.homed = False
+		if not noCtrlCHandler: self.startInterruptHandler()
+		self.shutter = shutterpowerranger.Shutter(absoluteMode = shutterAbsolute, shutter_label = shutter_label)
+		self.shutter.close()
 
-			if noHome:
-				warnings.warn("Stage will not be homed. Proceed with caution.", RuntimeWarning)
-			else:
-				print("Homing stage")
-				self.homeStage()
+		# BEGIN INITIALIZATION
+		print("Stage Initialization...", end="\r")
+		self.setunits(unit)
+		self.setvel(200)
+		self.homed = False
 
-			print("Stage Initialization Finished")
-			# END INITIALIZATION
+		if noHome:
+			warnings.warn("Stage will not be homed. Proceed with caution.", RuntimeWarning)
+		else:
+			print("Homing stage")
+			self.homeStage()
 
-		except Exception as e:
-			print(e)
-			raise RuntimeError("Unable to establish serial communication. Please check port settings and change configuration file accordingly. For more help, consult the documention.\n\nConfig: {}\n\n{}: {}\n\n{}".format(cfg, type(e).__name__ , e, traceback.format_exc()))
-			# sys.exit(0)
+		print("Stage Initialization Finished")
+		# END INITIALIZATION
 
 	def startInterruptHandler(self):
 		# https://stackoverflow.com/a/4205386/3211506
@@ -158,7 +163,8 @@ class Micos():
 		print("^C Detected: Aborting the FIFO stack and closing port.")
 		print("Shutter will be closed as part of the aborting process.")
 		self.abort()
-		self.dev.close()
+		if not self.devMode:
+			self.dev.close()
 		print("Exiting")
 		sys.exit(1)
 		# use os._exit(1) to avoid raising any SystemExit exception
@@ -246,6 +252,10 @@ class Micos():
 		# IMPT THIS DOES NOT UPDATE INTERNAL TRACKING COORDS
 		# returns the position as reported by the stage in the form of [x, y]
 		# Empty split will split by whitespace
+
+		if self.devMode:
+			return [0, 0]
+
 		return self.send("p", waitClear = True).strip().split()
 
 	def setlimits(self, xmin, ymin, xmax, ymax):
@@ -286,11 +296,18 @@ class Micos():
 		self.velocity = velocity
 		return self.send("{} setvel".format(velocity))
 
-	def send(self, cmd, waitClear = False, raw = False):
+	def send(self, cmd, waitClear = False, raw = False, waitTime = None):
+		if self.devMode:
+			return 0
+
 		# Writes cmd to the serial channel, returns the data as a list
 		cmd = cmd.encode("ascii") + self.ENTER if not raw else cmd
 
-		if waitClear: self.waitClear()
+		if waitTime is not None:
+			time.sleep(waitTime)
+
+		if waitClear:
+			self.waitClear()
 
 		self.dev.write(cmd)
 
@@ -328,9 +345,7 @@ class Micos():
 
 		assert digit is None or (isinstance(digit, int) and 0 <= digit <= 8), "Invalid digit"
 
-		self.dev.write("st".encode("ascii") + self.ENTER)
-		time.sleep(0.5)
-		y = self.read()
+		y = self.send("st", waitTime = 0.5)
 
 		# print("GETSTATUS READ = ", y)
 
@@ -384,6 +399,15 @@ class Micos():
 		# RE >2 1|8 4 2 1|8 4 2  1<
 		#     \-/ \-----/ \------/
 		#      3     0       F     => 30F
+
+		if self.devMode:
+			return {
+				"model": "0",
+				"hw-rev": "0",
+				"sw-rev": "0",
+				"board-sw": "0",
+				"dipswitches": "0000000000"
+			}
 
 		x = self.send("identify").split()
 
