@@ -79,7 +79,7 @@ class Shutter(Servo):
 
         self.isOpen = False
 
-        if shutter_state_label is None:
+        if shutter_state_label is None and self.GUI_Object is not None:
             shutter_state_label = self.GUI_Object._shutter_state
 
         if shutter_state_label is not None:
@@ -101,7 +101,7 @@ class Shutter(Servo):
 
         self.isOpen = True
 
-        if shutter_state_label is None:
+        if shutter_state_label is None and self.GUI_Object is not None:
             shutter_state_label = self.GUI_Object._shutter_state
 
         if shutter_state_label is not None:
