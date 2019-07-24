@@ -29,9 +29,10 @@ from extraFunctions import query_yes_no as qyn
 
 import datetime
 
-
 class PicConv():
-	def __init__(self, filename, xscale = 1, yscale = 1, cut = 0, allowDiagonals = False, prioritizeLeft = False, flipHorizontally = False, flipVertically = False ,frames = False, simulate = False, micronInstance = None, shutterTime = 0.8):
+	def __init__(self, filename, xscale = 1, yscale = 1, cut = 0, allowDiagonals = False, prioritizeLeft = False, flipHorizontally = False, flipVertically = False ,frames = False, simulate = False, simulateDrawing = False, micronInstance = None, shutterTime = 0.8):
+		# Set micronInstance to False instead of None to prevent using of micron
+
 		self.filename = filename
 		self.scale = {
 			"x": xscale,
@@ -48,7 +49,8 @@ class PicConv():
 		self.flipVertically = flipVertically
 
 		self.frames = frames if not simulate else True
-		self.simulate = simulate
+		self.simulate = simulate # for frames
+		self.simulateDrawing = simulateDrawing
 
 		self.controller = micronInstance
 
@@ -117,7 +119,7 @@ class PicConv():
 			if self.prioritizeLeft:
 				while y < self.shape[0]:
 					x = self.shape[1] - 1
-					while x >= 0:
+					while x > 0: 				# CANNOT USE >= 0
 						if self.imageArray[y, x] == self.cut:
 							return (y, x)
 						x -= 1
@@ -138,6 +140,10 @@ class PicConv():
 			y, x = point
 			for tup in self.directions:
 				coord = (y + tup[0], x + tup[1])
+
+				if coord[0] < 0 or coord[1] < 0:
+					continue # skip this one
+
 				# print("At {}, Looking at {} = {}".format(point, tup, self.imageArray[coord]))
 				try:
 					if self.imageArray[coord] == self.cut:
@@ -152,6 +158,7 @@ class PicConv():
 									self.directions = [RIGHT, LEFT, DOWN, DIRSW, DIRNW, UP, DIRSE, DIRNE]
 								elif tup in (RIGHT, DIRSE, DIRNE):
 									self.directions = [RIGHT, LEFT, DOWN, DIRSE, DIRNE, UP, DIRSW, DIRNW]
+						# We do not need to change otherwise
 						return coord
 				except IndexError as e:
 					pass
@@ -224,6 +231,9 @@ class PicConv():
 			# and mark as cut
 			while True:
 				print("At point ({:>3}:{:>3})".format(*nextPt), end='\r')
+				# if nextPt[0] < 0 or nextPt[1] < 0:
+				# 	print("")
+				# Used for catching erroronous pixels
 				nextPt = find_neighbour(self, nextPt)
 				if nextPt is None:
 					break
@@ -245,75 +255,107 @@ class PicConv():
 	def draw(self, velocity, **kwargs):
 		assert isinstance(velocity, (int, float)), "velocity must be int or float"
 
-		if not isinstance(self.controller, micron.Micos):
+		if not isinstance(self.controller, micron.Micos) and self.controller is not False:
 			# initialize the stage
 			self.controller = micron.Micos(**kwargs)
 
-		self.controller.setvel(self.fast_velocity)
+		gotController = isinstance(self.controller, micron.Micos)
 
-		self.controller.shutter.close()
+		if gotController:
+			self.controller.setvel(self.fast_velocity)
 
-		xlim = abs(self.controller.stage.xlim[1] - self.controller.stage.xlim[0])
-		ylim = abs(self.controller.stage.ylim[1] - self.controller.stage.ylim[0])
+			self.controller.shutter.close()
 
-		try:
-			assert self.shape[0] < ylim, "Image exceed y-limit"
-			assert self.shape[1] < xlim, "Image exceed x-limit"
-		except AssertionError as e:
-			raise AssertionError(e)
-		except Exception as e:
-			raise RuntimeError("Did you forget to load self.shape in form of y, x? Error: {}".format(e))
+			xlim = abs(self.controller.stage.xlim[1] - self.controller.stage.xlim[0])
+			ylim = abs(self.controller.stage.ylim[1] - self.controller.stage.ylim[0])
 
-		# do a rmove to the (0,0) of the image and let the user move the sample to match the (0,0) point
-		# checking if the image will exceed limits
-		dy, dx = self.shape[0] / 2, self.shape[1] / 2
-		self.controller.rmove(x = dx * self.scale["x"], y = dy * self.scale["y"])
+			try:
+				assert self.shape[0] < ylim, "Image exceed y-limit"
+				assert self.shape[1] < xlim, "Image exceed x-limit"
+			except AssertionError as e:
+				raise AssertionError(e)
+			except Exception as e:
+				raise RuntimeError("Did you forget to load self.shape in form of y, x? Error: {}".format(e))
 
-		# Estimate time if not yet estimated
-		if self.estimatedTime is None or velocity != self.estimatedVelocity:
-			self.estimateTime(velocity = velocity)
+			# do a rmove to the (0,0) of the image and let the user move the sample to match the (0,0) point
+			# checking if the image will exceed limits
+			dy, dx = self.shape[0] / 2, self.shape[1] / 2
+			self.controller.rmove(x = dx * self.scale["x"], y = dy * self.scale["y"])
 
-		deltaTime = datetime.timedelta(seconds = self.estimatedTime)
-		print("Given {} sec / shutter movement:\nEstimated time required  \t {}".format(self.shutterTime, deltaTime))
+			# Estimate time if not yet estimated
+			if self.estimatedTime is None or velocity != self.estimatedVelocity:
+				self.estimateTime(velocity = velocity)
 
-		if not qyn("This is the (0,0) of the image. Confirm?"):
-			print("Exiting...")
-			sys.exit(1)
+			deltaTime = datetime.timedelta(seconds = self.estimatedTime)
+			print("Given {} sec / shutter movement:\nEstimated time required  \t {}".format(self.shutterTime, deltaTime))
 
-		now = datetime.datetime.now()
-		print("Printing starting now \t {}".format(now.strftime('%Y-%m-%d %H:%M:%S')))
+			if not qyn("This is the (0,0) of the image. Confirm?"):
+				print("Exiting...")
+				sys.exit(1)
 
-		finish = now + deltaTime
+			now = datetime.datetime.now()
+			print("Printing starting now \t {}".format(now.strftime('%Y-%m-%d %H:%M:%S')))
 
-		print("Given {} sec / shutter movement:\nEstimated time required  \t {}".format(self.shutterTime, deltaTime))
-		print("Esimated to finish at \t {}".format(finish.strftime('%Y-%m-%d %H:%M:%S')))
+			finish = now + deltaTime
+
+			print("Given {} sec / shutter movement:\nEstimated time required  \t {}".format(self.shutterTime, deltaTime))
+			print("Esimated to finish at \t {}".format(finish.strftime('%Y-%m-%d %H:%M:%S')))
+
+		# SVGCODE
+		svgLine = ["M 0,0"]
+		svgMap = ["m", "l"] # 0 = off = m, 1 = on = l
+		# / SVGCODE
 
 		# do a rmove to the first point of self.lines from (0,0) of the image
 		dy, dx = self.lines[0][0][0], self.lines[0][0][1]
-		self.controller.rmove(x = dx * self.scale["x"], y = dy * self.scale["y"])
 
-		self.controller.setvel(velocity)
+		svgLine.append("m {},{}".format(dx * self.scale["x"], dy * self.scale["y"]))
+
+		if gotController:
+			self.controller.rmove(x = dx * self.scale["x"], y = dy * self.scale["y"])
+			self.controller.setvel(velocity)
 
 		# then we print
 		for cmd in self.commands:
 			print(cmd)
-			state  = cmd[0]
+			state  = cmd[0] 	# laser on state
 			rmoves = cmd[1]
 
-			if state:
-				self.controller.shutter.open()
-			else:
-				self.controller.setvel(self.fast_velocity)
+			if gotController:
+				if state:
+					self.controller.shutter.open()
+				else:
+					self.controller.setvel(self.fast_velocity)
 
 			for rmove in rmoves:
-				self.controller.rmove(y = rmove[0] * self.scale["x"], x = rmove[1] * self.scale["y"])
+				# SVGCODE
+				svgLine.append("{} {},{}".format(svgMap[state], rmove[1] * self.scale["x"], rmove[0] * self.scale["y"]))
+				# / SVGCODE
+				if gotController:
+					self.controller.rmove(y = rmove[0] * self.scale["y"], x = rmove[1] * self.scale["x"])
 
-			if state:
-				self.controller.shutter.close()
-			else:
-				self.controller.setvel(velocity)
+			if gotController:
+				if state:
+					self.controller.shutter.close()
+				else:
+					self.controller.setvel(velocity)
 
-		self.controller.shutter.close()
+		if gotController:
+			self.controller.shutter.close()
+
+		# SVGCODE
+		# PRINT TO SVG
+		if self.simulateDrawing:
+			import svgwrite
+
+			dl = " ".join(svgLine).strip()
+
+			dwg = svgwrite.Drawing("test.svg", size=(str(self.shape[1]) + "px", str(self.shape[0]) + "px"))
+			dwg.add(dwg.path(d=dl, stroke="#000", fill="none", stroke_width=0.5))
+			dwg.save()
+
+
+		# / SVGCODE
 
 	def save(self, variable, outputFile, protocol = pickle.HIGHEST_PROTOCOL):
 		# save self.lines into a pickle file
@@ -358,6 +400,7 @@ class PicConv():
 			prevPt = None
 
 			lineLastCount = len(line) - 1
+			currLinePtCount = 0
 			for j, point in enumerate(line):
 				if lineLastCount == 0:
 					# There is only 1 point in the line
@@ -368,12 +411,16 @@ class PicConv():
 					startPt = point
 				else:
 					dy, dx = point[0] - startPt[0], point[1] - startPt[1]
-					if (dy != 0 and dx != 0) and (abs(dy) != abs(dx)):
+					if (dy != 0 and dx != 0) and (not self.allowDiagonals or (abs(dy) != abs(dx) or abs(dy) != currLinePtCount + 1)):
+						# currLinePtCount += 1 for startPt
 						# This is no longer in a horizontal or straight line
 						# This point is also not on a continous diagonal
 						# We finish the line and append the rmove command:
+						# print("RMOVE: ", startPt, prevPt, "POINT =", point)
+						# print("CurrLinePtCount =", currLinePtCount)
 						rdy, rdx = prevPt[0] - startPt[0], prevPt[1] - startPt[1]
 						_l.append((rdy, rdx))
+						currLinePtCount = 1
 
 						# We set the end point of the previous move to the start point of the next move
 						startPt = prevPt
@@ -381,6 +428,7 @@ class PicConv():
 					else:
 						# It is the same line
 						prevPt = point
+						currLinePtCount += 1
 
 				# Check if last point
 				# print("j = ", j)

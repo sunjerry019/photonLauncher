@@ -7,12 +7,16 @@ import sys
 sys.path.insert(0, "../../")
 
 import picConv, micron
+import shutterpowerranger
 
 import datetime
 
 _velocity = 50
 _MODE = "RUDOLPH"
-_FILENAME = "./split/robinson-cropped-0.bmp"
+# _FILENAME = "./split/robinson-cropped-2.bmp"
+_FILENAME = "robinson_big.bmp"
+# done
+# 0, 1,3
 # _FILENAME = "./split_big/robinson_big2-3.bmp" #"Australia-NewGuinea.bmp" # , #"robinson_big.bmp", #
 
 _ESTIMATEONLY = False
@@ -23,12 +27,15 @@ if _MODE == "RUDOLPH":
     testPic = picConv.PicConv(
         filename = _FILENAME,
         allowDiagonals = True,
-        prioritizeLeft = True
+        prioritizeLeft = True,
+        simulateDrawing = True,
+        # simulate = True,
+        micronInstance = False # We only want to simulate drawing
     )
 
     testPic.convert()
     testPic.parseLines()
-    testPic.draw(velocity = _velocity, shutterAbsolute = True) if not _ESTIMATEONLY else print(datetime.timedelta(seconds = testPic.estimateTime(velocity = _velocity)))
+    testPic.draw(velocity = _velocity, shutterAbsolute = True, shutter_channel = shutterpowerranger.Servo.RIGHTCH) if not _ESTIMATEONLY else print(datetime.timedelta(seconds = testPic.estimateTime(velocity = _velocity)))
 
 # OSCAR
 elif _MODE == "OSCAR":
