@@ -48,8 +48,8 @@ class Stage():
 
 		# Set xlim and ylim to be 2 identical value for it to automatically find the range (USE WITH CAUTION)
 
-		self.xlim = [-10000, 0]
-		self.ylim = [-10000, 0]
+		self.xlim = [-20000, 0]
+		self.ylim = [-20000, 0]
 		self.x    = 0
 		self.y    = 0
 
@@ -77,7 +77,7 @@ class Stage():
 		self.y = y
 
 class Micos():
-	def __init__(self, stageConfig = None, noCtrlCHandler = False, unit = "um", noHome = False, shutterAbsolute = False, GUI_Object = None, devMode = False):
+	def __init__(self, stageConfig = None, noCtrlCHandler = False, unit = "um", noHome = False, shutterAbsolute = False, GUI_Object = None, devMode = False, shutter_channel = shutterpowerranger.Servo.LEFTCH):
 		# stageConfig can be a dictionary or a json filename
 		# See self.help for documentation
 
@@ -137,7 +137,7 @@ class Micos():
 			warnings.warn("devmode -- No serial device will be used")
 
 		if not noCtrlCHandler: self.startInterruptHandler()
-		self.shutter = shutterpowerranger.Shutter(absoluteMode = shutterAbsolute, GUI_Object = GUI_Object)
+		self.shutter = shutterpowerranger.Shutter(absoluteMode = shutterAbsolute, GUI_Object = GUI_Object, channel = shutter_channel)
 		self.shutter.close()
 
 		# BEGIN INITIALIZATION
@@ -328,11 +328,20 @@ class Micos():
 
 	def waitClear(self):
 		# we wait until all commands are done running and the stack is empty
+		timeoutCount = 0
+		timeoutLimit = 10
 		while True:
 			x = self.getStatus(0)
 			if x is not None and x == 0:
 				# print(x, " X is not None")
 				break
+
+			if x is None:
+				timeoutCount += 1
+				if timeoutCount >= timeoutLimit:
+					raise RuntimeError("waitClear timed out, this should not happen. Did you switch on the microcontroller?")
+
+				# We try again but quit if 2nd time still none
 
 			print("Waiting for stack to clear...", end="\r")
 			time.sleep(0.1)
@@ -460,7 +469,7 @@ class Micos():
 		distance = math.sqrt(x**2 + y**2) if (x and y) else abs(x + y)
 		time_req = distance / velocity
 
-		# time_req *= 1.0
+		time_req *= 1.1 # We wait 10% longer
 
 		return time_req
 

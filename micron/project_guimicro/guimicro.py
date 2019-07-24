@@ -31,6 +31,7 @@ import signal
 
 sys.path.insert(0, '../')
 import stagecontrol
+import shutterpowerranger
 
 class MicroGui(QtWidgets.QMainWindow):
     def __init__(self, devMode = False):
@@ -195,7 +196,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
                 else:
                     try:
-                        self.stageControl = stagecontrol.StageControl(noCtrlCHandler = True, GUI_Object = self)
+                        self.stageControl = stagecontrol.StageControl(noCtrlCHandler = True, GUI_Object = self, shutter_channel = shutterpowerranger.Servo.RIGHTCH)
                     except RuntimeError as e:
                         initWindow.close()
                         msgBox = QtWidgets.QMessageBox()
@@ -449,7 +450,7 @@ class MicroGui(QtWidgets.QMainWindow):
     def create_array_raster(self, widget):
         _array_raster_layout = QtWidgets.QGridLayout()
 
-        # _array_raster_layout.addWidget(QtWidgets.QLabel("Array Raster Layout"))
+        _array_raster_layout.addWidget(QtWidgets.QLabel("Array Raster Layout"))
 
         # Velocities, comma separated
         # Size
@@ -464,7 +465,7 @@ class MicroGui(QtWidgets.QMainWindow):
 		# 	"step": 1								# If set to xy, step is not necessary
 		# }
 
-        _
+        # _
 
         return _array_raster_layout
 
