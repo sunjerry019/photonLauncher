@@ -469,7 +469,7 @@ class Micos():
 		distance = math.sqrt(x**2 + y**2) if (x and y) else abs(x + y)
 		time_req = distance / velocity
 
-		time_req *= 1.1 # We wait 10% longer
+		# time_req *= 1.1 # We wait 10% longer
 
 		return time_req
 
