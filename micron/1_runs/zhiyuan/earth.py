@@ -11,10 +11,10 @@ import shutterpowerranger
 
 import datetime
 
-_velocity = 50
+_velocity = 50 # RUDOLPH = 50
 _MODE = "RUDOLPH"
 # _FILENAME = "./split/robinson-cropped-2.bmp"
-_FILENAME = "robinson_big.bmp"
+_FILENAME = "robinson.bmp"
 # done
 # 0, 1,3
 # _FILENAME = "./split_big/robinson_big2-3.bmp" #"Australia-NewGuinea.bmp" # , #"robinson_big.bmp", #
@@ -28,9 +28,9 @@ if _MODE == "RUDOLPH":
         filename = _FILENAME,
         allowDiagonals = True,
         prioritizeLeft = True,
-        simulateDrawing = True,
+        # simulateDrawing = True,
         # simulate = True,
-        micronInstance = False # We only want to simulate drawing
+        # micronInstance = False # We only want to simulate drawing
     )
 
     testPic.convert()
@@ -45,7 +45,8 @@ elif _MODE == "OSCAR":
         prioritizeLeft = True,
         flipVertically = True,
         yscale = 0.5,
-        xscale = 0.5
+        xscale = 0.5,
+        # simulateDrawing = True
     )
 
     if not _ESTIMATEONLY:
@@ -55,7 +56,8 @@ elif _MODE == "OSCAR":
                 "ylim" : [-10000,0],
             },
             noHome = True,
-            shutterAbsolute = True
+            shutterAbsolute = True,
+            shutter_channel = shutterpowerranger.Servo.RIGHTCH
         )
 
         testPic.controller.setvel(1000)
