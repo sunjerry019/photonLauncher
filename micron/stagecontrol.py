@@ -259,15 +259,15 @@ class StageControl():
 				speed = (inivel + a * yspeedinterval) + xspeedinterval * (b % ncol)
 				powa = inipower
 
-			if xcombo == True && ycombo == False:
+			elif xcombo == True && ycombo == False:
 				speed = inivel + xspeedinterval * (b % ncol)
 				powa = inipower + ypowerinterval * a
 
-			if xcombo == False && ycombo == False:
+			elif xcombo == False && ycombo == False:
 				speed = inivel
 				powa = (inivel + a * ypowerinterval) + xpowerinterval * (b % ncol)
 
-			if xcombo == False && ycombo == True:
+			elif xcombo == False && ycombo == True:
 				speed = inivel + yspeedinterval * a
 				powa = inipower + xpowerinterval * (b % ncol)
 
