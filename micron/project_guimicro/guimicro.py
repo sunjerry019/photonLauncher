@@ -162,9 +162,9 @@ class MicroGui(QtWidgets.QMainWindow):
         statusLabel.setMaximumWidth(250)
 
         topLabel = QtWidgets.QLabel("--- INITIALIZING STAGECONTROL---")
-        topLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        topLabel.setAlignment(QtCore.Qt.AlignCenter)
         bottomLabel = QtWidgets.QLabel("-- PLEASE WAIT AND DO NOT CLOSE --")
-        bottomLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        bottomLabel.setAlignment(QtCore.Qt.AlignCenter)
 
         lineC = QtWidgets.QFrame()
         lineC.setFrameShape(QtWidgets.QFrame.Shape.HLine);
@@ -353,7 +353,7 @@ class MicroGui(QtWidgets.QMainWindow):
         self._close_shutter = QtWidgets.QPushButton("Close")
 
         self._shutter_state.setStyleSheet("QLabel { background-color: #DF2928; }")
-        self._shutter_state.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self._shutter_state.setAlignment(QtCore.Qt.AlignCenter)
 
         _shutter_layout.addWidget(self._shutter_label)
         _shutter_layout.addWidget(self._shutter_state)
@@ -372,8 +372,8 @@ class MicroGui(QtWidgets.QMainWindow):
         # LCDS
         _lcdx_label = QtWidgets.QLabel("Current X")
         _lcdy_label = QtWidgets.QLabel("Current Y")
-        _lcdx_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        _lcdy_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        _lcdx_label.setAlignment(QtCore.Qt.AlignCenter)
+        _lcdy_label.setAlignment(QtCore.Qt.AlignCenter)
         _lcdx_label.setMaximumHeight(20)
         _lcdy_label.setMaximumHeight(20)
 
