@@ -395,7 +395,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
         # SETTINGS AND PARAMS
         _velocity_label = QtWidgets.QLabel("Velocity ({}m/s)".format(self.MICROSYMBOL))
-        _velocity_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
+        _velocity_label.setAlignment(QtCore.Qt.AlignRight)
         _step_size_label = QtWidgets.QLabel("Step size ({}m)".format(self.MICROSYMBOL))
 
         self._SL_velocity = QtWidgets.QLineEdit()
