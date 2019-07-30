@@ -209,72 +209,73 @@ class StageControl():
 	# overpowered, omni-potent rastering solution for both laser power and velocity
 	def arrayraster(self, xDist, yDist, xGap, yGap, rasterSettings, nrow, ncol, inipower, finxpower, finypower, inivel, finxvel, finyvel, returnToOrigin = False):
 
-		# cutting in rows
-		xstepvel = abs(finxvel - inivel) / nrow
-		xsteppower = abs(finxpower - inipower) / nrow
-		ystepvel = abs(finyvel - inivel) / ncol
-		ysteppower = abs(finypower - inipower) / ncol
-
-		for c in range(0, ncol):
-			inivel += ystepvel * c
-			inipower += ysteppower * c
-			if c < (ncol - 1):
-				for r in range(0, nrow):
-					#TODO! row power incremental adjustments
-					if r < (nrow - 1):
-						self.singleraster(inivel + xstepvel * r, xDist, yDist, rasterSettings, returnToOrigin)
-						self.controller.rmove(x = -xGap * self.noinvertx, y = 0)
-					else:
-						self.singleraster(inivel + xstepvel * r, xDist, yDist, rasterSettings, returnToOrigin)
-
-				self.controller.rmove(y = -yGap * self.noinverty, x = 0)
-			else:
-				for r in range(0, nrow):
-					if r < (nrow - 1):
-						self.singleraster(inivel + xstepvel * r, xDist, yDist, rasterSettings, returnToOrigin)
-						self.controller.rmove(x = -xGap * self.noinvertx, y = 0)
-					else:
-						self.singleraster(inivel + xstepvel * r, xDist, yDist, rasterSettings, returnToOrigin)
-
-
-		#TODO! column power incremental adjustments
-		#TODO! Estimate time
-
-		# building parameter mother-of-all-lists to parse through when cutting every individual raster. Raster array will be numbered left to right top to bottom
-		# info structure: <primary list> <raster1> (initial position tuple1), [velocity, power]</raster1> <raster2> (initial position tuple2), [velocity, power]</raster2> .... </primary list>
-
-		xone = self.controller.stage.x
-		yone = self.controller.stage.y
-
-		squaren = []
-		a = 0
-		for b in range(1, ncol * nrow + 1):
-			a += 1 if b % ncol == 0
-			axe = xone + (b % ncol) * (xDist + xGap)
-			why = yone + a * (yDist + yGap)
-
-			# gui combobox setting: velocity is True, power is False
-			if xcombo == True && ycombo == True:
-				speed = (inivel + a * yspeedinterval) + xspeedinterval * (b % ncol)
-				powa = inipower
-
-			elif xcombo == True && ycombo == False:
-				speed = inivel + xspeedinterval * (b % ncol)
-				powa = inipower + ypowerinterval * a
-
-			elif xcombo == False && ycombo == False:
-				speed = inivel
-				powa = (inivel + a * ypowerinterval) + xpowerinterval * (b % ncol)
-
-			elif xcombo == False && ycombo == True:
-				speed = inivel + yspeedinterval * a
-				powa = inipower + xpowerinterval * (b % ncol)
-
-			startpos = (axe , why)
-			speedpowa = [speed, powa]
-			squaren.append(startpos)
-			squaren.append(speedpowea)
-			moal.append(squaren)
+		# # cutting in rows
+		# xstepvel = abs(finxvel - inivel) / nrow
+		# xsteppower = abs(finxpower - inipower) / nrow
+		# ystepvel = abs(finyvel - inivel) / ncol
+		# ysteppower = abs(finypower - inipower) / ncol
+		#
+		# for c in range(0, ncol):
+		# 	inivel += ystepvel * c
+		# 	inipower += ysteppower * c
+		# 	if c < (ncol - 1):
+		# 		for r in range(0, nrow):
+		# 			#TODO! row power incremental adjustments
+		# 			if r < (nrow - 1):
+		# 				self.singleraster(inivel + xstepvel * r, xDist, yDist, rasterSettings, returnToOrigin)
+		# 				self.controller.rmove(x = -xGap * self.noinvertx, y = 0)
+		# 			else:
+		# 				self.singleraster(inivel + xstepvel * r, xDist, yDist, rasterSettings, returnToOrigin)
+		#
+		# 		self.controller.rmove(y = -yGap * self.noinverty, x = 0)
+		# 	else:
+		# 		for r in range(0, nrow):
+		# 			if r < (nrow - 1):
+		# 				self.singleraster(inivel + xstepvel * r, xDist, yDist, rasterSettings, returnToOrigin)
+		# 				self.controller.rmove(x = -xGap * self.noinvertx, y = 0)
+		# 			else:
+		# 				self.singleraster(inivel + xstepvel * r, xDist, yDist, rasterSettings, returnToOrigin)
+		#
+		#
+		# #TODO! column power incremental adjustments
+		# #TODO! Estimate time
+		#
+		# # building parameter mother-of-all-lists to parse through when cutting every individual raster. Raster array will be numbered left to right top to bottom
+		# # info structure: <primary list> <raster1> (initial position tuple1), [velocity, power]</raster1> <raster2> (initial position tuple2), [velocity, power]</raster2> .... </primary list>
+		#
+		# xone = self.controller.stage.x
+		# yone = self.controller.stage.y
+		#
+		# squaren = []
+		# a = 0
+		# for b in range(1, ncol * nrow + 1):
+		# 	a += 1 if b % ncol == 0
+		# 	axe = xone + (b % ncol) * (xDist + xGap)
+		# 	why = yone + a * (yDist + yGap)
+		#
+		# 	# gui combobox setting: velocity is True, power is False
+		# 	if xcombo == True && ycombo == True:
+		# 		speed = (inivel + a * yspeedinterval) + xspeedinterval * (b % ncol)
+		# 		powa = inipower
+		#
+		# 	elif xcombo == True && ycombo == False:
+		# 		speed = inivel + xspeedinterval * (b % ncol)
+		# 		powa = inipower + ypowerinterval * a
+		#
+		# 	elif xcombo == False && ycombo == False:
+		# 		speed = inivel
+		# 		powa = (inivel + a * ypowerinterval) + xpowerinterval * (b % ncol)
+		#
+		# 	elif xcombo == False && ycombo == True:
+		# 		speed = inivel + yspeedinterval * a
+		# 		powa = inipower + xpowerinterval * (b % ncol)
+		#
+		# 	startpos = (axe , why)
+		# 	speedpowa = [speed, powa]
+		# 	squaren.append(startpos)
+		# 	squaren.append(speedpowea)
+		# 	moal.append(squaren)
+		pass
 
 
 
