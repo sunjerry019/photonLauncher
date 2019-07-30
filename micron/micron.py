@@ -147,7 +147,12 @@ class Micos():
 		self.homed = False
 
 		if noHome:
-			warnings.warn("Stage will not be homed. Proceed with caution.", RuntimeWarning)
+			xl = abs(self.stage.xlim[1] - self.stage.xlim[0])
+			yl = abs(self.stage.ylim[1] - self.stage.ylim[0])
+
+			self.stage.setpos(x = -xl/2, y = -yl/2)
+
+			warnings.warn("Stage will not be homed. Proceed with caution., set to (-{}, -{})".format(xl/2, yl/2), RuntimeWarning)
 		else:
 			print("Homing stage")
 			self.homeStage()

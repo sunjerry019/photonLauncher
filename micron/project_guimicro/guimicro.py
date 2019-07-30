@@ -34,12 +34,14 @@ import stagecontrol
 import shutterpowerranger
 
 class MicroGui(QtWidgets.QMainWindow):
-    def __init__(self, devMode = False):
+    def __init__(self, devMode = False, noHome = False):
         super().__init__()
 
         self.micronInitialized = False
         self.currentStatus = ""
         self.devMode = devMode
+
+        self.noHome = noHome
 
         # symboldefs
         self.MICROSYMBOL = u"\u00B5"
@@ -196,7 +198,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
                 else:
                     try:
-                        self.stageControl = stagecontrol.StageControl(noCtrlCHandler = True, GUI_Object = self, shutter_channel = shutterpowerranger.Servo.RIGHTCH)
+                        self.stageControl = stagecontrol.StageControl(noCtrlCHandler = True, GUI_Object = self, shutter_channel = shutterpowerranger.Servo.RIGHTCH, noHome = self.noHome)
                     except RuntimeError as e:
                         initWindow.close()
                         msgBox = QtWidgets.QMessageBox()
@@ -448,6 +450,17 @@ class MicroGui(QtWidgets.QMainWindow):
 # third layout
     @make_widget_from_layout
     def create_array_raster(self, widget):
+        # Widget defs
+
+        # AR_initial_settings
+        # self.AR_initial_settings = QtWidgets.QGroupBox("Initial Values")
+        # self.AR_initial_settings_layout = QtWidgets.QVBoxLayout()
+        #
+        # self.AR_initial_settings.setLayout(self.AR_initial_settings_layout)
+        # / AR_initial_settings
+
+
+        # Create Layout to add widgets
         _array_raster_layout = QtWidgets.QGridLayout()
 
         _array_raster_layout.addWidget(QtWidgets.QLabel("Array Raster Layout"))
@@ -482,6 +495,8 @@ class MicroGui(QtWidgets.QMainWindow):
 
     def initEventListeners(self):
         self.UP, self.RIGHT, self.DOWN, self.LEFT = (0, 1), (1, 0), (0, -1), (-1, 0)
+
+        self.cardinalStageMoving = False
 
         self._upArrow.clicked.connect(lambda: self.cardinalMoveStage(self.UP))
         self._downArrow.clicked.connect(lambda: self.cardinalMoveStage(self.DOWN))
@@ -583,12 +598,17 @@ class MicroGui(QtWidgets.QMainWindow):
             _mag = math.sqrt(dir[0]**2 + dir[1]**2)
             dir = dir[0] / _mag , dir[1] / _mag
 
-        if self.stageControl.controller.velocity != velocity:
-            # We reset the velocity if it is different
-            self.stageControl.controller.setvel(velocity)
+        if not self.cardinalStageMoving:
+            self.cardinalStageMoving = True
 
-        self.stageControl.controller.rmove(x = dir[0] * distance, y = dir[1] * distance)
-        self.updatePositionDisplay()
+            if self.stageControl.controller.velocity != velocity:
+                # We reset the velocity if it is different
+                self.stageControl.controller.setvel(velocity)
+
+            self.stageControl.controller.rmove(x = dir[0] * distance, y = dir[1] * distance)
+            self.updatePositionDisplay()
+
+            self.cardinalStageMoving = False
 
     def updatePositionDisplay(self):
         if self.stageControl is not None:
@@ -633,6 +653,7 @@ def main(**kwargs):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--devMode', help="Use DevMode so that StageControl is not initialized", action='store_true')
+    parser.add_argument('-H', '--noHome', help="Stage will not be homed", action='store_true')
     args = parser.parse_args()
 
-    main(devMode = args.devMode)
+    main(devMode = args.devMode, noHome = args.noHome)

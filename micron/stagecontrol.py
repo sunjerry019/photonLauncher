@@ -246,13 +246,12 @@ class StageControl():
 		xone = self.controller.stage.x
 		yone = self.controller.stage.y
 
-		moal = []
 		squaren = []
 		a = 0
 		for b in range(1, ncol * nrow + 1):
 			a += 1 if b % ncol == 0
-			axe = self.controller.stage.x + (b % ncol) * (xDist + xGap)
-			why = self.controller.stage.y + a * (yDist + yGap)
+			axe = xone + (b % ncol) * (xDist + xGap)
+			why = yone + a * (yDist + yGap)
 
 			# gui combobox setting: velocity is True, power is False
 			if xcombo == True && ycombo == True:
@@ -275,7 +274,7 @@ class StageControl():
 			speedpowa = [speed, powa]
 			squaren.append(startpos)
 			squaren.append(speedpowea)
-
+			moal.append(squaren)
 
 
 
