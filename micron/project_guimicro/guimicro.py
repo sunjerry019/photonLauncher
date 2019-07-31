@@ -114,6 +114,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
         self.initializeDevice()
         self.initEventListeners()
+        self.recalculateARValues()
 
         # Set to the last menu item
         self.showPage(self.main_widget.count() - 1)
@@ -133,8 +134,8 @@ class MicroGui(QtWidgets.QMainWindow):
         self.setOperationStatus("^C Detected: Aborting the FIFO stack. Shutter will be closed as part of the aborting process.")
 
         if not self.devMode:
-            self.stageControl.controller.abort()
             self.StageControl.controller.shutter.close()
+            self.stageControl.controller.abort()
 
             # Some code here to detect printing/array state
 
@@ -400,12 +401,12 @@ class MicroGui(QtWidgets.QMainWindow):
 
         self._SL_velocity = QtWidgets.QLineEdit()
         self._SL_velocity.setText('100')
-        self._SL_velocity.setValidator(QtGui.QIntValidator(0,10000))
+        self._SL_velocity.setValidator(QtGui.QDoubleValidator(0,10000, 12))
         # _velocity.setFont(QtGui.QFont("Arial",20))
 
         self._step_size = QtWidgets.QLineEdit()
         self._step_size.setText('10')
-        self._step_size.setValidator(QtGui.QIntValidator(0.5,1000))
+        self._step_size.setValidator(QtGui.QDoubleValidator(0.5,10000, 12))
         # _step_size.setFont(QtGui.QFont("Arial",20))
 
         # Create the layout with the child elements
@@ -450,20 +451,200 @@ class MicroGui(QtWidgets.QMainWindow):
 # third layout
     @make_widget_from_layout
     def create_array_raster(self, widget):
-        # Widget defs
+        # https://doc.qt.io/archives/qtjambi-4.5.2_01/com/trolltech/qt/core/Qt.AlignmentFlag.html
+
+        # Widget Defs
 
         # AR_initial_settings
-        # self.AR_initial_settings = QtWidgets.QGroupBox("Initial Values")
-        # self.AR_initial_settings_layout = QtWidgets.QVBoxLayout()
-        #
-        # self.AR_initial_settings.setLayout(self.AR_initial_settings_layout)
+        _AR_initial_settings = QtWidgets.QGroupBox("Initial Values")
+        _AR_initial_settings_layout = QtWidgets.QGridLayout()
+
+        _AR_init_vel_label = QtWidgets.QLabel("Velocity ({}m/s)".format(self.MICROSYMBOL))
+        _AR_init_vel_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        _AR_init_pow_label = QtWidgets.QLabel("Power (steps)")
+        _AR_init_pow_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+
+        self._AR_init_velocity = QtWidgets.QLineEdit()
+        self._AR_init_velocity.setText('100')
+        self._AR_init_velocity.setValidator(QtGui.QDoubleValidator(0,10000, 12))
+
+        self._AR_init_power = QtWidgets.QLineEdit()
+        self._AR_init_power.setText('0')
+        # TODO: VALIDATOR
+        # self._AR_init_power.setValidator(QtGui.QIntValidator(-1,10000))
+
+        _AR_initial_settings_layout.addWidget(_AR_init_vel_label, 0, 0)
+        _AR_initial_settings_layout.addWidget(_AR_init_pow_label, 1, 0)
+        _AR_initial_settings_layout.addWidget(self._AR_init_velocity, 0, 1)
+        _AR_initial_settings_layout.addWidget(self._AR_init_power, 1, 1)
+
+        _AR_initial_settings.setLayout(_AR_initial_settings_layout)
         # / AR_initial_settings
 
+        # AR_X_final_settings
+        self._AR_X_final_settings = QtWidgets.QGroupBox("Calculated Final Values")
+        _AR_X_final_settings_layout = QtWidgets.QGridLayout()
+
+        _AR_X_final_vel_label = QtWidgets.QLabel("Velocity ({}m/s)".format(self.MICROSYMBOL))
+        _AR_X_final_vel_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+
+        _AR_X_final_pow_label = QtWidgets.QLabel("Power (steps)")
+        _AR_X_final_pow_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+
+        self._AR_X_final_velocity = QtWidgets.QLabel("0")
+        self._AR_X_final_power = QtWidgets.QLabel("0")
+        self._AR_X_final_velocity.setAlignment(QtCore.Qt.AlignVCenter)
+        self._AR_X_final_power.setAlignment(QtCore.Qt.AlignVCenter)
+
+        _AR_X_final_settings_layout.addWidget(_AR_X_final_vel_label, 0, 0)
+        _AR_X_final_settings_layout.addWidget(_AR_X_final_pow_label, 1, 0)
+        _AR_X_final_settings_layout.addWidget(self._AR_X_final_velocity, 0, 1)
+        _AR_X_final_settings_layout.addWidget(self._AR_X_final_power, 1, 1)
+
+        self._AR_X_final_settings.setLayout(_AR_X_final_settings_layout)
+        # / AR_X_final_settings
+
+        # AR_Y_final_settings
+        self._AR_Y_final_settings = QtWidgets.QGroupBox("Calculated Final Values")
+        _AR_Y_final_settings_layout = QtWidgets.QGridLayout()
+
+        _AR_Y_final_vel_label = QtWidgets.QLabel("Velocity ({}m/s)".format(self.MICROSYMBOL))
+        _AR_Y_final_vel_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+
+        _AR_Y_final_pow_label = QtWidgets.QLabel("Power (steps)")
+        _AR_Y_final_pow_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+
+        self._AR_Y_final_velocity = QtWidgets.QLabel("0")
+        self._AR_Y_final_power = QtWidgets.QLabel("0")
+        self._AR_Y_final_velocity.setAlignment(QtCore.Qt.AlignVCenter)
+        self._AR_Y_final_power.setAlignment(QtCore.Qt.AlignVCenter)
+
+        _AR_Y_final_settings_layout.addWidget(_AR_Y_final_vel_label, 0, 0)
+        _AR_Y_final_settings_layout.addWidget(_AR_Y_final_pow_label, 1, 0)
+        _AR_Y_final_settings_layout.addWidget(self._AR_Y_final_velocity, 0, 1)
+        _AR_Y_final_settings_layout.addWidget(self._AR_Y_final_power, 1, 1)
+
+        self._AR_Y_final_settings.setLayout(_AR_Y_final_settings_layout)
+        # / AR_Y_final_settings
+
+        # X Interval
+        _AR_X_interval_settings = QtWidgets.QGroupBox("Horizontal Settings")
+        _AR_X_interval_settings_layout = QtWidgets.QGridLayout()
+
+        self._AR_X_mode = QtWidgets.QComboBox()
+        self._AR_X_mode.addItem("Velocity")
+        self._AR_X_mode.addItem("Power")
+
+        _AR_cols_label = QtWidgets.QLabel("Cols")
+        _AR_cols_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self._AR_cols = QtWidgets.QLineEdit()
+        self._AR_cols.setText("1")
+        self._AR_cols.setValidator(QtGui.QIntValidator(1,10000))
+
+        _AR_X_intervals_label = QtWidgets.QLabel("Increment")
+        _AR_X_intervals_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self._AR_X_intervals = QtWidgets.QLineEdit()
+        self._AR_X_intervals.setText("10")
+        self._AR_X_intervals.setValidator(QtGui.QDoubleValidator(-10000,10000,12))
+
+        _AR_X_spacing_label = QtWidgets.QLabel("Spacing")
+        _AR_X_spacing_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self._AR_X_spacing = QtWidgets.QLineEdit()
+        self._AR_X_spacing.setText("10")
+        self._AR_X_spacing.setValidator(QtGui.QDoubleValidator(1,10000,12))
+
+        _AR_X_interval_settings_layout.addWidget(self._AR_X_mode, 0, 0, 1, 2)
+        _AR_X_interval_settings_layout.addWidget(_AR_X_intervals_label, 0, 2)
+        _AR_X_interval_settings_layout.addWidget(self._AR_X_intervals, 0, 3)
+        _AR_X_interval_settings_layout.addWidget(_AR_cols_label, 1, 0)
+        _AR_X_interval_settings_layout.addWidget(self._AR_cols, 1, 1)
+        _AR_X_interval_settings_layout.addWidget(_AR_X_spacing_label, 1, 2)
+        _AR_X_interval_settings_layout.addWidget(self._AR_X_spacing, 1, 3)
+
+        _AR_X_interval_settings.setLayout(_AR_X_interval_settings_layout)
+        # / X Interval
+
+        # Y Interval
+        _AR_Y_interval_settings = QtWidgets.QGroupBox("Vertical Settings")
+        _AR_Y_interval_settings_layout = QtWidgets.QGridLayout()
+
+        self._AR_Y_mode = QtWidgets.QComboBox()
+        self._AR_Y_mode.addItem("Velocity")
+        self._AR_Y_mode.addItem("Power")
+
+        _AR_rows_label = QtWidgets.QLabel("Rows")
+        _AR_rows_label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignBottom)
+        self._AR_rows = QtWidgets.QLineEdit()
+        self._AR_rows.setText("1")
+        self._AR_rows.setValidator(QtGui.QIntValidator(1,10000))
+
+        _AR_Y_intervals_label = QtWidgets.QLabel("Increment")
+        _AR_Y_intervals_label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignBottom)
+        self._AR_Y_intervals = QtWidgets.QLineEdit()
+        self._AR_Y_intervals.setText("10")
+        self._AR_Y_intervals.setValidator(QtGui.QDoubleValidator(-10000,10000,12))
+
+        _AR_Y_spacing_label = QtWidgets.QLabel("Spacing")
+        _AR_Y_spacing_label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignBottom)
+        self._AR_Y_spacing = QtWidgets.QLineEdit()
+        self._AR_Y_spacing.setText("10")
+        self._AR_Y_spacing.setValidator(QtGui.QDoubleValidator(1,10000,12))
+
+        _AR_Y_interval_settings_layout.addWidget(self._AR_Y_mode, 0, 0, 2, 1)
+        _AR_Y_interval_settings_layout.addWidget(_AR_Y_intervals_label, 0, 1)
+        _AR_Y_interval_settings_layout.addWidget(self._AR_Y_intervals, 1, 1)
+        _AR_Y_interval_settings_layout.addWidget(_AR_rows_label, 2, 0)
+        _AR_Y_interval_settings_layout.addWidget(self._AR_rows, 3, 0)
+        _AR_Y_interval_settings_layout.addWidget(_AR_Y_spacing_label, 2, 1)
+        _AR_Y_interval_settings_layout.addWidget(self._AR_Y_spacing, 3, 1)
+
+        _AR_Y_interval_settings.setLayout(_AR_Y_interval_settings_layout)
+        # / Y Interval
+
+        # AR_XY_final_settings
+        self._AR_XY_final_settings = QtWidgets.QGroupBox("Calculated Final Values")
+        _AR_XY_final_settings_layout = QtWidgets.QGridLayout()
+
+        _AR_XY_final_vel_label = QtWidgets.QLabel("Velocity ({}m/s)".format(self.MICROSYMBOL))
+        _AR_XY_final_vel_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+
+        _AR_XY_final_pow_label = QtWidgets.QLabel("Power (steps)")
+        _AR_XY_final_pow_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+
+        self._AR_XY_final_velocity = QtWidgets.QLabel("0")
+        self._AR_XY_final_power = QtWidgets.QLabel("0")
+        self._AR_XY_final_velocity.setAlignment(QtCore.Qt.AlignVCenter)
+        self._AR_XY_final_power.setAlignment(QtCore.Qt.AlignVCenter)
+
+        _AR_XY_final_settings_layout.addWidget(_AR_XY_final_vel_label, 0, 0)
+        _AR_XY_final_settings_layout.addWidget(_AR_XY_final_pow_label, 1, 0)
+        _AR_XY_final_settings_layout.addWidget(self._AR_XY_final_velocity, 0, 1)
+        _AR_XY_final_settings_layout.addWidget(self._AR_XY_final_power, 1, 1)
+
+        self._AR_XY_final_settings.setLayout(_AR_XY_final_settings_layout)
+        # / AR_XY_final_settings
+
+        # void QGridLayout::addWidget(QWidget *widget, int row, int column, Qt::Alignment alignment = Qt::Alignment())
+        # void QGridLayout::addWidget(QWidget *widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = Qt::Alignment())
 
         # Create Layout to add widgets
+        _AR_numrows = 3
+        _AR_numcols = 4
         _array_raster_layout = QtWidgets.QGridLayout()
+        # Add widgets at position
+        _array_raster_layout.addWidget(_AR_initial_settings, 0, 0)
+        _array_raster_layout.addWidget(self._AR_X_final_settings, 0, 3)
+        _array_raster_layout.addWidget(_AR_X_interval_settings, 0, 1, 1, 2)
+        _array_raster_layout.addWidget(self._AR_Y_final_settings, 2, 0)
+        _array_raster_layout.addWidget(_AR_Y_interval_settings, 1, 0)
+        _array_raster_layout.addWidget(self._AR_XY_final_settings, 2, 3)
 
-        _array_raster_layout.addWidget(QtWidgets.QLabel("Array Raster Layout"))
+        # To ensure each row and column is the same width
+        # https://stackoverflow.com/a/40154349/3211506
+        for i in range(_AR_numrows):
+            _array_raster_layout.setRowStretch(i, 1)
+            for j in range(_AR_numcols):
+                _array_raster_layout.setColumnStretch(j, 1);
 
         # Velocities, comma separated
         # Size
@@ -494,6 +675,8 @@ class MicroGui(QtWidgets.QMainWindow):
 # INTERACTION FUNCTONS
 
     def initEventListeners(self):
+
+        # STAGE
         self.UP, self.RIGHT, self.DOWN, self.LEFT = (0, 1), (1, 0), (0, -1), (-1, 0)
 
         self.cardinalStageMoving = False
@@ -517,11 +700,21 @@ class MicroGui(QtWidgets.QMainWindow):
         self.stage_widget.installEventFilter(self)
         self.installEventFilter(self)
 
-        # Shutter
+        # ARRAY RASTER
+        self._AR_init_velocity.textChanged.connect(lambda: self.recalculateARValues())
+        self._AR_init_power.textChanged.connect(lambda: self.recalculateARValues())
+        self._AR_X_mode.currentIndexChanged.connect(lambda: self.recalculateARValues())
+        self._AR_cols.textChanged.connect(lambda: self.recalculateARValues())
+        self._AR_X_intervals.textChanged.connect(lambda: self.recalculateARValues())
+        self._AR_X_spacing.textChanged.connect(lambda: self.recalculateARValues())
+        self._AR_Y_mode.currentIndexChanged.connect(lambda: self.recalculateARValues())
+        self._AR_rows.textChanged.connect(lambda: self.recalculateARValues())
+        self._AR_Y_intervals.textChanged.connect(lambda: self.recalculateARValues())
+        self._AR_Y_spacing.textChanged.connect(lambda: self.recalculateARValues())
+
+        # SHUTTER
         self._close_shutter.clicked.connect(lambda: self.stageControl.controller.shutter.close())
         self._open_shutter.clicked.connect(lambda: self.stageControl.controller.shutter.open())
-
-
 
     # keyPressEvent(self, evt)
 
@@ -615,12 +808,73 @@ class MicroGui(QtWidgets.QMainWindow):
             self._lcdx.display(self.stageControl.controller.stage.x)
             self._lcdy.display(self.stageControl.controller.stage.y)
 
+    def recalculateARValues(self):
+        try:
+            # Recalculate the values for Array Raster
+            vel_0 = float(self._AR_init_velocity.text())
+            pow_0 = float(self._AR_init_power.text())
+
+            # 0 = Velocity, 1 = Power
+            x_isPow = self._AR_X_mode.currentIndex()
+            x_incr = float(self._AR_X_intervals.text())
+            x_cols = float(self._AR_cols.text())
+
+            y_isPow = self._AR_Y_mode.currentIndex()
+            y_incr = float(self._AR_Y_intervals.text())
+            y_rows = float(self._AR_rows.text())
+
+            # Horizontal
+            vel_x_f = vel_0 + (x_cols - 1) * x_incr if not x_isPow else vel_0
+            pow_x_f = pow_0 + (x_cols - 1) * x_incr if x_isPow else pow_0
+            # Vertical
+            vel_y_f = vel_0 + (y_rows - 1) * y_incr if not y_isPow else vel_0
+            pow_y_f = pow_0 + (y_rows - 1) * y_incr if y_isPow else pow_0
+
+            # Final
+            vel_xy_f = vel_x_f + vel_y_f - vel_0
+            pow_xy_f = pow_x_f + pow_y_f - pow_0
+
+            self._AR_X_final_settings.setStyleSheet("background-color: #DF2928; color: #fff;") if vel_x_f < 0 else self._AR_X_final_settings.setStyleSheet("background-color: none; color: #000;")
+
+            self._AR_Y_final_settings.setStyleSheet("background-color: #DF2928; color: #fff;") if vel_y_f < 0 else self._AR_Y_final_settings.setStyleSheet("background-color: none; color: #000;")
+
+            self._AR_XY_final_settings.setStyleSheet("background-color: #DF2928; color: #fff;") if vel_xy_f < 0 else self._AR_XY_final_settings.setStyleSheet("background-color: none; color: #000;")
+
+
+            self._AR_X_final_velocity.setText(str(vel_x_f))
+            self._AR_Y_final_velocity.setText(str(vel_y_f))
+            self._AR_XY_final_velocity.setText(str(vel_xy_f))
+
+            self._AR_X_final_power.setText(str(pow_x_f))
+            self._AR_Y_final_power.setText(str(pow_y_f))
+            self._AR_XY_final_power.setText(str(pow_xy_f))
+
+        except Exception as e:
+            self.logconsole("{}: {}".format(type(e).__name__, e))
+            self._AR_Y_final_settings.setStyleSheet("background-color: none; color: #000;")
+            self._AR_Y_final_settings.setStyleSheet("background-color: none; color: #000;")
+            self._AR_XY_final_settings.setStyleSheet("background-color: none; color: #000;")
+
+            self._AR_X_final_velocity.setText("-")
+            self._AR_Y_final_velocity.setText("-")
+            self._AR_XY_final_velocity.setText("-")
+
+            self._AR_X_final_power.setText("-")
+            self._AR_Y_final_power.setText("-")
+            self._AR_XY_final_power.setText("-")
+
+        # Check if the values are even valid
+        # Change background if necessary
+
     def setOperationStatus(self, status, printToTerm = True):
         self.currentStatus = status
         if printToTerm:
             print("[{}]".format(datetime.datetime.now().time()), status)
         # Do some updating of the status bar
         self._statusbar_label.setText(status)
+
+    def logconsole(self, status):
+        print("[{}]".format(datetime.datetime.now().time()), status)
 
 # Status Bar
 
