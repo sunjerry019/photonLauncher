@@ -199,12 +199,16 @@ class StageControl():
 			self.controller.shutter.close()
 
 		if returnToOrigin:
+			self.controller.shutter.close()
+
 			# we /could/ use self.controller.move() but I don't really trust it
 			# so...relative move
 			cX, cY = self.controller.stage.x, self.controller.stage.y
+			self.controller.setvel(1000)
 			self.controller.rmove(x = oX - cX, y = oY - cY)
+			self.controller.setvel(velocity)
 
-		self.finish()
+		#self.finish()
 
 	# overpowered, omni-potent rastering solution for both laser power and velocity
 	def arrayraster(self, xDist, yDist, xGap, yGap, rasterSettings, nrow, ncol, inipower, finxpower, finypower, inivel, finxvel, finyvel, returnToOrigin = False):
@@ -249,7 +253,7 @@ class StageControl():
 		# squaren = []
 		# a = 0
 		# for b in range(1, ncol * nrow + 1):
-		# 	a += 1 if b % ncol == 0
+		# 	a += 1 if b % ncol == 0 else pass 
 		# 	axe = xone + (b % ncol) * (xDist + xGap)
 		# 	why = yone + a * (yDist + yGap)
 		#
