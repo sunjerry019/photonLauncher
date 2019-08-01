@@ -149,7 +149,7 @@ class Power(Servo):
                 time.sleep(0.5)
         else:
             for i in range(number):
-                self.absolute(0.079, duration = 200)
+                self.absolute(0.079, duration = 210)
                 self._displacement -= 1
                 time.sleep(0.5)
 
