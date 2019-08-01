@@ -118,40 +118,42 @@ class Shutter(Servo):
         return True
 
 class Power(Servo):
-    ## Power servo functions
+    ## Power servo functions, assume servo is 360 version, non absolute positioning.
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._displacement = 0
 
-    # incremental step scan from one position to another for ND filter rotation control.
-    def scan(self, p1, p2, increment_level):
-        try:
-            if (isinstance(p1, float) and isinstance(p2, float)) or ("." in str(p1) and "." in str(p2)):
-                val1, val2 = float(p1), float(p2) if (isinstance(p1, str) or isinstance(p2, str)) else p1, p2
-                val1, val2 = int(round(val1)), int(round(val2))
-                print(val1, "_", val2, "I rounded to nearest integers!")
-            else:
-                val1, val2 = p1, p2 if (isinstance(p1, int) and isinstance(p2, int)) else int(p1), int(p2)
-                print(val1, "_", val2, "Integers accepted.")
+    @property
+    def displacement(self):
+        return self._displacement
 
-        except ValueError:
-            print("Did you input a NUMBER?")
+    @displacement.setter
+    def displacement(self, displacement):
+        difference = displacement - self._displacement
+        if difference.is_integer():
+            if difference != 0:
+                self.powerstep(abs(difference), direction = (difference > 0))
+        else:
+            # We need difference to be an integer
+            raise RuntimeException("Displacement must be an integer")
 
-        # for ABSOLUTEMODE: as convention, lets take position 0 (0.15 duty) as closed, position 1 - position n as the increments from 180 degrees to 0.
-        if self.absolute == True:
-            if val1 < val2:
-                for i in range(val1,val2+1):
-                    dc = 0.1 - (0.002)*(i-1)
-                    self.absolute(dc)
-                    print("DUTY CYCLE = ", dc)
-            else:
-                for i in range(val1,val2+1):
-                    dc = 0.017 + (0.002)*(i-1)
-                    self.absolute(dc)
-                    print("DUTY CYCLE = ", dc)
+    def powerstep(self, number, direction = True):
+        if not number.is_integer():
+            raise RuntimeException("Displacement must be an integer")
 
-        # for nonABSOLUTE 360 servo:
-        # else:
+        if direction == True:
+            for i in range(number):
+                self.absolute(0.07, duration = 130)
+                self._displacement += 1
+                time.sleep(0.5)
+        else:
+            for i in range(number):
+                self.absolute(0.079, duration = 200)
+                self._displacement -= 1
+                time.sleep(0.5)
+
+
 
 if __name__ == '__main__':
     with Shutter(channel = Servo.LEFTCH, absoluteMode = True) as s:
