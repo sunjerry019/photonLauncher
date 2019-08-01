@@ -4,9 +4,9 @@ import sys
 sys.path.insert(0, "../../")
 
 import stagecontrol
-import shutterpowerranger
+import servos
 
-s = stagecontrol.StageControl(shutter_channel = shutterpowerranger.Servo.RIGHTCH, shutterAbsolute = True, noHome = True)
+s = stagecontrol.StageControl(shutter_channel = servos.Servo.RIGHTCH, shutterAbsolute = True, noHome = True)
 
 velocities = [50]
 size = (30, 30)

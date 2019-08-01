@@ -31,7 +31,7 @@ import signal
 
 sys.path.insert(0, '../')
 import stagecontrol
-import shutterpowerranger
+import servos
 
 class MicroGui(QtWidgets.QMainWindow):
     def __init__(self, devMode = False, noHome = False):
@@ -199,7 +199,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
                 else:
                     try:
-                        self.stageControl = stagecontrol.StageControl(noCtrlCHandler = True, GUI_Object = self, shutter_channel = shutterpowerranger.Servo.RIGHTCH, noHome = self.noHome)
+                        self.stageControl = stagecontrol.StageControl(noCtrlCHandler = True, GUI_Object = self, shutter_channel = servos.Servo.RIGHTCH, noHome = self.noHome)
                     except RuntimeError as e:
                         initWindow.close()
                         msgBox = QtWidgets.QMessageBox()

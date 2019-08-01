@@ -28,7 +28,7 @@ import traceback
 import platform  	# for auto windows/linux detection
 
 # hashtag homemade
-import shutterpowerranger
+import servos
 
 import math
 
@@ -77,7 +77,7 @@ class Stage():
 		self.y = y
 
 class Micos():
-	def __init__(self, stageConfig = None, noCtrlCHandler = False, unit = "um", noHome = False, shutterAbsolute = False, GUI_Object = None, devMode = False, shutter_channel = shutterpowerranger.Servo.LEFTCH):
+	def __init__(self, stageConfig = None, noCtrlCHandler = False, unit = "um", noHome = False, shutterAbsolute = False, GUI_Object = None, devMode = False, shutter_channel = servos.Servo.LEFTCH):
 		# stageConfig can be a dictionary or a json filename
 		# See self.help for documentation
 
@@ -137,7 +137,7 @@ class Micos():
 			warnings.warn("devmode -- No serial device will be used")
 
 		if not noCtrlCHandler: self.startInterruptHandler()
-		self.shutter = shutterpowerranger.Shutter(absoluteMode = shutterAbsolute, GUI_Object = GUI_Object, channel = shutter_channel)
+		self.shutter = servos.Shutter(absoluteMode = shutterAbsolute, GUI_Object = GUI_Object, channel = shutter_channel)
 		self.shutter.close()
 
 		# BEGIN INITIALIZATION

@@ -7,7 +7,7 @@ import sys
 sys.path.insert(0, "../../")
 
 import picConv, micron
-import shutterpowerranger
+import servos
 
 import datetime
 
@@ -35,7 +35,7 @@ if _MODE == "RUDOLPH":
 
     testPic.convert()
     testPic.parseLines()
-    testPic.draw(velocity = _velocity, shutterAbsolute = True, shutter_channel = shutterpowerranger.Servo.RIGHTCH) if not _ESTIMATEONLY else print(datetime.timedelta(seconds = testPic.estimateTime(velocity = _velocity)))
+    testPic.draw(velocity = _velocity, shutterAbsolute = True, shutter_channel = servos.Servo.RIGHTCH) if not _ESTIMATEONLY else print(datetime.timedelta(seconds = testPic.estimateTime(velocity = _velocity)))
 
 # OSCAR
 elif _MODE == "OSCAR":
@@ -57,7 +57,7 @@ elif _MODE == "OSCAR":
             },
             noHome = True,
             shutterAbsolute = True,
-            shutter_channel = shutterpowerranger.Servo.RIGHTCH
+            shutter_channel = servos.Servo.RIGHTCH
         )
 
         testPic.controller.setvel(1000)

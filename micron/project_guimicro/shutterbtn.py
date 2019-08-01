@@ -8,7 +8,7 @@ from PyQt5.QtCore import pyqtSlot
 
 sys.path.insert(0, '../')
 # import stagecontrol
-import shutterpowerranger
+import servos
 
 class Butt(QWidget):
 
@@ -19,7 +19,7 @@ class Butt(QWidget):
         self.top = 10
         self.width = 500
         self.height = 500
-        self.shutter = shutterpowerranger.Shutter(absoluteMode = True, channel = shutterpowerranger.Servo.RIGHTCH)
+        self.shutter = servos.Shutter(absoluteMode = True, channel = servos.Servo.RIGHTCH)
         self.isOpen = False
         self.initUI()
 
