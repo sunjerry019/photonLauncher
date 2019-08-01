@@ -219,7 +219,7 @@ class Micos():
 			self.stage.setpos(self.stage.x + x, self.stage.y + y) # Note this is not Micos.setpos
 			ret = self.send("{} {} r".format(x, y), *args, **kwargs)
 
-			if not noWait:
+			if not self.devMode and not noWait:
 				time_req = self.getDeltaTime(x = x, y = y, velocity = self.velocity)
 
 				print("Sleeping", time_req)

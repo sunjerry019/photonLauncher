@@ -3,4 +3,18 @@ TO TEST: Cardinal move stage
 TODO:
 Save config to some configuration file
 Shutter mode
+Shutter channel
 Invert x and y
+
+getstatus wait time
+
+onchange -> recalculate
+
+add units marker for ALL headings to be clear what the input box is for
+
+change cols and row to total cols total rows
+
+DONE add in input boxes for raster size, step and step direction
+
+Column entry accepts float values when only integer values should be allowed
+arrows

@@ -49,7 +49,7 @@ class MicroGui(QtWidgets.QMainWindow):
         self.initUI()
 
     def initUI(self):
-        self.setGeometry(50, 50, 700, 500) # x, y, w, h
+        self.setGeometry(50, 50, 800, 600) # x, y, w, h
 
         moveToCentre(self)
 
@@ -114,6 +114,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
         self.initializeDevice()
         self.initEventListeners()
+        self.recalculateARValues()
 
         # Set to the last menu item
         self.showPage(self.main_widget.count() - 1)
@@ -133,8 +134,8 @@ class MicroGui(QtWidgets.QMainWindow):
         self.setOperationStatus("^C Detected: Aborting the FIFO stack. Shutter will be closed as part of the aborting process.")
 
         if not self.devMode:
-            self.stageControl.controller.abort()
             self.StageControl.controller.shutter.close()
+            self.stageControl.controller.abort()
 
             # Some code here to detect printing/array state
 
@@ -312,10 +313,10 @@ class MicroGui(QtWidgets.QMainWindow):
     def createModes(self, widget):
         _mode_layout = QtWidgets.QHBoxLayout()
         _modes = [
-            QtWidgets.QPushButton("Draw Picture") ,
-            QtWidgets.QPushButton("Array Raster") ,
-            QtWidgets.QPushButton("Single Raster") ,
-            QtWidgets.QPushButton("Stage Movement")
+            QtWidgets.QPushButton("Draw &Picture") ,
+            QtWidgets.QPushButton("&Array Raster") ,
+            QtWidgets.QPushButton("Single &Raster") ,
+            QtWidgets.QPushButton("&Stage Movement")
         ]
 
         # for i, btn in enumerate(_modes):
@@ -349,8 +350,8 @@ class MicroGui(QtWidgets.QMainWindow):
         # Shutter controls
         self._shutter_label = QtWidgets.QLabel("Shutter Controls")
         self._shutter_state = QtWidgets.QLabel() # Change color
-        self._open_shutter  = QtWidgets.QPushButton("Open")
-        self._close_shutter = QtWidgets.QPushButton("Close")
+        self._open_shutter  = QtWidgets.QPushButton("&Open")
+        self._close_shutter = QtWidgets.QPushButton("&Close")
 
         self._shutter_state.setStyleSheet("QLabel { background-color: #DF2928; }")
         self._shutter_state.setAlignment(QtCore.Qt.AlignCenter)
@@ -400,12 +401,12 @@ class MicroGui(QtWidgets.QMainWindow):
 
         self._SL_velocity = QtWidgets.QLineEdit()
         self._SL_velocity.setText('100')
-        self._SL_velocity.setValidator(QtGui.QIntValidator(0,10000))
+        self._SL_velocity.setValidator(QtGui.QDoubleValidator(0,10000, 12))
         # _velocity.setFont(QtGui.QFont("Arial",20))
 
         self._step_size = QtWidgets.QLineEdit()
         self._step_size.setText('10')
-        self._step_size.setValidator(QtGui.QIntValidator(0.5,1000))
+        self._step_size.setValidator(QtGui.QDoubleValidator(0.5,10000, 12))
         # _step_size.setFont(QtGui.QFont("Arial",20))
 
         # Create the layout with the child elements
@@ -450,35 +451,301 @@ class MicroGui(QtWidgets.QMainWindow):
 # third layout
     @make_widget_from_layout
     def create_array_raster(self, widget):
-        # Widget defs
+        # https://doc.qt.io/archives/qtjambi-4.5.2_01/com/trolltech/qt/core/Qt.AlignmentFlag.html
+
+        # Widget Defs
 
         # AR_initial_settings
-        # self.AR_initial_settings = QtWidgets.QGroupBox("Initial Values")
-        # self.AR_initial_settings_layout = QtWidgets.QVBoxLayout()
-        #
-        # self.AR_initial_settings.setLayout(self.AR_initial_settings_layout)
+        _AR_initial_settings = QtWidgets.QGroupBox("Initial Values")
+        _AR_initial_settings_layout = QtWidgets.QGridLayout()
+
+        _AR_init_vel_label = QtWidgets.QLabel("Velocity ({}m/s)".format(self.MICROSYMBOL))
+        _AR_init_vel_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        _AR_init_pow_label = QtWidgets.QLabel("Power (steps)")
+        _AR_init_pow_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+
+        self._AR_init_velocity = QtWidgets.QLineEdit()
+        self._AR_init_velocity.setText('100')
+        self._AR_init_velocity.setValidator(QtGui.QDoubleValidator(0,10000, 12))
+
+        self._AR_init_power = QtWidgets.QLineEdit()
+        self._AR_init_power.setText('0')
+        # TODO: VALIDATOR
+        # self._AR_init_power.setValidator(QtGui.QIntValidator(-1,10000))
+
+        _AR_initial_settings_layout.addWidget(_AR_init_vel_label, 0, 0)
+        _AR_initial_settings_layout.addWidget(_AR_init_pow_label, 1, 0)
+        _AR_initial_settings_layout.addWidget(self._AR_init_velocity, 0, 1)
+        _AR_initial_settings_layout.addWidget(self._AR_init_power, 1, 1)
+
+        _AR_initial_settings.setLayout(_AR_initial_settings_layout)
         # / AR_initial_settings
 
+        # AR_X_final_settings
+        self._AR_X_final_settings = QtWidgets.QGroupBox("Calculated Final Values")
+        _AR_X_final_settings_layout = QtWidgets.QGridLayout()
+
+        _AR_X_final_vel_label = QtWidgets.QLabel("Velocity ({}m/s)".format(self.MICROSYMBOL))
+        _AR_X_final_vel_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+
+        _AR_X_final_pow_label = QtWidgets.QLabel("Power (steps)")
+        _AR_X_final_pow_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+
+        self._AR_X_final_velocity = QtWidgets.QLabel("0")
+        self._AR_X_final_power = QtWidgets.QLabel("0")
+        self._AR_X_final_velocity.setAlignment(QtCore.Qt.AlignVCenter)
+        self._AR_X_final_power.setAlignment(QtCore.Qt.AlignVCenter)
+
+        _AR_X_final_settings_layout.addWidget(_AR_X_final_vel_label, 0, 0)
+        _AR_X_final_settings_layout.addWidget(_AR_X_final_pow_label, 1, 0)
+        _AR_X_final_settings_layout.addWidget(self._AR_X_final_velocity, 0, 1)
+        _AR_X_final_settings_layout.addWidget(self._AR_X_final_power, 1, 1)
+
+        self._AR_X_final_settings.setLayout(_AR_X_final_settings_layout)
+        # / AR_X_final_settings
+
+        # AR_Y_final_settings
+        self._AR_Y_final_settings = QtWidgets.QGroupBox("Calculated Final Values")
+        _AR_Y_final_settings_layout = QtWidgets.QGridLayout()
+
+        _AR_Y_final_vel_label = QtWidgets.QLabel("Velocity ({}m/s)".format(self.MICROSYMBOL))
+        _AR_Y_final_vel_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+
+        _AR_Y_final_pow_label = QtWidgets.QLabel("Power (steps)")
+        _AR_Y_final_pow_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+
+        self._AR_Y_final_velocity = QtWidgets.QLabel("0")
+        self._AR_Y_final_power = QtWidgets.QLabel("0")
+        self._AR_Y_final_velocity.setAlignment(QtCore.Qt.AlignVCenter)
+        self._AR_Y_final_power.setAlignment(QtCore.Qt.AlignVCenter)
+
+        _AR_Y_final_settings_layout.addWidget(_AR_Y_final_vel_label, 0, 0)
+        _AR_Y_final_settings_layout.addWidget(_AR_Y_final_pow_label, 1, 0)
+        _AR_Y_final_settings_layout.addWidget(self._AR_Y_final_velocity, 0, 1)
+        _AR_Y_final_settings_layout.addWidget(self._AR_Y_final_power, 1, 1)
+
+        self._AR_Y_final_settings.setLayout(_AR_Y_final_settings_layout)
+        # / AR_Y_final_settings
+
+        # X Interval
+        _AR_X_interval_settings = QtWidgets.QGroupBox("Horizontal Settings")
+        _AR_X_interval_settings_layout = QtWidgets.QGridLayout()
+
+        self._AR_X_mode = QtWidgets.QComboBox()
+        self._AR_X_mode.addItem("Velocity")
+        self._AR_X_mode.addItem("Power")
+
+        _AR_cols_label = QtWidgets.QLabel("NCols")
+        _AR_cols_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self._AR_cols = QtWidgets.QLineEdit()
+        self._AR_cols.setText("1")
+        self._AR_cols.setValidator(QtGui.QIntValidator(1,10000))
+
+        _AR_X_intervals_label = QtWidgets.QLabel("Increment")
+        _AR_X_intervals_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self._AR_X_intervals = QtWidgets.QLineEdit()
+        self._AR_X_intervals.setText("10")
+        self._AR_X_intervals.setValidator(QtGui.QDoubleValidator(-10000,10000,12))
+        # self._AR_X_intervals.setMinimumWidth(50)
+
+        _AR_X_spacing_label = QtWidgets.QLabel("Spacing")
+        _AR_X_spacing_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self._AR_X_spacing = QtWidgets.QLineEdit()
+        self._AR_X_spacing.setText("10")
+        self._AR_X_spacing.setValidator(QtGui.QDoubleValidator(1,10000,12))
+
+        _AR_X_interval_settings_layout.addWidget(self._AR_X_mode, 0, 0, 1, 2)
+        _AR_X_interval_settings_layout.addWidget(_AR_X_intervals_label, 0, 2)
+        _AR_X_interval_settings_layout.addWidget(self._AR_X_intervals, 0, 3)
+        _AR_X_interval_settings_layout.addWidget(_AR_cols_label, 1, 0)
+        _AR_X_interval_settings_layout.addWidget(self._AR_cols, 1, 1)
+        _AR_X_interval_settings_layout.addWidget(_AR_X_spacing_label, 1, 2)
+        _AR_X_interval_settings_layout.addWidget(self._AR_X_spacing, 1, 3)
+
+        _AR_X_interval_settings.setLayout(_AR_X_interval_settings_layout)
+        _AR_X_interval_settings.setStyleSheet("QGroupBox { background-color: rgba(0,0,0,0.1); }")
+        # / X Interval
+
+        # Y Interval
+        _AR_Y_interval_settings = QtWidgets.QGroupBox("Vertical Settings")
+        _AR_Y_interval_settings_layout = QtWidgets.QGridLayout()
+
+        self._AR_Y_mode = QtWidgets.QComboBox()
+        self._AR_Y_mode.addItem("Velocity")
+        self._AR_Y_mode.addItem("Power")
+
+        _AR_rows_label = QtWidgets.QLabel("NRows")
+        _AR_rows_label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignBottom)
+        self._AR_rows = QtWidgets.QLineEdit()
+        self._AR_rows.setText("1")
+        self._AR_rows.setValidator(QtGui.QIntValidator(1,10000))
+
+        _AR_Y_intervals_label = QtWidgets.QLabel("Increment")
+        _AR_Y_intervals_label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignBottom)
+        self._AR_Y_intervals = QtWidgets.QLineEdit()
+        self._AR_Y_intervals.setText("10")
+        self._AR_Y_intervals.setValidator(QtGui.QDoubleValidator(-10000,10000,12))
+
+        _AR_Y_spacing_label = QtWidgets.QLabel("Spacing")
+        _AR_Y_spacing_label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignBottom)
+        self._AR_Y_spacing = QtWidgets.QLineEdit()
+        self._AR_Y_spacing.setText("10")
+        self._AR_Y_spacing.setValidator(QtGui.QDoubleValidator(1,10000,12))
+
+        _AR_Y_interval_settings_layout.addWidget(self._AR_Y_mode, 0, 0, 2, 1)
+        _AR_Y_interval_settings_layout.addWidget(_AR_Y_intervals_label, 0, 1)
+        _AR_Y_interval_settings_layout.addWidget(self._AR_Y_intervals, 1, 1)
+        _AR_Y_interval_settings_layout.addWidget(_AR_rows_label, 2, 0)
+        _AR_Y_interval_settings_layout.addWidget(self._AR_rows, 3, 0)
+        _AR_Y_interval_settings_layout.addWidget(_AR_Y_spacing_label, 2, 1)
+        _AR_Y_interval_settings_layout.addWidget(self._AR_Y_spacing, 3, 1)
+
+        _AR_Y_interval_settings.setLayout(_AR_Y_interval_settings_layout)
+        _AR_Y_interval_settings.setStyleSheet("QGroupBox { background-color: rgba(0,0,0,0.1); }")
+        # / Y Interval
+
+        # AR_XY_final_settings
+        self._AR_XY_final_settings = QtWidgets.QGroupBox("Calculated Final Values")
+        _AR_XY_final_settings_layout = QtWidgets.QGridLayout()
+
+        _AR_XY_final_vel_label = QtWidgets.QLabel("Velocity ({}m/s)".format(self.MICROSYMBOL))
+        _AR_XY_final_vel_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+
+        _AR_XY_final_pow_label = QtWidgets.QLabel("Power (steps)")
+        _AR_XY_final_pow_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+
+        self._AR_XY_final_velocity = QtWidgets.QLabel("0")
+        self._AR_XY_final_power = QtWidgets.QLabel("0")
+        self._AR_XY_final_velocity.setAlignment(QtCore.Qt.AlignVCenter)
+        self._AR_XY_final_power.setAlignment(QtCore.Qt.AlignVCenter)
+
+        _AR_XY_final_settings_layout.addWidget(_AR_XY_final_vel_label, 0, 0)
+        _AR_XY_final_settings_layout.addWidget(_AR_XY_final_pow_label, 1, 0)
+        _AR_XY_final_settings_layout.addWidget(self._AR_XY_final_velocity, 0, 1)
+        _AR_XY_final_settings_layout.addWidget(self._AR_XY_final_power, 1, 1)
+
+        self._AR_XY_final_settings.setLayout(_AR_XY_final_settings_layout)
+        # / AR_XY_final_settings
+
+        # Arrows
+        # https://www.compart.com/en/unicode/U+1F82F
+        _right_dash  = QtWidgets.QLabel(u"\u25B6")
+        _down_dash   = QtWidgets.QLabel(u"\u25BC")
+        _right_arrow = QtWidgets.QLabel(u"\u25B6")
+        _down_arrow  = QtWidgets.QLabel(u"\u25BC")
+        _arrows = [_right_dash, _down_dash, _right_arrow, _down_arrow]
+
+        for arr in _arrows:
+            arr.setAlignment(QtCore.Qt.AlignCenter)
+            # arr.setStyleSheet("line-height: 25px; font-size: 25px;")
+        # / Arrows
+
+        # Each Box Size
+        _AR_size = QtWidgets.QGroupBox("Individual Raster Setting")
+        _AR_size_layout = QtWidgets.QGridLayout()
+
+        _AR_size_y_label = QtWidgets.QLabel("Height ({}m)".format(self.MICROSYMBOL))
+        _AR_size_y_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+
+        _AR_size_x_label = QtWidgets.QLabel("Width ({}m)".format(self.MICROSYMBOL))
+        _AR_size_x_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+
+        _AR_step_size_label = QtWidgets.QLabel("Step Size ({}m)".format(self.MICROSYMBOL))
+        _AR_step_size_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+
+        self._AR_size_x = QtWidgets.QLineEdit()
+        self._AR_size_x.setText("10")
+        self._AR_size_x.setValidator(QtGui.QDoubleValidator(1,10000,12))
+
+        self._AR_size_y = QtWidgets.QLineEdit()
+        self._AR_size_y.setText("10")
+        self._AR_size_y.setValidator(QtGui.QDoubleValidator(1,10000,12))
+
+        self._AR_step_size = QtWidgets.QLineEdit()
+        self._AR_step_size.setText("1")
+        self._AR_step_size.setValidator(QtGui.QDoubleValidator(0.1,10000,12))
+
+        self._AR_raster_x = QtWidgets.QCheckBox()
+        self._AR_raster_y = QtWidgets.QCheckBox()
+        self._AR_raster_y.setChecked(True)
+        _AR_raster_step_along_label = QtWidgets.QLabel("Steps?")
+        _AR_raster_step_along_label.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignLeft)
+
+        self._AR_raster_style = QtWidgets.QLabel("Filled square\nStepping along y-axis")
+        self._AR_raster_style.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+
+        _AR_size_layout.addWidget(_AR_step_size_label, 0, 0)
+        _AR_size_layout.addWidget(self._AR_step_size, 0, 1)
+        _AR_size_layout.addWidget(_AR_raster_step_along_label, 0, 2)
+        _AR_size_layout.addWidget(self._AR_raster_y, 1, 2)
+        _AR_size_layout.addWidget(self._AR_raster_x, 2, 2)
+        _AR_size_layout.addWidget(_AR_size_y_label, 1, 0)
+        _AR_size_layout.addWidget(_AR_size_x_label, 2, 0)
+        _AR_size_layout.addWidget(self._AR_size_y, 1, 1)
+        _AR_size_layout.addWidget(self._AR_size_x, 2, 1)
+        _AR_size_layout.addWidget(self._AR_raster_style, 3, 0, 1, 3)
+        _AR_size.setLayout(_AR_size_layout)
+        # / Each Box Size
+
+        # Summary
+        _AR_summary = QtWidgets.QGroupBox("Array Raster Summary")
+        _AR_summary_layout = QtWidgets.QGridLayout()
+
+        self._AR_summary_text = QtWidgets.QLabel("-")
+        self._AR_summary_text.setAlignment(QtCore.Qt.AlignVCenter)
+
+        _AR_summary_layout.addWidget(self._AR_summary_text, 0, 0)
+        _AR_summary.setLayout(_AR_summary_layout)
+        _AR_summary.setStyleSheet("QGroupBox { background-color: rgba(255, 165, 0, 0.4); }")
+        # / Summary
+
+        # Action Buttons
+        _AR_action_btns = QtWidgets.QWidget()
+        _AR_action_btns_layout = QtWidgets.QVBoxLayout()
+
+        self._AR_start = QtWidgets.QPushButton("START")
+
+        _AR_action_btns_layout.addWidget(self._AR_start)
+        _AR_action_btns.setLayout(_AR_action_btns_layout)
+        # / Action Buttons
+
+        # void QGridLayout::addWidget(QWidget *widget, int row, int column, Qt::Alignment alignment = Qt::Alignment())
+        # void QGridLayout::addWidget(QWidget *widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = Qt::Alignment())
 
         # Create Layout to add widgets
+        _AR_numrows = 5
+        _AR_numcols = 6
         _array_raster_layout = QtWidgets.QGridLayout()
+        # Add widgets at position
+        _array_raster_layout.addWidget(_AR_initial_settings, 0, 0)
+        _array_raster_layout.addWidget(_right_dash, 0, 1)
+        _array_raster_layout.addWidget(_AR_X_interval_settings, 0, 2, 1, 2)
+        _array_raster_layout.addWidget(_right_arrow, 0, 4)
+        _array_raster_layout.addWidget(self._AR_X_final_settings, 0, 5)
+        _array_raster_layout.addWidget(_down_dash, 1, 0)
+        _array_raster_layout.addWidget(_AR_Y_interval_settings, 2, 0)
+        _array_raster_layout.addWidget(_down_arrow, 3, 0)
+        _array_raster_layout.addWidget(_AR_size, 1, 2, 2, 2)
+        _array_raster_layout.addWidget(_AR_summary, 4, 1, 1, 4)
+        _array_raster_layout.addWidget(self._AR_Y_final_settings, 4, 0)
+        _array_raster_layout.addWidget(self._AR_XY_final_settings, 4, 5)
+        _array_raster_layout.addWidget(_AR_action_btns, 2, 5)
 
-        _array_raster_layout.addWidget(QtWidgets.QLabel("Array Raster Layout"))
+        # To ensure each row and column is the same width
+        # https://stackoverflow.com/a/40154349/3211506
+        for i in range(_AR_numrows):
+            _array_raster_layout.setRowStretch(i, 1)
+            for j in range(_AR_numcols):
+                _array_raster_layout.setColumnStretch(j, 1)
+
+        _array_raster_layout.setColumnStretch(1, 0.5)
+        _array_raster_layout.setColumnStretch(4, 0.5)
+        _array_raster_layout.setRowStretch(1, 0.5)
+        _array_raster_layout.setRowStretch(3, 0.5)
 
         # Velocities, comma separated
         # Size
         # Power, comma separated
-
-        # JUMP TO DEF
-        # def arrayraster(self, xDist, yDist, xGap, yGap, rasterSettings, nrow, ncol, inipower, finxpower, finypower, inivel, finxvel, finyvel, returnToOrigin = False):
-
-        # Raster in a rectangle
-		# rasterSettings = {
-		# 	"direction": "x" || "y" || "xy", 		# Order matters here xy vs yx
-		# 	"step": 1								# If set to xy, step is not necessary
-		# }
-
-        # _
 
         return _array_raster_layout
 
@@ -494,6 +761,8 @@ class MicroGui(QtWidgets.QMainWindow):
 # INTERACTION FUNCTONS
 
     def initEventListeners(self):
+
+        # STAGE
         self.UP, self.RIGHT, self.DOWN, self.LEFT = (0, 1), (1, 0), (0, -1), (-1, 0)
 
         self.cardinalStageMoving = False
@@ -517,11 +786,26 @@ class MicroGui(QtWidgets.QMainWindow):
         self.stage_widget.installEventFilter(self)
         self.installEventFilter(self)
 
-        # Shutter
+        # ARRAY RASTER
+        self._AR_init_velocity.textChanged.connect(lambda: self.recalculateARValues())
+        self._AR_init_power.textChanged.connect(lambda: self.recalculateARValues())
+        self._AR_X_mode.currentIndexChanged.connect(lambda: self.recalculateARValues())
+        self._AR_cols.textChanged.connect(lambda: self.recalculateARValues())
+        self._AR_X_intervals.textChanged.connect(lambda: self.recalculateARValues())
+        self._AR_X_spacing.textChanged.connect(lambda: self.recalculateARValues())
+        self._AR_Y_mode.currentIndexChanged.connect(lambda: self.recalculateARValues())
+        self._AR_rows.textChanged.connect(lambda: self.recalculateARValues())
+        self._AR_Y_intervals.textChanged.connect(lambda: self.recalculateARValues())
+        self._AR_Y_spacing.textChanged.connect(lambda: self.recalculateARValues())
+        self._AR_size_x.textChanged.connect(lambda: self.recalculateARValues())
+        self._AR_size_y.textChanged.connect(lambda: self.recalculateARValues())
+        self._AR_raster_x.stateChanged.connect(lambda: self.recalculateARValues())
+        self._AR_raster_y.stateChanged.connect(lambda: self.recalculateARValues())
+        self._AR_start.clicked.connect(lambda: self.recalculateARValues(startRaster = True))
+
+        # SHUTTER
         self._close_shutter.clicked.connect(lambda: self.stageControl.controller.shutter.close())
         self._open_shutter.clicked.connect(lambda: self.stageControl.controller.shutter.open())
-
-
 
     # keyPressEvent(self, evt)
 
@@ -615,12 +899,162 @@ class MicroGui(QtWidgets.QMainWindow):
             self._lcdx.display(self.stageControl.controller.stage.x)
             self._lcdy.display(self.stageControl.controller.stage.y)
 
+    def recalculateARValues(self, startRaster = False):
+        try:
+            # Recalculate the values for Array Raster
+            vel_0 = float(self._AR_init_velocity.text())
+            pow_0 = float(self._AR_init_power.text())
+
+            step_along_x = self._AR_raster_x.checkState()
+            step_along_y = self._AR_raster_y.checkState()
+            step_size = float(self._AR_step_size.text())
+
+            # 0 = Velocity, 1 = Power
+            x_isPow = self._AR_X_mode.currentIndex()
+            x_incr = float(self._AR_X_intervals.text())
+            x_cols = int(self._AR_cols.text())
+            x_spac = float(self._AR_X_spacing.text())
+
+            y_isPow = self._AR_Y_mode.currentIndex()
+            y_incr = float(self._AR_Y_intervals.text())
+            y_rows = int(self._AR_rows.text())
+            y_spac = float(self._AR_Y_spacing.text())
+
+            # sizes
+            # y, x
+            size = (float(self._AR_size_y.text()), float(self._AR_size_x.text()))
+
+            # Horizontal
+            vel_x_f = vel_0 + (x_cols - 1) * x_incr if not x_isPow else vel_0
+            pow_x_f = pow_0 + (x_cols - 1) * x_incr if x_isPow else pow_0
+            # Vertical
+            vel_y_f = vel_0 + (y_rows - 1) * y_incr if not y_isPow else vel_0
+            pow_y_f = pow_0 + (y_rows - 1) * y_incr if y_isPow else pow_0
+
+            # Final
+            vel_xy_f = vel_x_f + vel_y_f - vel_0
+            pow_xy_f = pow_x_f + pow_y_f - pow_0
+
+            # Total Raster Area
+            tt_x = x_cols * size[1] + (x_cols - 1) * x_spac
+            tt_y = y_rows * size[0] + (y_rows - 1) * y_spac
+
+            # Indivdual Raster Type
+            indiv_type = "square" if size[0] == size[1] else "rectangle"
+
+            self._AR_cols.setStyleSheet("background-color: #DF2928; color: #fff;") if x_cols <= 0 else self._AR_cols.setStyleSheet("background-color: none; color: #000;")
+            self._AR_rows.setStyleSheet("background-color: #DF2928; color: #fff;") if y_rows <= 0 else self._AR_rows.setStyleSheet("background-color: none; color: #000;")
+
+            self._AR_size_x.setStyleSheet("background-color: #DF2928; color: #fff;") if size[1] <= 0 else self._AR_size_x.setStyleSheet("background-color: none; color: #000;")
+            self._AR_size_y.setStyleSheet("background-color: #DF2928; color: #fff;") if size[0] <= 0 else self._AR_size_y.setStyleSheet("background-color: none; color: #000;")
+
+            self._AR_X_final_settings.setStyleSheet("background-color: #DF2928; color: #fff;") if vel_x_f < 0 else self._AR_X_final_settings.setStyleSheet("background-color: none; color: #000;")
+            self._AR_Y_final_settings.setStyleSheet("background-color: #DF2928; color: #fff;") if vel_y_f < 0 else self._AR_Y_final_settings.setStyleSheet("background-color: none; color: #000;")
+            self._AR_XY_final_settings.setStyleSheet("background-color: #DF2928; color: #fff;") if vel_xy_f < 0 else self._AR_XY_final_settings.setStyleSheet("background-color: none; color: #000;")
+
+            self._AR_summary_text.setText("Rastering a {} x {} array\nEach {} {} x {} {}m\nRaster Area = {} x {} {}m".format(y_rows, x_cols, indiv_type, *size, self.MICROSYMBOL, tt_y, tt_x, self.MICROSYMBOL))
+
+            self._AR_X_final_velocity.setText(str(vel_x_f))
+            self._AR_Y_final_velocity.setText(str(vel_y_f))
+            self._AR_XY_final_velocity.setText(str(vel_xy_f))
+
+            self._AR_X_final_power.setText(str(pow_x_f))
+            self._AR_Y_final_power.setText(str(pow_y_f))
+            self._AR_XY_final_power.setText(str(pow_xy_f))
+
+            self._AR_raster_style.setStyleSheet("background-color: none; color: #000;")
+            if step_along_x and step_along_y:
+                self._AR_raster_style.setText("Unfilled {}\nDrawing an outline".format(indiv_type))
+                self._AR_step_size.setReadOnly(True)
+                self._AR_step_size.setStyleSheet("background-color: #ccc; color: #555;")
+            elif step_along_x:
+                self._AR_raster_style.setText("Filled {}\nStepping along x-axis".format(indiv_type))
+                self._AR_step_size.setReadOnly(False)
+                self._AR_step_size.setStyleSheet("background-color: none; color: #000;")
+            elif step_along_y:
+                self._AR_raster_style.setText("Filled {}\nStepping along y-axis".format(indiv_type))
+                self._AR_step_size.setReadOnly(False)
+                self._AR_step_size.setStyleSheet("background-color: none; color: #000;")
+            else:
+                self._AR_raster_style.setText("No axis selected\nChoose at least one axis")
+                self._AR_raster_style.setStyleSheet("background-color: #DF2928; color: #fff;")
+                self._AR_step_size.setReadOnly(False)
+                self._AR_step_size.setStyleSheet("background-color: none; color: #000;")
+
+        except Exception as e:
+            # We assume the user is not done entering the data
+            self.logconsole("{}: {}".format(type(e).__name__, e))
+            self._AR_Y_final_settings.setStyleSheet("background-color: none; color: #000;")
+            self._AR_Y_final_settings.setStyleSheet("background-color: none; color: #000;")
+            self._AR_XY_final_settings.setStyleSheet("background-color: none; color: #000;")
+
+            self._AR_rows.setStyleSheet("background-color: none; color: #000;")
+            self._AR_rows.setStyleSheet("background-color: none; color: #000;")
+            self._AR_size_x.setStyleSheet("background-color: none; color: #000;")
+            self._AR_size_y.setStyleSheet("background-color: none; color: #000;")
+
+            self._AR_summary_text.setText("-")
+
+            self._AR_raster_style.setText("-\n")
+            self._AR_raster_style.setStyleSheet("background-color: none; color: #000;")
+
+            self._AR_X_final_velocity.setText("-")
+            self._AR_Y_final_velocity.setText("-")
+            self._AR_XY_final_velocity.setText("-")
+
+            self._AR_X_final_power.setText("-")
+            self._AR_Y_final_power.setText("-")
+            self._AR_XY_final_power.setText("-")
+
+        # Check if the values are even valid
+        # Change background if necessary
+        else:
+            # There are no errors, and we check if startRaster
+            if startRaster:
+                # JUMP TO DEF
+                # def arrayraster(self, xDist, yDist, xGap, yGap, rasterSettings, nrow, ncol, inipower, finxpower, finypower, inivel, finxvel, finyvel, returnToOrigin = False):
+
+                # Raster in a rectangle
+        		# rasterSettings = {
+        		# 	"direction": "x" || "y" || "xy", 		# Order matters here xy vs yx
+        		# 	"step": 1								# If set to xy, step is not necessary
+        		# }
+                if not step_along_x and not step_along_y:
+                    self.setOperationStatus("Step-axis not selected!")
+                    return
+
+                rsSettingsDir = ""
+                rsSettingsDir += "x" if step_along_x else ""
+                rsSettingsDir += "y" if step_along_y else ""
+
+                if step_along_x and step_along_y:
+                    rsSettings = { "direction" : rsSettingsDir }
+                else:
+                    rsSettings = { "direction" : rsSettingsDir, "step": step_size }
+
+                self.setOperationStatus("Starting Array Raster...")
+
+                self.stageControl.arrayraster(
+                    xDist = size[1],
+                    yDist = size[0],
+                    xGap  = x_spac,
+                    yGap  = y_spac,
+                    rasterSettings = rsSettings,
+                    nrow  = y_rows,
+                    ncol  = x_cols,
+                    # TODO: ADJUST ARRAY RASTER ARGS
+                )
+
+
     def setOperationStatus(self, status, printToTerm = True):
         self.currentStatus = status
         if printToTerm:
             print("[{}]".format(datetime.datetime.now().time()), status)
         # Do some updating of the status bar
         self._statusbar_label.setText(status)
+
+    def logconsole(self, status):
+        print("[{}]".format(datetime.datetime.now().time()), status)
 
 # Status Bar
 
