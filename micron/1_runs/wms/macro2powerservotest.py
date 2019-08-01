@@ -8,12 +8,26 @@ import servos
 p = servos.Power(absoluteMode = False, channel = servos.Servo.RIGHTCH)
 s = servos.Shutter(absoluteMode = True, channel = servos.Servo.LEFTCH)
 
-for i in range(0,5):
-    p.absolute(0.0725, duration = 150)
-    time.sleep(0.5)
+# for i in range(0,5):
+#     p.absolute(0.072, duration = 200)
+#     time.sleep(2)
 
-for i in range(0,5):
-    p.absolute(0.0785, duration = 150)
-    time.sleep(0.5)
-s.open()
-s.close()
+# for i in range(0,5):
+#     p.absolute(0.079, duration = 200)
+#     time.sleep(2)
+
+# s.open()
+# s.close()
+
+p.absolute(0.07, duration = 130)
+time.sleep(1)
+p.absolute(0.07, duration = 130)
+time.sleep(1)
+p.absolute(0.079, duration = 200)
+time.sleep(1)
+p.absolute(0.079, duration = 200)
+time.sleep(1)
+
+
+
+
