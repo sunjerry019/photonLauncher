@@ -131,7 +131,7 @@ class Power(Servo):
     @displacement.setter
     def displacement(self, displacement):
         difference = displacement - self._displacement
-        if difference.is_integer():
+        if isinstance(difference, int) or (isinstance(difference, float) and number.is_integer()):
             if difference != 0:
                 self.powerstep(abs(difference), direction = (difference > 0))
         else:
@@ -139,7 +139,7 @@ class Power(Servo):
             raise RuntimeException("Displacement must be an integer")
 
     def powerstep(self, number, direction = True):
-        if not number.is_integer():
+        if not (isinstance(number, int) or (isinstance(number, float) and number.is_integer())):
             raise RuntimeException("Displacement must be an integer")
 
         if direction == True:
