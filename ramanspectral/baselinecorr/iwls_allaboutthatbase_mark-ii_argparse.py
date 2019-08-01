@@ -18,7 +18,7 @@ class MyParser(argparse.ArgumentParser):
         sys.exit(2)
 
 parser = MyParser()
-  
+
 parser.add_argument('polynomial', action='store', type = int, default=[3], help='An integer for the order of polynomial used to fit the spectrum. Usually 3 (cubic polynomial) is just nice. I will also display fits for 2 adjacent order polynomials to be safe :)')
 
 parser.add_argument('-r','--residual', action='store', type = float, default=[0.001], help='Arbitrary parameter for residual acting as a weight to be applied when evaluating new coefficient vector. It is above but close to 0, Usually on the order of 10^-3 (input 0.001), experiment in the neighbourhood of this value (10^-2,  10^-4 etc) for better fits!')
@@ -54,7 +54,7 @@ def rocknroll(input, window):
 
     return temp
 
-#Function2: actual iteration process for fitness parameter p, threshold parameter n, number of iterations niter
+#Function2: actual iteration process for fitness parameter p, threshold parameter z, number of iterations niter
 def iteration(p, z, window, niter):
     for t in range(1, niter+1):
         print("Iteration ", t)
@@ -74,8 +74,8 @@ def iteration(p, z, window, niter):
         print('RMS = ', rms, "\n")
         r = y - np.matmul(vander, co)
         d = np.gradient(r, axis=0)
-        coarse = rocknroll(d, window)
-        coarsenormalised = (coarse - min(coarse))/(max(coarse)-min(coarse))
+        finalcoarse = rocknroll(d, window)
+        coarsenormalised = (finalcoarse - min(coarse))/(max(coarse)-min(coarse))
 
         if rms == 0:
             break

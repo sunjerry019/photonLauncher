@@ -31,7 +31,7 @@ def pure(note, duration):
     return sound
 
 # lento
-tempo = 400
+tempo = 300
 # around 30 is good
 probability_unity = 40
 scale = Cpent
