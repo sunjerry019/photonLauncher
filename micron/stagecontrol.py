@@ -211,75 +211,63 @@ class StageControl():
 		#self.finish()
 
 	# overpowered, omni-potent rastering solution for both laser power and velocity
-	def arrayraster(self, xDist, yDist, xGap, yGap, rasterSettings, nrow, ncol, inipower, finxpower, finypower, inivel, finxvel, finyvel, returnToOrigin = False):
+	def arrayraster(self, inivel, inipower, xcombo, ncols, xincrement, xGap, ycombo, nrows, yincrement, ygap, xDist, yDist, rasterSettings, returnToOrigin = True):
 
-		# # cutting in rows
-		# xstepvel = abs(finxvel - inivel) / nrow
-		# xsteppower = abs(finxpower - inipower) / nrow
-		# ystepvel = abs(finyvel - inivel) / ncol
-		# ysteppower = abs(finypower - inipower) / ncol
-		#
-		# for c in range(0, ncol):
-		# 	inivel += ystepvel * c
-		# 	inipower += ysteppower * c
-		# 	if c < (ncol - 1):
-		# 		for r in range(0, nrow):
-		# 			#TODO! row power incremental adjustments
-		# 			if r < (nrow - 1):
-		# 				self.singleraster(inivel + xstepvel * r, xDist, yDist, rasterSettings, returnToOrigin)
-		# 				self.controller.rmove(x = -xGap * self.noinvertx, y = 0)
-		# 			else:
-		# 				self.singleraster(inivel + xstepvel * r, xDist, yDist, rasterSettings, returnToOrigin)
-		#
-		# 		self.controller.rmove(y = -yGap * self.noinverty, x = 0)
-		# 	else:
-		# 		for r in range(0, nrow):
-		# 			if r < (nrow - 1):
-		# 				self.singleraster(inivel + xstepvel * r, xDist, yDist, rasterSettings, returnToOrigin)
-		# 				self.controller.rmove(x = -xGap * self.noinvertx, y = 0)
-		# 			else:
-		# 				self.singleraster(inivel + xstepvel * r, xDist, yDist, rasterSettings, returnToOrigin)
-		#
-		#
-		# #TODO! column power incremental adjustments
-		# #TODO! Estimate time
-		#
-		# # building parameter mother-of-all-lists to parse through when cutting every individual raster. Raster array will be numbered left to right top to bottom
-		# # info structure: <primary list> <raster1> (initial position tuple1), [velocity, power]</raster1> <raster2> (initial position tuple2), [velocity, power]</raster2> .... </primary list>
-		#
-		# xone = self.controller.stage.x
-		# yone = self.controller.stage.y
-		#
-		# squaren = []
-		# a = 0
-		# for b in range(1, ncol * nrow + 1):
-		# 	a += 1 if b % ncol == 0 else pass 
-		# 	axe = xone + (b % ncol) * (xDist + xGap)
-		# 	why = yone + a * (yDist + yGap)
-		#
-		# 	# gui combobox setting: velocity is True, power is False
-		# 	if xcombo == True && ycombo == True:
-		# 		speed = (inivel + a * yspeedinterval) + xspeedinterval * (b % ncol)
-		# 		powa = inipower
-		#
-		# 	elif xcombo == True && ycombo == False:
-		# 		speed = inivel + xspeedinterval * (b % ncol)
-		# 		powa = inipower + ypowerinterval * a
-		#
-		# 	elif xcombo == False && ycombo == False:
-		# 		speed = inivel
-		# 		powa = (inivel + a * ypowerinterval) + xpowerinterval * (b % ncol)
-		#
-		# 	elif xcombo == False && ycombo == True:
-		# 		speed = inivel + yspeedinterval * a
-		# 		powa = inipower + xpowerinterval * (b % ncol)
-		#
-		# 	startpos = (axe , why)
-		# 	speedpowa = [speed, powa]
-		# 	squaren.append(startpos)
-		# 	squaren.append(speedpowea)
-		# 	moal.append(squaren)
-		pass
+		# building parameter mother-of-all-lists (MOAL) to parse through when cutting every individual raster. Raster array will be numbered left to right top to bottom
+		# info structure: <primary list> <raster1> (initial position tuple1), [velocity, power]</raster1> <raster2> (initial position tuple2), [velocity, power]</raster2> .... </primary list>
+
+		xone = self.controller.stage.x
+		yone = self.controller.stage.y
+
+		moal = []
+		nthsquare = []
+		a = 0
+		for b in range(1, ncols * nrows + 1):
+			a += 1 if b % ncols == 0 else pass
+			axe = xone + (b % ncols) * (xDist + xGap)
+			why = yone + a * (yDist + yGap)
+
+			# gui combobox setting: velocity is True, power is False
+			if xcombo == True && ycombo == True:
+				speed = (inivel + a * yincrement) + xincrement * (b % ncols)
+				powa = inipower
+
+			elif xcombo == True && ycombo == False:
+				speed = inivel + xincrement * (b % ncols)
+				powa = inipower + yincrement * a
+
+			elif xcombo == False && ycombo == False:
+				speed = inivel
+				powa = (inivel + a * yincrement) + xincrement * (b % ncols)
+
+			elif xcombo == False && ycombo == True:
+				speed = inivel + yincrement * a
+				powa = inipower + xincrement * (b % ncols)
+
+			startpos = (axe , why)
+			speedpowa = [speed, powa]
+			nthsquare.append(startpos)
+			nthsquare.append(speedpowa)
+			moal.append(squaren)
+
+		#TODO! have a countdown for all rastering and run timer in separate thread
+
+		# actual rastering
+		for i in range(nrows):
+
+			for u in range(ncols):
+				self.controller.Power.powerstep(moal[u + i*ncols][1][1])
+				self.singleraster(velocity = moal[u + i*ncols][1][0], xDist, yDist, rasterSettings, returnToOrigin)
+				self.controller.setvel(500)
+				self.controller.rmove(x = xGap + xDist, y = 0)
+				print('(',i,',',u,') raster completed! :D')
+
+			self.controller.rmove(x = -ncols * (xGap + xDist), y = yDist + yGap)
+
+		print('raster compeleted, have a gr8 day. Self-destruct sequence initiated (T-10).')
+
+
+
 
 
 

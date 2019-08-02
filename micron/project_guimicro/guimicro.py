@@ -53,7 +53,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
         moveToCentre(self)
 
-        self.setWindowTitle('Micos Stage Controller MARK II 0.01a')
+        self.setWindowTitle('Micos Stage Controller MARK II 0.1a')
         self.setWindowIcon(QtGui.QIcon('./pictures/icon.bmp'))
 
         # Essentially the steps for the gui works like this
@@ -150,7 +150,7 @@ class MicroGui(QtWidgets.QMainWindow):
         initWindow.setWindowTitle("Initializing...")
         self.setOperationStatus("Initializing StageControl()")
         initWindow.setGeometry(50, 50, 300, 200)
-        initWindow.setWindowFlags(QtCore.Qt.WindowType.WindowTitleHint | QtCore.Qt.WindowType.Dialog | QtCore.Qt.WindowType.WindowMaximizeButtonHint | QtCore.Qt.WindowType.CustomizeWindowHint)
+        initWindow.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.Dialog | QtCore.Qt.WindowMaximizeButtonHint | QtCore.Qt.CustomizeWindowHint)
         moveToCentre(initWindow)
 
         initWindow_layout = QtWidgets.QVBoxLayout()
@@ -168,9 +168,9 @@ class MicroGui(QtWidgets.QMainWindow):
         bottomLabel.setAlignment(QtCore.Qt.AlignCenter)
 
         lineC = QtWidgets.QFrame()
-        lineC.setFrameShape(QtWidgets.QFrame.Shape.HLine);
+        lineC.setFrameShape(QtWidgets.QFrame.HLine);
         lineD = QtWidgets.QFrame()
-        lineD.setFrameShape(QtWidgets.QFrame.Shape.HLine);
+        lineD.setFrameShape(QtWidgets.QFrame.HLine);
 
         initWindow_wrapper_layout.addWidget(topLabel)
         initWindow_wrapper_layout.addWidget(lineC)
@@ -470,8 +470,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
         self._AR_init_power = QtWidgets.QLineEdit()
         self._AR_init_power.setText('0')
-        # TODO: VALIDATOR
-        # self._AR_init_power.setValidator(QtGui.QIntValidator(-1,10000))
+        self._AR_init_power.setValidator(QtGui.QIntValidator(0,10000))
 
         _AR_initial_settings_layout.addWidget(_AR_init_vel_label, 0, 0)
         _AR_initial_settings_layout.addWidget(_AR_init_pow_label, 1, 0)
@@ -903,7 +902,7 @@ class MicroGui(QtWidgets.QMainWindow):
         try:
             # Recalculate the values for Array Raster
             vel_0 = float(self._AR_init_velocity.text())
-            pow_0 = float(self._AR_init_power.text())
+            pow_0 = int(self._AR_init_power.text())
 
             step_along_x = self._AR_raster_x.checkState()
             step_along_y = self._AR_raster_y.checkState()
@@ -919,6 +918,10 @@ class MicroGui(QtWidgets.QMainWindow):
             y_incr = float(self._AR_Y_intervals.text())
             y_rows = int(self._AR_rows.text())
             y_spac = float(self._AR_Y_spacing.text())
+
+            # If power, ensure changes are integer
+            # TODO
+            if
 
             # sizes
             # y, x
