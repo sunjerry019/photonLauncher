@@ -114,9 +114,9 @@ class SuiteRaman():
         plt.close()
 
     #
-    def plotbased(self, xrange: tuple, yrange: tuple, xlabel: str, ylabel: str, savefile = False, staticplot = True, polyorder = 3):
+    def plotbased(self, xrange: tuple, yrange: tuple, xlabel: str, ylabel: str, freezeplot = True, **kwarg):
 
-        self.ramanbaseline(savefile = savefile, polyorder = polyorder)
+        self.ramanbaseline(**kwarg)
         fig = plt.figure()
         plt.xlim(xrange)
         plt.ylim(yrange)
@@ -127,7 +127,7 @@ class SuiteRaman():
         plt.plot(self.x, self.signal)
         plt.plot(self.x, self.residual)
 
-        if staticplot:
+        if freezeplot:
             plt.show()
         else:
             plt.show(block=False)

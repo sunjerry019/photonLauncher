@@ -248,7 +248,7 @@ class StageControl():
 			speedpowa = [speed, powa]
 			nthsquare.append(startpos)
 			nthsquare.append(speedpowa)
-			moal.append(squaren)
+			moal.append(nthsquare)
 
 		#TODO! have a countdown for all rastering and run timer in separate thread
 
@@ -265,18 +265,6 @@ class StageControl():
 			self.controller.rmove(x = -ncols * (xGap + xDist), y = yDist + yGap)
 
 		print('raster compeleted, have a gr8 day. Self-destruct sequence initiated (T-10).')
-
-
-
-
-
-
-
-	def drawElipse(self, x0, y0, h, k):
-		# 1 = (x-x0)^2 / h^2 + (y-y0)^2 / k^2
-		# Implement this somehow...?
-
-		pass
 
 
 
