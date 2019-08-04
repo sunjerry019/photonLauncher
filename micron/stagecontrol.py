@@ -35,20 +35,20 @@ class StageControl():
 		self.noinverty = noinverty
 		# Generate filename based on the serial number of the model
 		self.serial = self.controller.getSerial()
-		self.fn = self.generateFilename(self.serial)
 
 		# define contants
 		self.UP, self.RIGHT, self.DOWN, self.LEFT = 0, 1, 2, 3
 
-	def generateFilename(self, cereal):
-		# TODO!
+
 
 		return "sounds/completed/raster_alarm.wav"
 
-	def finish(self):
+	def finishtone(self):
 		#Play sound to let user know that the action is completed
-		playsound.playsound(self.fn)
-		pass
+		import jukebox
+
+		j = jukebox.JukeBox()
+
 
 	# implement cardinal direction movement definitions, the input cases arent actually necessary once we have buttons paired to commands on guimicro
 	def rcardinal(self, direction, distance):
@@ -208,7 +208,7 @@ class StageControl():
 			self.controller.rmove(x = oX - cX, y = oY - cY)
 			self.controller.setvel(velocity)
 
-		#self.finish()
+		self.finishtone()
 
 	# overpowered, omni-potent rastering solution for both laser power and velocity
 	def arrayraster(self, inivel, inipower, xcombo, ncols, xincrement, xGap, ycombo, nrows, yincrement, ygap, xDist, yDist, rasterSettings, returnToOrigin = True):
@@ -266,6 +266,7 @@ class StageControl():
 
 		print('raster compeleted, have a gr8 day. Self-destruct sequence initiated (T-10).')
 
+		self.finishtone()
 
 
 	def __enter__(self):
