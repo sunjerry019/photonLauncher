@@ -798,6 +798,7 @@ class MicroGui(QtWidgets.QMainWindow):
         self._AR_Y_spacing.textChanged.connect(lambda: self.recalculateARValues())
         self._AR_size_x.textChanged.connect(lambda: self.recalculateARValues())
         self._AR_size_y.textChanged.connect(lambda: self.recalculateARValues())
+        self._AR_step_size.textChanged.connect(lambda: self.recalculateARValues())
         self._AR_raster_x.stateChanged.connect(lambda: self.recalculateARValues())
         self._AR_raster_y.stateChanged.connect(lambda: self.recalculateARValues())
         self._AR_start.clicked.connect(lambda: self.recalculateARValues(startRaster = True))
@@ -921,11 +922,15 @@ class MicroGui(QtWidgets.QMainWindow):
 
             # If power, ensure changes are integer
             # TODO
-            if
+            # if
 
             # sizes
             # y, x
-            size = (float(self._AR_size_y.text()), float(self._AR_size_x.text()))
+            size = [float(self._AR_size_y.text()), float(self._AR_size_x.text())]
+
+            # Recalculate size based on flooring calculations
+            _lines = math.floor(abs(size[step_along_x] / step_size))
+            size[step_along_x] = _lines * step_size
 
             # Horizontal
             vel_x_f = vel_0 + (x_cols - 1) * x_incr if not x_isPow else vel_0
@@ -1049,10 +1054,10 @@ class MicroGui(QtWidgets.QMainWindow):
                 )
 
 
-    def setOperationStatus(self, status, printToTerm = True):
+    def setOperationStatus(self, status, printToTerm = True, **printArgs):
         self.currentStatus = status
         if printToTerm:
-            print("[{}]".format(datetime.datetime.now().time()), status)
+            print("[{}]".format(datetime.datetime.now().time()), status, **printArgs)
         # Do some updating of the status bar
         self._statusbar_label.setText(status)
 

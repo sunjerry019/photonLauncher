@@ -39,11 +39,7 @@ class StageControl():
 		# define contants
 		self.UP, self.RIGHT, self.DOWN, self.LEFT = 0, 1, 2, 3
 
-
-
-		return "sounds/completed/raster_alarm.wav"
-
-	def finishtone(self):
+	def finishTone(self):
 		#Play sound to let user know that the action is completed
 		import jukebox
 
@@ -153,18 +149,18 @@ class StageControl():
 			# Normal rastering
 			# Since python range doesn't allow for float step sizes, we find the number of times to go raster a line
 			# DO NOTE THAT THIS PROBABLY WILL CAUSE ROUNDING ERRORS
-			# Floats are ROUNDED UP!
+			# Floats are ROUNDED DOWN!
 
-			_lines = math.ceil(abs(distances[b] / rasterSettings["step"]))
+			_lines = math.floor(abs(distances[b] / rasterSettings["step"]))
 			_bDirTime = rasterSettings["step"] / velocity
 			_timeperline = abs(distances[a]) / velocity + _bDirTime
 			_totaltime = _lines * _timeperline - _bDirTime
-			print("Total Time = ", _totaltime)
+			self.logconsole("Total Time = ", _totaltime)
 			# _sleepTime = _timeperline - 1 if _timeperline > 1 else _timeperline
 			# _sleepTime = 0.85 * _timeperline # Arbitrary, will be a problem if/when the difference adds up to 1 full command
 
-			print("Lines = ", _lines)
-			print("Time/line = ", _timeperline)
+			self.logconsole("Lines = ", _lines)
+			self.logconsole("Time/line = ", _timeperline)
 
 			_step = -rasterSettings["step"] if distances[b] < 0 else rasterSettings["step"]
 
@@ -194,7 +190,7 @@ class StageControl():
 			self.controller.waitClear()
 			t2 = datetime.datetime.now()
 
-			print("\nTimes = {}, {}".format(t1 - t0, t2 - t0))
+			self.logconsole("\nTimes = {}, {}".format(t1 - t0, t2 - t0))
 			print("\nSTATUS = ",self.controller.getStatus(),"\n")
 			self.controller.shutter.close()
 
@@ -208,7 +204,7 @@ class StageControl():
 			self.controller.rmove(x = oX - cX, y = oY - cY)
 			self.controller.setvel(velocity)
 
-		self.finishtone()
+		self.finishTone()
 
 	# overpowered, omni-potent rastering solution for both laser power and velocity
 	def arrayraster(self, inivel, inipower, xcombo, ncols, xincrement, xGap, ycombo, nrows, yincrement, ygap, xDist, yDist, rasterSettings, returnToOrigin = True):
@@ -223,24 +219,24 @@ class StageControl():
 		nthsquare = []
 		a = 0
 		for b in range(1, ncols * nrows + 1):
-			a += 1 if b % ncols == 0 else pass
+			a += 1 if b % ncols == 0 else 0
 			axe = xone + (b % ncols) * (xDist + xGap)
 			why = yone + a * (yDist + yGap)
 
 			# gui combobox setting: velocity is True, power is False
-			if xcombo == True && ycombo == True:
+			if xcombo and ycombo:
 				speed = (inivel + a * yincrement) + xincrement * (b % ncols)
 				powa = inipower
 
-			elif xcombo == True && ycombo == False:
+			elif xcombo and not ycombo:
 				speed = inivel + xincrement * (b % ncols)
 				powa = inipower + yincrement * a
 
-			elif xcombo == False && ycombo == False:
+			elif not xcombo and not ycombo:
 				speed = inivel
 				powa = (inivel + a * yincrement) + xincrement * (b % ncols)
 
-			elif xcombo == False && ycombo == True:
+			elif not xcombo and ycombo:
 				speed = inivel + yincrement * a
 				powa = inipower + xincrement * (b % ncols)
 
@@ -251,22 +247,34 @@ class StageControl():
 			moal.append(nthsquare)
 
 		#TODO! have a countdown for all rastering and run timer in separate thread
+		# Estimate time
+
 
 		# actual rastering
 		for i in range(nrows):
-
 			for u in range(ncols):
 				self.controller.Power.powerstep(moal[u + i*ncols][1][1])
-				self.singleraster(velocity = moal[u + i*ncols][1][0], xDist, yDist, rasterSettings, returnToOrigin)
+				self.singleraster(velocity = moal[u + i*ncols][1][0], xDist = xDist, yDist = yDist, rasterSettings = rasterSettings, returnToOrigin = returnToOrigin)
 				self.controller.setvel(500)
 				self.controller.rmove(x = xGap + xDist, y = 0)
-				print('(',i,',',u,') raster completed! :D')
+
+				self.logconsole('(',i,',',u,') raster completed! :D')
 
 			self.controller.rmove(x = -ncols * (xGap + xDist), y = yDist + yGap)
 
-		print('raster compeleted, have a gr8 day. Self-destruct sequence initiated (T-10).')
 
-		self.finishtone()
+		if self.GUI_Object is not None:
+			self.GUI_Object.setOperationStatus("Raster Finished. Have a g8 day. Ready.")
+		else:
+			print('raster compeleted, have a gr8 day. Self-destruct sequence initiated (T-10).')
+
+		self.finishTone()
+
+	def logconsole(self, msg, printToTerm = True, **printArgs):
+		if self.GUI_Object is not None:
+			self.GUI_Object.setOperationStatus(msg, printToTerm, **printArgs)
+		else:
+			print(msg, **printArgs)
 
 
 	def __enter__(self):
