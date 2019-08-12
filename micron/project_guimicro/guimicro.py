@@ -1081,11 +1081,11 @@ class MicroGui(QtWidgets.QMainWindow):
                 self.stageControl.arrayraster(
                     xDist      = size[1],         yDist      = size[0],
                     xGap       = x_spac,          yGap       = y_spac,
-                    rasterSettings = rsSettings,
                     nrows      = y_rows,          ncols      = x_cols,
                     inivel     = vel_0,           inipower   = pow_0,
                     x_isVel    = x_isPow ^ 1,     y_isVel    = y_isPow ^ 1,
                     xincrement = x_incr,          yincrement = y_incr,
+                    rasterSettings = rsSettings,
                     returnToOrigin = returnToOrigin
                 )
             elif startRaster:
