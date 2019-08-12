@@ -248,15 +248,15 @@ class StageControl():
 
 		#TODO! have a countdown for all rastering and run timer in separate thread
 		# Estimate time
-		totaltime = 0
-		for c in range(ncols * nrows):
-
-			rasvelocity = moal[c][1][0]
-			lines = math.floor(abs(distances[b] / rasterSettings["step"]))
-			steptime = rasterSettings["step"] / rasvelocity
-			timeperline = abs(distances[a]) / rasvelocity + steptime
-			subtotaltime = lines * timeperline - steptime
-			totaltime += subtotaltime
+		# totaltime = 0
+		# for c in range(ncols * nrows):
+		#
+		# 	rasvelocity = moal[c][1][0]
+		# 	lines = math.floor(abs(distances[b] / rasterSettings["step"]))
+		# 	steptime = rasterSettings["step"] / rasvelocity
+		# 	timeperline = abs(distances[a]) / rasvelocity + steptime
+		# 	subtotaltime = lines * timeperline - steptime
+		# 	totaltime += subtotaltime
 
 		# actual rastering
 		for i in range(nrows):
