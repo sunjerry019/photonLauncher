@@ -900,6 +900,7 @@ class MicroGui(QtWidgets.QMainWindow):
             self._lcdy.display(self.stageControl.controller.stage.y)
 
     def recalculateARValues(self, startRaster = False):
+        _got_error = False
         try:
             # Recalculate the values for Array Raster
             vel_0 = float(self._AR_init_velocity.text())
@@ -919,10 +920,6 @@ class MicroGui(QtWidgets.QMainWindow):
             y_incr = float(self._AR_Y_intervals.text())
             y_rows = int(self._AR_rows.text())
             y_spac = float(self._AR_Y_spacing.text())
-
-            # If power, ensure changes are integer
-            # TODO
-            # if
 
             # sizes
             # y, x
@@ -950,6 +947,9 @@ class MicroGui(QtWidgets.QMainWindow):
             # Indivdual Raster Type
             indiv_type = "square" if size[0] == size[1] else "rectangle"
 
+            # catch all errors:
+            _got_error = (x_cols <= 0 or y_rows <= 0 or size[1] <= 0 or size[0] <= 0 or vel_x_f < 0 or vel_y_f < 0 or vel_xy_f < 0)
+
             self._AR_cols.setStyleSheet("background-color: #DF2928; color: #fff;") if x_cols <= 0 else self._AR_cols.setStyleSheet("background-color: none; color: #000;")
             self._AR_rows.setStyleSheet("background-color: #DF2928; color: #fff;") if y_rows <= 0 else self._AR_rows.setStyleSheet("background-color: none; color: #000;")
 
@@ -970,6 +970,26 @@ class MicroGui(QtWidgets.QMainWindow):
             self._AR_Y_final_power.setText(str(pow_y_f))
             self._AR_XY_final_power.setText(str(pow_xy_f))
 
+            # If power, ensure changes are integer
+            if x_isPow and not (x_incr.is_integer()):
+                # x_power error
+                _got_error = True
+                self._AR_X_intervals.setStyleSheet("background-color: #DF2928; color: #fff;")
+                self._AR_X_final_power.setText("<b style='color: red'>INT!<b>")
+                self._AR_XY_final_power.setText("<b style='color: red'>INT!<b>")
+            else:
+                self._AR_X_intervals.setStyleSheet("background-color: none; color: #000;")
+
+            if y_isPow and not (y_incr.is_integer()):
+                # y_power error
+                _got_error = True
+                self._AR_Y_intervals.setStyleSheet("background-color: #DF2928; color: #fff;")
+                self._AR_Y_final_power.setText("<b style='color: red'>INT!<b>")
+                self._AR_XY_final_power.setText("<b style='color: red'>INT!<b>")
+            else:
+                self._AR_Y_intervals.setStyleSheet("background-color: none; color: #000;")
+
+            # RASTER SETTINGS
             self._AR_raster_style.setStyleSheet("background-color: none; color: #000;")
             if step_along_x and step_along_y:
                 self._AR_raster_style.setText("Unfilled {}\nDrawing an outline".format(indiv_type))
@@ -984,6 +1004,7 @@ class MicroGui(QtWidgets.QMainWindow):
                 self._AR_step_size.setReadOnly(False)
                 self._AR_step_size.setStyleSheet("background-color: none; color: #000;")
             else:
+                _got_error = True
                 self._AR_raster_style.setText("No axis selected\nChoose at least one axis")
                 self._AR_raster_style.setStyleSheet("background-color: #DF2928; color: #fff;")
                 self._AR_step_size.setReadOnly(False)
@@ -1018,7 +1039,7 @@ class MicroGui(QtWidgets.QMainWindow):
         # Change background if necessary
         else:
             # There are no errors, and we check if startRaster
-            if startRaster:
+            if startRaster and not _got_error:
                 # JUMP TO DEF
                 # def arrayraster(self, xDist, yDist, xGap, yGap, rasterSettings, nrow, ncol, inipower, finxpower, finypower, inivel, finxvel, finyvel, returnToOrigin = False):
 
@@ -1052,7 +1073,9 @@ class MicroGui(QtWidgets.QMainWindow):
                     ncol  = x_cols,
                     # TODO: ADJUST ARRAY RASTER ARGS
                 )
-
+            elif startRaster:
+                # Alert got error
+                self.criticalDialog(message = "Error in array raster settings.\nPlease check again!", host = self)
 
     def setOperationStatus(self, status, printToTerm = True, **printArgs):
         self.currentStatus = status
@@ -1064,6 +1087,28 @@ class MicroGui(QtWidgets.QMainWindow):
     def logconsole(self, status):
         print("[{}]".format(datetime.datetime.now().time()), status)
 
+    def criticalDialog(self, message, title = "Oh no!", informativeText = None, host = None):
+        _msgBox = QtWidgets.QMessageBox(host)
+        _msgBox.setIcon(QtWidgets.QMessageBox.Critical)
+        _msgBox.setWindowTitle("Oh no!")
+        _msgBox.setText(message)
+        if informativeText is not None:
+            _msgBox.setInformativeText(informativeText)
+
+        # Get height and width
+        _h = _msgBox.height()
+        _w = _msgBox.width()
+        _msgBox.setGeometry(0, 0, _w, _h)
+
+        moveToCentre(_msgBox)
+
+        # mb.setTextFormat(Qt.RichText)
+        # mb.setDetailedText(message)
+
+        _msgBox.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextSelectableByMouse)
+
+        return _msgBox.exec_()
+
 # Status Bar
 
 class aboutPopUp(QtWidgets.QDialog):
@@ -1074,14 +1119,28 @@ class aboutPopUp(QtWidgets.QDialog):
     def initUI(self):
         lblName = QtWidgets.QLabel("Made by\n\nSun Yudong, Wu Mingsong\n\n2019\n\nsunyudong [at] outlook [dot] sg\n\nmingsongwu[at] outlook [dot] sg", self)
 
-def moveToCentre(QtObj):
-    # Get center of the window and move the window to the centre
-    # Remember to setGeometry of the object first
-    # https://pythonprogramminglanguage.com/pyqt5-center-window/
-    _qtRectangle = QtObj.frameGeometry()
-    _centerPoint = QtWidgets.QDesktopWidget().availableGeometry().center()
-    _qtRectangle.moveCenter(_centerPoint)
-    QtObj.move(_qtRectangle.topLeft())
+# def moveToCentre(QtObj):
+#     # Get center of the window and move the window to the centre
+#     # Remember to setGeometry of the object first
+#     # https://pythonprogramminglanguage.com/pyqt5-center-window/
+#     _qtRectangle = QtObj.frameGeometry()
+#     _centerPoint = QtWidgets.QDesktopWidget().availableGeometry().center()
+#     _qtRectangle.moveCenter(_centerPoint)
+#     QtObj.move(_qtRectangle.topLeft())
+
+def moveToCentre(QtObj, host = None):
+    # https://stackoverflow.com/a/42326134/3211506
+    if host is None:
+        host = QtObj.parentWidget()
+
+    if host:
+        hostRect = host.frameGeometry()
+        QtObj.move(hostRect.center() - QtObj.rect().center())
+    else:
+        screenGeometry = QtWidgets.QDesktopWidget().availableGeometry()
+        _x = (screenGeometry.width() - QtObj.width()) / 2;
+        _y = (screenGeometry.height() - QtObj.height()) / 2;
+        QtObj.move(_x, _y);
 
 def main(**kwargs):
     app = QtWidgets.QApplication(sys.argv)
