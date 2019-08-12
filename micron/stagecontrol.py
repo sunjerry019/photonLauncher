@@ -207,7 +207,7 @@ class StageControl():
 		self.finishTone()
 
 	# overpowered, omni-potent rastering solution for both laser power and velocity
-	def arrayraster(self, inivel, inipower, xcombo, ncols, xincrement, xGap, ycombo, nrows, yincrement, ygap, xDist, yDist, rasterSettings, returnToOrigin = True):
+	def arrayraster(self, inivel, inipower, x_isVel, ncols, xincrement, xGap, y_isVel, nrows, yincrement, yGap, xDist, yDist, rasterSettings, returnToOrigin = True):
 
 		# building parameter mother-of-all-lists (MOAL) to parse through when cutting every individual raster. Raster array will be numbered left to right top to bottom
 		# info structure: <primary list> <raster1> (initial position tuple1), [velocity, power]</raster1> <raster2> (initial position tuple2), [velocity, power]</raster2> .... </primary list>
@@ -224,19 +224,19 @@ class StageControl():
 			why = yone + a * (yDist + yGap)
 
 			# gui combobox setting: velocity is True, power is False
-			if xcombo and ycombo:
+			if x_isVel and y_isVel:
 				speed = (inivel + a * yincrement) + xincrement * (b % ncols)
 				powa = inipower
 
-			elif xcombo and not ycombo:
+			elif x_isVel and not y_isVel:
 				speed = inivel + xincrement * (b % ncols)
 				powa = inipower + yincrement * a
 
-			elif not xcombo and not ycombo:
+			elif not x_isVel and not y_isVel:
 				speed = inivel
 				powa = (inivel + a * yincrement) + xincrement * (b % ncols)
 
-			elif not xcombo and ycombo:
+			elif not x_isVel and y_isVel:
 				speed = inivel + yincrement * a
 				powa = inipower + xincrement * (b % ncols)
 
@@ -248,7 +248,15 @@ class StageControl():
 
 		#TODO! have a countdown for all rastering and run timer in separate thread
 		# Estimate time
+		totaltime = 0
+		for c in range(ncols * nrows):
 
+			rasvelocity = moal[c][1][0]
+			lines = math.floor(abs(distances[b] / rasterSettings["step"]))
+			steptime = rasterSettings["step"] / rasvelocity
+			timeperline = abs(distances[a]) / rasvelocity + steptime
+			subtotaltime = lines * timeperline - steptime
+			totaltime += subtotaltime
 
 		# actual rastering
 		for i in range(nrows):
