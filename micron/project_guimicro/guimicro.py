@@ -700,11 +700,23 @@ class MicroGui(QtWidgets.QMainWindow):
 
         # Action Buttons
         _AR_action_btns = QtWidgets.QWidget()
-        _AR_action_btns_layout = QtWidgets.QVBoxLayout()
+        _AR_action_btns_layout = QtWidgets.QGridLayout()
 
+        # https://stackoverflow.com/a/33793752/3211506
+        _AR_action_btns_spacer = QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self._AR_retToOri = QtWidgets.QCheckBox()
+        self._AR_retToOri.setChecked(True)
+        _AR_retToOri_label = QtWidgets.QLabel("Return to Origin")
+        _AR_retToOri_label.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignLeft)
         self._AR_start = QtWidgets.QPushButton("START")
 
-        _AR_action_btns_layout.addWidget(self._AR_start)
+        _AR_action_btns_layout.setColumnStretch(0, 0)
+        _AR_action_btns_layout.setColumnStretch(1, 1)
+
+        _AR_action_btns_layout.addItem(_AR_action_btns_spacer, 0, 0, 1, 2)
+        _AR_action_btns_layout.addWidget(self._AR_retToOri, 1, 0)
+        _AR_action_btns_layout.addWidget(_AR_retToOri_label, 1 ,1)
+        _AR_action_btns_layout.addWidget(self._AR_start, 2, 0, 1, 2)
         _AR_action_btns.setLayout(_AR_action_btns_layout)
         # / Action Buttons
 
@@ -801,6 +813,7 @@ class MicroGui(QtWidgets.QMainWindow):
         self._AR_step_size.textChanged.connect(lambda: self.recalculateARValues())
         self._AR_raster_x.stateChanged.connect(lambda: self.recalculateARValues())
         self._AR_raster_y.stateChanged.connect(lambda: self.recalculateARValues())
+        self._AR_retToOri.stateChanged.connect(lambda: self.recalculateARValues())
         self._AR_start.clicked.connect(lambda: self.recalculateARValues(startRaster = True))
 
         # SHUTTER
@@ -920,6 +933,8 @@ class MicroGui(QtWidgets.QMainWindow):
             y_incr = float(self._AR_Y_intervals.text())
             y_rows = int(self._AR_rows.text())
             y_spac = float(self._AR_Y_spacing.text())
+
+            returnToOrigin = self._AR_retToOri.checkState()
 
             # sizes
             # y, x
@@ -1041,7 +1056,7 @@ class MicroGui(QtWidgets.QMainWindow):
             # There are no errors, and we check if startRaster
             if startRaster and not _got_error:
                 # JUMP TO DEF
-                # def arrayraster(self, xDist, yDist, xGap, yGap, rasterSettings, nrow, ncol, inipower, finxpower, finypower, inivel, finxvel, finyvel, returnToOrigin = False):
+                # def arrayraster(self, inivel, inipower, x_isVel, ncols, xincrement, xGap, y_isVel, nrows, yincrement, ygap, xDist, yDist, rasterSettings, returnToOrigin = True):
 
                 # Raster in a rectangle
         		# rasterSettings = {
@@ -1064,14 +1079,14 @@ class MicroGui(QtWidgets.QMainWindow):
                 self.setOperationStatus("Starting Array Raster...")
 
                 self.stageControl.arrayraster(
-                    xDist = size[1],
-                    yDist = size[0],
-                    xGap  = x_spac,
-                    yGap  = y_spac,
+                    xDist      = size[1],         yDist      = size[0],
+                    xGap       = x_spac,          yGap       = y_spac,
                     rasterSettings = rsSettings,
-                    nrow  = y_rows,
-                    ncol  = x_cols,
-                    # TODO: ADJUST ARRAY RASTER ARGS
+                    nrows      = y_rows,          ncols      = x_cols,
+                    inivel     = vel_0,           inipower   = pow_0,
+                    x_isVel    = x_isPow ^ 1,     y_isVel    = y_isPow ^ 1,
+                    xincrement = x_incr,          yincrement = y_incr,
+                    returnToOrigin = returnToOrigin
                 )
             elif startRaster:
                 # Alert got error
