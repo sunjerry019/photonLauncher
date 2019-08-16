@@ -479,12 +479,17 @@ class Micos():
 		self.dev.close()
 
 	@staticmethod
-	def getDeltaTime(x, y, velocity):
+	def getDeltaTime(x, y, velocity, shutterCycles: int = 0, shutterAbsoluteMode = True):
+		# shutterCycles = number of open + number of closes
 		# we wait 100% of the time required before returning to the loop
 		distance = math.sqrt(x**2 + y**2) if (x and y) else abs(x + y)
 		time_req = distance / velocity
 
 		# time_req *= 1.1 # We wait 10% longer
+
+		if shutterCycles:
+			shutterDuration = servos.Shutter.DEFAULT_DURATION if shutterAbsoluteMode else servos.SHUTTER.NONABSOLUTE_DURATION
+			time_req += shutterCycles * (shutterDuration / 1000)
 
 		return time_req
 
