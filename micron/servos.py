@@ -23,6 +23,8 @@ import time
 class Servo():
     LEFTCH = -1
     RIGHTCH = 1
+    DEFAULT_DURATION = 400
+
     def __init__(self, absoluteMode = False, channel = -1):
         print('\n\nABSOLUTE MODE IS', absoluteMode,'\n')
 
@@ -47,7 +49,7 @@ class Servo():
             self.human_channel = "Pan = {}".format(channel)
 
     # The most general format for PWM signal control
-    def absolute(self, duty, polarity = True, freq = 50, duration = 400):
+    def absolute(self, duty, polarity = True, freq = 50, duration = self.DEFAULT_DURATION):
         with Pulsegen(duty, polarity, freq, duration, pan = self.channel) as p:
             p.playpulse()
 
@@ -59,6 +61,8 @@ class Servo():
         self.close()
 
 class Shutter(Servo):
+    NONABSOLUTE_DURATION = 100
+    
     def __init__(self, GUI_Object = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -70,7 +74,7 @@ class Shutter(Servo):
     ## Shutter servo functions
     # This is the "over extended" range of 180 degree servo (>180 degrees). Reserved for closed state, where 180 degrees would be open, ready for 180-0 degrees scanning
     def close(self, shutter_state_label = None):
-        self.absolute(0.15) if self.absoluteMode else self.absolute(0.09, duration = 100)
+        self.absolute(0.15) if self.absoluteMode else self.absolute(0.09, duration = self.NONABSOLUTE_DURATION)
 
         if self.GUI_Object is not None:
             self.GUI_Object.setOperationStatus("Closing Shutter")
@@ -92,7 +96,7 @@ class Shutter(Servo):
         return True
 
     def open(self, shutter_state_label = None):
-        self.absolute(0.1) if self.absoluteMode else self.absolute(0.06, duration = 100)
+        self.absolute(0.1) if self.absoluteMode else self.absolute(0.06, duration = self.NONABSOLUTE_DURATION)
 
         if self.GUI_Object is not None:
             self.GUI_Object.setOperationStatus("Opening Shutter")
