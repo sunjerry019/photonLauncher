@@ -49,7 +49,7 @@ class Servo():
             self.human_channel = "Pan = {}".format(channel)
 
     # The most general format for PWM signal control
-    def absolute(self, duty, polarity = True, freq = 50, duration = self.DEFAULT_DURATION):
+    def absolute(self, duty, polarity = True, freq = 50, duration = DEFAULT_DURATION):
         with Pulsegen(duty, polarity, freq, duration, pan = self.channel) as p:
             p.playpulse()
 
@@ -62,7 +62,7 @@ class Servo():
 
 class Shutter(Servo):
     NONABSOLUTE_DURATION = 100
-    
+
     def __init__(self, GUI_Object = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
