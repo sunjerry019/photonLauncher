@@ -335,8 +335,10 @@ class Micos():
 		# we wait until all commands are done running and the stack is empty
 		timeoutCount = 0
 		timeoutLimit = 10
+		waitTime = 0
+		waitTimeLimit = 0.6
 		while True:
-			x = self.getStatus(0)
+			x = self.getStatus(0, waitTime = waitTime)
 			if x is not None and x == 0:
 				# print(x, " X is not None")
 				break
@@ -344,6 +346,10 @@ class Micos():
 			if x is None:
 				timeoutCount += 1
 				if timeoutCount >= timeoutLimit:
+					timeoutCount = 0
+					waitTime += 0.1
+
+				if waitTime >= waitTimeLimit:
 					raise RuntimeError("waitClear timed out, this should not happen. Did you switch on the microcontroller?")
 
 				# We try again but quit if 2nd time still none
@@ -354,12 +360,12 @@ class Micos():
 
 		return True
 
-	def getStatus(self, digit = None):
+	def getStatus(self, digit = None, waitTime = 0):
 		# Get the status of the controller
 
 		assert digit is None or (isinstance(digit, int) and 0 <= digit <= 8), "Invalid digit"
 
-		y = self.send("st", waitTime = 0.5)
+		y = self.send("st", waitTime = waitTime)
 
 		# print("GETSTATUS READ = ", y)
 
