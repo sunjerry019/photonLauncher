@@ -144,6 +144,8 @@ class Micos():
 		self.shutter = servos.Shutter(absoluteMode = shutterAbsolute, GUI_Object = GUI_Object, channel = shutter_channel)
 		self.shutter.close()
 
+		self.powerServo = servos.Power(absoluteMode = False, channel = shutter_channel * (-1))
+
 		# BEGIN INITIALIZATION
 		print("Stage Initialization...", end="\r")
 		self.setunits(unit)
@@ -338,9 +340,9 @@ class Micos():
 	def waitClear(self):
 		# we wait until all commands are done running and the stack is empty
 		timeoutCount = 0
-		timeoutLimit = 10
+		timeoutLimit = 5
 		waitTime = 0
-		waitTimeLimit = 0.6
+		waitTimeLimit = 0.3
 		while True:
 			x = self.getStatus(0, waitTime = waitTime)
 			if x is not None and x == 0:
@@ -488,7 +490,7 @@ class Micos():
 		# time_req *= 1.1 # We wait 10% longer
 
 		if shutterCycles:
-			shutterDuration = servos.Shutter.DEFAULT_DURATION if shutterAbsoluteMode else servos.SHUTTER.NONABSOLUTE_DURATION
+			shutterDuration = servos.Shutter.DEFAULT_DURATION if shutterAbsoluteMode else servos.Shutter.NONABSOLUTE_DURATION
 			time_req += shutterCycles * (shutterDuration / 1000)
 
 		return time_req
