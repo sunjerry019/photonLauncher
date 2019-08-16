@@ -21,6 +21,7 @@ import playsound
 import numpy as np
 import math
 import time
+import datetime
 
 
 class InputError(Exception):
@@ -70,12 +71,14 @@ class StageControl():
 		pass
 
 	# most basic, single rectangle cut rastering
-	def singleraster(self, velocity, xDist, yDist, rasterSettings, returnToOrigin = False):
+	def singleraster(self, velocity, xDist, yDist, rasterSettings, returnToOrigin = False, estimateTime = True, onlyEstimate = False):
 		# Raster in a rectangle
 		# rasterSettings = {
 		# 	"direction": "x" || "y" || "xy", 		# Order matters here xy vs yx
 		# 	"step": 1								# If set to xy, step is not necessary
 		# }
+
+		# setting onlyEstimate will return the estimated time for the action
 
 		# xy/yx = Draw a rectangle with sides xDist and yDist
 		# x = horizontal lines will be drawn while scanning down/up
@@ -106,6 +109,8 @@ class StageControl():
 		except AssertionError as e:
 			raise InputError(e)
 
+		if onlyEstimate:
+			estimateTime = True
 
 		# ACTUAL FUNCTION
 		self.controller.setvel(velocity)
@@ -122,6 +127,19 @@ class StageControl():
 		# Check the raster step
 		if len(rasterSettings["direction"]) > 1:
 			# Rastering a square
+
+			if estimateTime:
+				_totalTime = 2 * micron.Micos.getDeltaTime(distances[a], 0, velocity) + \
+				             2 * micron.Micos.getDeltaTime(distances[b], 0, velocity)
+
+				# We always return to origin, so need not calculate
+
+				if onlyEstimate:
+					return _totalTime
+
+				_doneTime   = datetime.datetime.now() + datetime.timedelta(seconds = _totalTime)
+
+				self.logconsole("Total Time = {} Est Done = {}".format(_totaltime, _doneTime.strftime('%Y-%m-%d %H:%M:%S')))
 
 			# Relative moves are blocking, so we can flood the FIFO stack after we are sure all commands have been cleared
 			self.controller.waitClear()
@@ -145,22 +163,36 @@ class StageControl():
 			self.controller.waitClear()
 			self.controller.shutter.close()
 		else:
-			import datetime
 			# Normal rastering
 			# Since python range doesn't allow for float step sizes, we find the number of times to go raster a line
 			# DO NOTE THAT THIS PROBABLY WILL CAUSE ROUNDING ERRORS
 			# Floats are ROUNDED DOWN!
 
 			_lines = math.floor(abs(distances[b] / rasterSettings["step"]))
-			_bDirTime = rasterSettings["step"] / velocity
-			_timeperline = abs(distances[a]) / velocity + _bDirTime
-			_totaltime = _lines * _timeperline - _bDirTime
-			self.logconsole("Total Time = ", _totaltime)
-			# _sleepTime = _timeperline - 1 if _timeperline > 1 else _timeperline
-			# _sleepTime = 0.85 * _timeperline # Arbitrary, will be a problem if/when the difference adds up to 1 full command
 
-			self.logconsole("Lines = ", _lines)
-			self.logconsole("Time/line = ", _timeperline)
+			if estimateTime:
+				# It doesnt matter if its x or y
+				_bDirTime 	 = micron.Micos.getDeltaTime(rasterSettings["step"], 0, velocity)
+				_timeperline = micron.Micos.getDeltaTime(distances[a], 0, velocity) + _bDirTime
+				_totalTime   = _lines * _timeperline - _bDirTime
+
+				_totalTime  += micron.Micos.getDeltaTime(0, 0, 100, shutterCycles = 2, shutterAbsoluteMode = self.controller.shutter.absoluteMode)
+
+				if returnToOrigin:
+					# If even, we end up at the top right of the box // _q = 0
+					# If odd, we end up at the bottom right of the box // _q = 1
+
+					_q = _lines % 2
+					_totalTime += micron.Micos.getDeltaTime(distances[a] if _q else 0, _lines * rasterSettings["step"] , 1000)
+
+				if onlyEstimate:
+					return _totalTime
+
+				_deltaTime   = datetime.timedelta(seconds = _totalTime)
+				_doneTime    = datetime.datetime.now() + _deltaTime
+
+				# "Time/line =", _timeperline,
+				self.logconsole("Total Time = {} Lines = {} Est Done = {}".format(_deltaTime, _lines, _doneTime.strftime('%Y-%m-%d %H:%M:%S')))
 
 			_step = -rasterSettings["step"] if distances[b] < 0 else rasterSettings["step"]
 
@@ -212,13 +244,20 @@ class StageControl():
 		# building parameter mother-of-all-lists (MOAL) to parse through when cutting every individual raster. Raster array will be numbered left to right top to bottom
 		# info structure: <primary list> <raster1> (initial position tuple1), [velocity, power]</raster1> <raster2> (initial position tuple2), [velocity, power]</raster2> .... </primary list>
 
+		# NOTE: This function can CLEARLY be optimized
+
+		# Struct [
+		#     [(Init Pos), [velocity, power]], ...
+		# ]
+
 		xone = self.controller.stage.x
 		yone = self.controller.stage.y
 
 		moal = []
-		nthsquare = []
 		a = 0
 		for b in range(1, ncols * nrows + 1):
+			nthsquare = []
+
 			a += 1 if b % ncols == 0 else 0
 			axe = xone + (b % ncols) * (xDist + xGap)
 			why = yone + a * (yDist + yGap)
@@ -248,21 +287,33 @@ class StageControl():
 
 		#TODO! have a countdown for all rastering and run timer in separate thread
 		# Estimate time
-		totaltime = 0
-		for c in range(ncols * nrows):
 
-			rasvelocity = moal[c][1][0]
-			lines = math.floor(abs(distances[b] / rasterSettings["step"]))
-			steptime = rasterSettings["step"] / rasvelocity
-			timeperline = abs(distances[a]) / rasvelocity + steptime
-			subtotaltime = lines * timeperline - steptime
+		totaltime = 0
+
+		firstsq = True
+		for n, square in enumerate(moal):
+			subtotaltime = 0 if firstsq else micron.Micos.getDeltaTime(x = xGap + xDist, y = 0, velocity = 500)
+			firstsq = False
+
+			if not (n + 1) % ncols:
+				micron.Micos.getDeltaTime(x = -ncols * (xGap + xDist), y = yDist + yGap, velocity = 500)
+
+			rasvelocity = square[1][0]
+			subtotaltime += self.singleraster(velocity = square[1][0], xDist = xDist, yDist = yDist, rasterSettings = rasterSettings, returnToOrigin = True, onlyEstimate = True)
 			totaltime += subtotaltime
+
+		_deltaTime = datetime.timedelta(seconds = totaltime)
+		doneTime = datetime.datetime.now() + _deltaTime
+
+		self.logconsole("Est time = {} Est Done = {}".format(_deltaTime, doneTime.strftime('%Y-%m-%d %H:%M:%S')))
+
+		oX, oY = self.controller.stage.x, self.controller.stage.y
 
 		# actual rastering
 		for i in range(nrows):
 			for u in range(ncols):
-				self.controller.Power.powerstep(moal[u + i*ncols][1][1])
-				self.singleraster(velocity = moal[u + i*ncols][1][0], xDist = xDist, yDist = yDist, rasterSettings = rasterSettings, returnToOrigin = returnToOrigin)
+				self.controller.powerServo.powerstep(moal[u + i*ncols][1][1])
+				self.singleraster(velocity = moal[u + i*ncols][1][0], xDist = xDist, yDist = yDist, rasterSettings = rasterSettings, returnToOrigin = True, estimateTime = False)
 				self.controller.setvel(500)
 				self.controller.rmove(x = xGap + xDist, y = 0)
 
@@ -270,6 +321,17 @@ class StageControl():
 
 			self.controller.rmove(x = -ncols * (xGap + xDist), y = yDist + yGap)
 
+		if returnToOrigin:
+			self.controller.shutter.close()
+
+			# we /could/ use self.controller.move() but I don't really trust it
+			# so...relative move
+			cX, cY = self.controller.stage.x, self.controller.stage.y
+			self.controller.setvel(1000)
+			self.controller.rmove(x = oX - cX, y = oY - cY)
+			self.controller.setvel(velocity)
+
+		self.finishTone()
 
 		if self.GUI_Object is not None:
 			self.GUI_Object.setOperationStatus("Raster Finished. Have a g8 day. Ready.")

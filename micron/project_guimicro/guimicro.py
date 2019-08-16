@@ -189,6 +189,7 @@ class MicroGui(QtWidgets.QMainWindow):
         l = []
 
         def initMicron():
+            self.stageControl = None
             with redirect_stdout(f):
                 if self.devMode:
                     # Following code is for testing and emulation of homing commands
@@ -876,19 +877,19 @@ class MicroGui(QtWidgets.QMainWindow):
                     self.stageControl.controller.shutter.close() if self.stageControl.controller.shutter.isOpen else self.stageControl.controller.shutter.open()
                     return True # Prevents further handling
 
-                if evtkey == QtCore.Qt.Key_Up and source == self.stage_widget:
+                if evtkey == QtCore.Qt.Key_Up and source == self.stage_widget and not self.cardinalStageMoving:
                     # print("Up")
                     self.cardinalMoveStage(self.UP)
 
-                if evtkey == QtCore.Qt.Key_Down and source == self.stage_widget:
+                if evtkey == QtCore.Qt.Key_Down and source == self.stage_widget and not self.cardinalStageMoving:
                     # print("Down")
                     self.cardinalMoveStage(self.DOWN)
 
-                if evtkey == QtCore.Qt.Key_Left and source == self.stage_widget:
+                if evtkey == QtCore.Qt.Key_Left and source == self.stage_widget and not self.cardinalStageMoving:
                     # print("Left")
                     self.cardinalMoveStage(self.LEFT)
 
-                if evtkey == QtCore.Qt.Key_Right and source == self.stage_widget:
+                if evtkey == QtCore.Qt.Key_Right and source == self.stage_widget and not self.cardinalStageMoving:
                     # print("Right")
                     self.cardinalMoveStage(self.RIGHT)
 
