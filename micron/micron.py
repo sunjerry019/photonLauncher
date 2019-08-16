@@ -59,6 +59,10 @@ class Stage():
 	def __repr__(self):
 		return "Stage <x [{},{}], y [{},{}]>".format(self.xlim[0], self.xlim[1], self.ylim[0], self.ylim[1])
 
+	@property
+	def position(self):
+		return (self.x, self.y)
+
 	def update(self, stageAsDict):
 		for k, v in stageAsDict.items():
 			if k.endswith("lim") and type(v) is not list:
