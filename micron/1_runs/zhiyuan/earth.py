@@ -29,6 +29,7 @@ if _MODE == "RUDOLPH":
         filename = _FILENAME,
         allowDiagonals = True,
         prioritizeLeft = True,
+        shutterTime = servos.Shutter.DEFAULT_DURATION
         # simulateDrawing = True,
         # simulate = True,
         # micronInstance = False # We only want to simulate drawing
@@ -47,6 +48,7 @@ elif _MODE == "OSCAR":
         flipVertically = True,
         yscale = 0.5,
         xscale = 0.5,
+        shutterTime = servos.Shutter.DEFAULT_DURATION
         # simulateDrawing = True
     )
 
