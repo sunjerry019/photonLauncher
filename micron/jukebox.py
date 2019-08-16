@@ -6,6 +6,8 @@ from pydub.generators import Sine
 from pydub.playback import play
 import random2
 
+from pwmaudio import noALSAerror
+
 
 # the most basic melody with pentatonics SCALE should have: TIMBRE, TEMPO, RHYTHMic forms (triplets, quavers, rests, etc), ornaments, repetition, where the last 4 can be done randomly within the score.
 
@@ -59,7 +61,8 @@ class JukeBox():
         return self.sound
 
     def playmusic(self):
-        play(self.sound)
+        with noALSAerror():
+            play(self.sound)
 
     def notegen(self, note, duration, timbre = 'marimba'):
 
