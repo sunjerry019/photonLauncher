@@ -341,6 +341,9 @@ class MicroGui(QtWidgets.QMainWindow):
         # Page 3 = Stage Movement
         self.main_widget.setCurrentIndex(page)
 
+        if page == 3:
+            self.updatePositionDisplay()
+
 # Shutter Control layout
 
     @make_widget_from_layout
@@ -379,7 +382,15 @@ class MicroGui(QtWidgets.QMainWindow):
         _lcdy_label.setMaximumHeight(20)
 
         self._lcdx = QtWidgets.QLCDNumber()
+        self._lcdx.setDigitCount(8)
+        self._lcdx.setSmallDecimalPoint(True)
+        self._lcdx.setMaximumHeight(200)
+        self._lcdx.setMinimumHeight(150)
         self._lcdy = QtWidgets.QLCDNumber()
+        self._lcdy.setDigitCount(8)
+        self._lcdy.setSmallDecimalPoint(True)
+        self._lcdy.setMaximumHeight(200)
+        self._lcdy.setMinimumHeight(150)
         # TODO: Some styling here for the QLCD number
 
         # BUTTONS
@@ -388,6 +399,18 @@ class MicroGui(QtWidgets.QMainWindow):
         self._leftArrow  = QtWidgets.QPushButton(u'\u21E6')
         self._rightArrow = QtWidgets.QPushButton(u'\u21E8')
         self._homeBtn    = QtWidgets.QPushButton("Home\nStage")
+
+        self._stage_buttons = [
+            self._upArrow    ,
+            self._downArrow  ,
+            self._leftArrow  ,
+            self._rightArrow ,
+            self._homeBtn    ,
+        ]
+
+        for btn in self._stage_buttons:
+            btn.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+            btn.setMaximumHeight(150)
 
         self.arrowFont = QtGui.QFont("Arial", 30)
         self.arrowFont.setBold(True)
@@ -909,6 +932,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
     def updatePositionDisplay(self):
         if self.stageControl is not None:
+            # self.logconsole(self.stageControl.controller.stage.position)
             self._lcdx.display(self.stageControl.controller.stage.x)
             self._lcdy.display(self.stageControl.controller.stage.y)
 
