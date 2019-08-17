@@ -33,6 +33,11 @@ class InputError(Exception):
 
 class StageControl():
 	def __init__(self, noinvertx = 1, noinverty = 1, GUI_Object = None, **kwargs):
+		# noinvertx can take values 1 and -1
+
+		assert noinvertx in (-1, 1), "No invertx can only take -1 or 1"
+		assert noinverty in (-1, 1), "No inverty can only take -1 or 1"
+
 		self.controller = micron.Micos(GUI_Object = GUI_Object, **kwargs)
 		self.GUI_Object = GUI_Object
 		self.noinvertx = noinvertx
@@ -46,7 +51,7 @@ class StageControl():
 	def finishTone(self):
 		# Play sound to let user know that the action is completed
 		# TODO: Devise a way for the user to stop the music
-		x = threading.Thread(target=self.jukethreads, args=(,), daemon=True)
+		x = threading.Thread(target=self.jukethreads, daemon=True) #args=(,)
 		x.start()
 
 	def jukethreads(self, **kwargs):

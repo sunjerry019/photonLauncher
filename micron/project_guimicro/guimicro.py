@@ -435,6 +435,14 @@ class MicroGui(QtWidgets.QMainWindow):
         self._step_size.setValidator(QtGui.QDoubleValidator(0.5,10000, 12))
         # _step_size.setFont(QtGui.QFont("Arial",20))
 
+        _SL_settings = QtWidgets.QWidget()
+        _SL_settings_layout = QtWidgets.QVBoxLayout()
+        self._SL_invertx_checkbox = QtWidgets.QCheckBox("Invert Horizontal")
+        self._SL_inverty_checkbox = QtWidgets.QCheckBox("Invert Vertical")
+        _SL_settings_layout.addWidget(self._SL_invertx_checkbox)
+        _SL_settings_layout.addWidget(self._SL_inverty_checkbox)
+        _SL_settings.setLayout(_SL_settings_layout)
+
         # Create the layout with the child elements
         _stage_layout = QtWidgets.QGridLayout()
 
@@ -460,6 +468,8 @@ class MicroGui(QtWidgets.QMainWindow):
         _stage_layout.addWidget(self._downArrow, 5, 2, 1, 2)
         _stage_layout.addWidget(self._leftArrow, 5, 0, 1, 2)
         _stage_layout.addWidget(self._rightArrow, 5, 4, 1, 2)
+
+        _stage_layout.addWidget(_SL_settings, 4, 4, 1, 2)
 
         _stage_layout.addWidget(self._homeBtn, 4, 0, 1, 2)
 
@@ -730,19 +740,15 @@ class MicroGui(QtWidgets.QMainWindow):
 
         # https://stackoverflow.com/a/33793752/3211506
         _AR_action_btns_spacer = QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self._AR_retToOri = QtWidgets.QCheckBox()
+        self._AR_retToOri = QtWidgets.QCheckBox("Return to Origin")
         self._AR_retToOri.setChecked(True)
-        _AR_retToOri_label = QtWidgets.QLabel("Return to Origin")
-        _AR_retToOri_label.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignLeft)
         self._AR_start = QtWidgets.QPushButton("START")
 
         _AR_action_btns_layout.setColumnStretch(0, 0)
-        _AR_action_btns_layout.setColumnStretch(1, 1)
 
-        _AR_action_btns_layout.addItem(_AR_action_btns_spacer, 0, 0, 1, 2)
+        _AR_action_btns_layout.addItem(_AR_action_btns_spacer, 0, 0)
         _AR_action_btns_layout.addWidget(self._AR_retToOri, 1, 0)
-        _AR_action_btns_layout.addWidget(_AR_retToOri_label, 1 ,1)
-        _AR_action_btns_layout.addWidget(self._AR_start, 2, 0, 1, 2)
+        _AR_action_btns_layout.addWidget(self._AR_start, 2, 0)
         _AR_action_btns.setLayout(_AR_action_btns_layout)
         # / Action Buttons
 
@@ -810,6 +816,8 @@ class MicroGui(QtWidgets.QMainWindow):
         self._leftArrow.clicked.connect(lambda: self.cardinalMoveStage(self.LEFT))
         self._rightArrow.clicked.connect(lambda: self.cardinalMoveStage(self.RIGHT))
         self._homeBtn.clicked.connect(lambda: self.homeStage())
+        self._SL_invertx_checkbox.stateChanged.connect(lambda: self.invertCheck())
+        self._SL_inverty_checkbox.stateChanged.connect(lambda: self.invertCheck())
 
         self.keyMapping = {
             QtCore.Qt.Key_Up   : "Up",
@@ -939,6 +947,12 @@ class MicroGui(QtWidgets.QMainWindow):
             # self.logconsole(self.stageControl.controller.stage.position)
             self._lcdx.display(self.stageControl.controller.stage.x)
             self._lcdy.display(self.stageControl.controller.stage.y)
+
+    def invertCheck(self):
+        self.noinvertx = -1 if self._SL_invertx_checkbox.checkState() else 1
+        self.noinverty = -1 if self._SL_inverty_checkbox.checkState() else 1
+
+        # TODO: Update the checkbox in settings
 
     def recalculateARValues(self, startRaster = False):
         _got_error = False
