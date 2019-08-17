@@ -1,12 +1,3 @@
-# Custom
-spectra_log
-.vscode
-*.sublime*
-
-# micron frames
-micron/results/*
-micron/videos/*
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -83,3 +74,17 @@ getresponse
 
 # data files for spec
 oceanoptics/get/[0-9]*_[0-9]*/
+
+# Custom
+spectra_log
+.vscode
+*.sublime*
+
+# micron frames
+micron/results/*
+micron/videos/*
+
+# Project MicroGUI
+!/micron/project_guimicro/build-android-64/
+!/micron/project_guimicro/build-android-64/*
+!/micron/project_guimicro/build-android-64/**/*
