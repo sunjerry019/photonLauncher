@@ -46,7 +46,9 @@ class MicroGui(QtWidgets.QMainWindow):
         # symboldefs
         self.MICROSYMBOL = u"\u00B5"
 
-        self.KEYSTROKE_TIMEOUT = 400 # ms
+        self.KEYSTROKE_TIMEOUT = 10 # ms
+        # Default based on 100ums / 10um
+        # need to change on speed and interval change
 
         self.initUI()
 
@@ -430,9 +432,9 @@ class MicroGui(QtWidgets.QMainWindow):
         self._SL_velocity.setValidator(QtGui.QDoubleValidator(0,10000, 12))
         # _velocity.setFont(QtGui.QFont("Arial",20))
 
-        self._step_size = QtWidgets.QLineEdit()
-        self._step_size.setText('10')
-        self._step_size.setValidator(QtGui.QDoubleValidator(0.5,10000, 12))
+        self._SL_step_size = QtWidgets.QLineEdit()
+        self._SL_step_size.setText('10')
+        self._SL_step_size.setValidator(QtGui.QDoubleValidator(0.5,10000, 12))
         # _step_size.setFont(QtGui.QFont("Arial",20))
 
         _SL_settings = QtWidgets.QWidget()
@@ -461,7 +463,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
         _stage_layout.addWidget(_velocity_label, 2, 0)
         _stage_layout.addWidget(self._SL_velocity, 2, 1, 1, 2)
-        _stage_layout.addWidget(self._step_size, 2, 3, 1, 2)
+        _stage_layout.addWidget(self._SL_step_size, 2, 3, 1, 2)
         _stage_layout.addWidget(_step_size_label, 2, 5)
 
         _stage_layout.addWidget(self._upArrow, 4, 2, 1, 2)
@@ -480,7 +482,58 @@ class MicroGui(QtWidgets.QMainWindow):
     def create_single_raster(self, widget):
         _single_raster_layout = QtWidgets.QGridLayout()
 
-        _single_raster_layout.addWidget(QtWidgets.QLabel("Single Raster Layout"))
+        # Velocity and power adjustments
+
+        # Start button
+
+        # Box Settings
+        _SR_settings = QtWidgets.QGroupBox("Settings")
+        _SR_settings_layout = QtWidgets.QGridLayout()
+
+        _SR_size_y_label = QtWidgets.QLabel("Height ({}m)".format(self.MICROSYMBOL))
+        _SR_size_y_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+
+        _SR_size_x_label = QtWidgets.QLabel("Width ({}m)".format(self.MICROSYMBOL))
+        _SR_size_x_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+
+        _SR_step_size_label = QtWidgets.QLabel("Step Size ({}m)".format(self.MICROSYMBOL))
+        _SR_step_size_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+
+        self._SR_size_x = QtWidgets.QLineEdit()
+        self._SR_size_x.setText("10")
+        self._SR_size_x.setValidator(QtGui.QDoubleValidator(1,10000,12))
+
+        self._SR_size_y = QtWidgets.QLineEdit()
+        self._SR_size_y.setText("10")
+        self._SR_size_y.setValidator(QtGui.QDoubleValidator(1,10000,12))
+
+        self._SR_step_size = QtWidgets.QLineEdit()
+        self._SR_step_size.setText("1")
+        self._SR_step_size.setValidator(QtGui.QDoubleValidator(0.1,10000,12))
+
+        self._SR_raster_x = QtWidgets.QCheckBox()
+        self._SR_raster_y = QtWidgets.QCheckBox()
+        self._SR_raster_y.setChecked(True)
+        _SR_raster_step_along_label = QtWidgets.QLabel("Steps?")
+        _SR_raster_step_along_label.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignLeft)
+
+        self._SR_raster_style = QtWidgets.QLabel("Filled square\nStepping along y-axis")
+        self._SR_raster_style.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+
+        _SR_settings_layout.addWidget(_SR_step_size_label, 0, 0)
+        _SR_settings_layout.addWidget(self._SR_step_size, 0, 1)
+        _SR_settings_layout.addWidget(_SR_raster_step_along_label, 0, 2)
+        _SR_settings_layout.addWidget(self._SR_raster_y, 1, 2)
+        _SR_settings_layout.addWidget(self._SR_raster_x, 2, 2)
+        _SR_settings_layout.addWidget(_SR_size_y_label, 1, 0)
+        _SR_settings_layout.addWidget(_SR_size_x_label, 2, 0)
+        _SR_settings_layout.addWidget(self._SR_size_y, 1, 1)
+        _SR_settings_layout.addWidget(self._SR_size_x, 2, 1)
+        _SR_settings_layout.addWidget(self._SR_raster_style, 3, 0, 1, 3)
+        _SR_settings.setLayout(_SR_settings_layout)
+        # / Settings
+
+        _single_raster_layout.addWidget(_SR_settings)
 
         return _single_raster_layout
 
@@ -818,6 +871,8 @@ class MicroGui(QtWidgets.QMainWindow):
         self._homeBtn.clicked.connect(lambda: self.homeStage())
         self._SL_invertx_checkbox.stateChanged.connect(lambda: self.invertCheck())
         self._SL_inverty_checkbox.stateChanged.connect(lambda: self.invertCheck())
+        self._SL_velocity.textChanged.connect(lambda: self.recalculateKeystrokeTimeout())
+        self._SL_step_size.textChanged.connect(lambda: self.recalculateKeystrokeTimeout())
 
         self.keyMapping = {
             QtCore.Qt.Key_Up   : "Up",
@@ -888,8 +943,26 @@ class MicroGui(QtWidgets.QMainWindow):
                     self.stageControl.controller.shutter.close() if self.stageControl.controller.shutter.isOpen else self.stageControl.controller.shutter.open()
                     return True # Prevents further handling
 
+                # self.logconsole(self.lastCardinalStageMove)
+
+                # now = datetime.datetime.now()
+                # try:
+                #     if now >= self.lastEvent + datetime.timedelta(seconds = 1):
+                #         print(self.numEvents)
+                #         self.numSeconds += 1
+                #         self.lastEvent = now
+                #         self.numEvents = 0
+                # except Exception as e:
+                #     self.lastEvent = now
+                #     self.numSeconds = 0
+                #     self.numEvents = 0
+                #
+                # self.numEvents += 1
+                # we deduce about 66 events / second
+
                 # we try to block it as early and possible
                 if source == self.stage_widget and not self.cardinalStageMoving and datetime.datetime.now() > self.lastCardinalStageMove + datetime.timedelta(milliseconds = self.KEYSTROKE_TIMEOUT):
+
                     if evtkey == QtCore.Qt.Key_Up:
                         self.cardinalMoveStage(self.UP)
 
@@ -915,7 +988,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
     def cardinalMoveStage(self, dir):
         # Get the distance
-        dist = float(self._step_size.text())
+        dist = float(self._SL_step_size.text())
         vel  = float(self._SL_velocity.text())
 
         # Move the stage
@@ -926,7 +999,7 @@ class MicroGui(QtWidgets.QMainWindow):
         # dir is a (dx, dy) tuple/vector that defines the direction that gets multiplied by distance
         if sum(map(abs, dir)) > 1:
             _mag = math.sqrt(dir[0]**2 + dir[1]**2)
-            dir = dir[0] / _mag , dir[1] / _mag
+            dir = (dir[0] / _mag , dir[1] / _mag)
 
         if not self.cardinalStageMoving:
             self.cardinalStageMoving = True
@@ -935,10 +1008,10 @@ class MicroGui(QtWidgets.QMainWindow):
                 # We reset the velocity if it is different
                 self.stageControl.controller.setvel(velocity)
 
-            self.stageControl.controller.rmove(x = dir[0] * distance, y = dir[1] * distance)
+            self.stageControl.controller.rmove(x = dir[0] * distance * self.stageControl.noinvertx, y = dir[1] * distance * self.stageControl.noinverty)
             self.updatePositionDisplay()
 
-            self.lastCardinalStageMove = datetime.datetime.now() # We just completed a move
+            self.lastCardinalStageMove = datetime.datetime.now()
 
             self.cardinalStageMoving = False
 
@@ -949,10 +1022,23 @@ class MicroGui(QtWidgets.QMainWindow):
             self._lcdy.display(self.stageControl.controller.stage.y)
 
     def invertCheck(self):
-        self.noinvertx = -1 if self._SL_invertx_checkbox.checkState() else 1
-        self.noinverty = -1 if self._SL_inverty_checkbox.checkState() else 1
+        self.stageControl.noinvertx = -1 if self._SL_invertx_checkbox.checkState() else 1
+        self.stageControl.noinverty = -1 if self._SL_inverty_checkbox.checkState() else 1
 
         # TODO: Update the checkbox in settings
+
+    def recalculateKeystrokeTimeout(self):
+        try:
+            vel = float(self._SL_velocity.text())
+            dist = float(self._SL_step_size.text())
+            estTime = self.stageControl.controller.getDeltaTime(x = dist, y = 0, velocity = vel)
+            self.KEYSTROKE_TIMEOUT = estTime * 66 * 0.002 * 1000 # 66 events per second, 0.002 to process each event
+            # i.e. to say how long to burn all the events
+            # Issue is events gets queued, not the connected function
+
+        except Exception as e:
+            self.logconsole(e)
+            self.KEYSTROKE_TIMEOUT = 10
 
     def recalculateARValues(self, startRaster = False):
         _got_error = False
