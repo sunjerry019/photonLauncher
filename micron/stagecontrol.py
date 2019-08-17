@@ -22,6 +22,9 @@ import numpy as np
 import math
 import time
 import datetime
+import threading
+
+import jukebox
 
 
 class InputError(Exception):
@@ -41,11 +44,13 @@ class StageControl():
 		self.UP, self.RIGHT, self.DOWN, self.LEFT = 0, 1, 2, 3
 
 	def finishTone(self):
-		#Play sound to let user know that the action is completed
-		import jukebox
+		# Play sound to let user know that the action is completed
+		# TODO: Devise a way for the user to stop the music
+		x = threading.Thread(target=self.jukethreads, args=(,), daemon=True)
+		x.start()
 
-		j = jukebox.JukeBox()
-
+	def jukethreads(self, **kwargs):
+		return jukebox.JukeBox(**kwargs)
 
 	# implement cardinal direction movement definitions, the input cases arent actually necessary once we have buttons paired to commands on guimicro
 	def rcardinal(self, direction, distance):
