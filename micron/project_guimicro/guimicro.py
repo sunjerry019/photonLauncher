@@ -46,6 +46,8 @@ class MicroGui(QtWidgets.QMainWindow):
         # symboldefs
         self.MICROSYMBOL = u"\u00B5"
 
+        self.KEYSTROKE_TIMEOUT = 400 # ms
+
         self.initUI()
 
     def initUI(self):
@@ -801,6 +803,7 @@ class MicroGui(QtWidgets.QMainWindow):
         self.UP, self.RIGHT, self.DOWN, self.LEFT = (0, 1), (1, 0), (0, -1), (-1, 0)
 
         self.cardinalStageMoving = False
+        self.lastCardinalStageMove = datetime.datetime.now()
 
         self._upArrow.clicked.connect(lambda: self.cardinalMoveStage(self.UP))
         self._downArrow.clicked.connect(lambda: self.cardinalMoveStage(self.DOWN))
@@ -877,21 +880,19 @@ class MicroGui(QtWidgets.QMainWindow):
                     self.stageControl.controller.shutter.close() if self.stageControl.controller.shutter.isOpen else self.stageControl.controller.shutter.open()
                     return True # Prevents further handling
 
-                if evtkey == QtCore.Qt.Key_Up and source == self.stage_widget and not self.cardinalStageMoving:
-                    # print("Up")
-                    self.cardinalMoveStage(self.UP)
+                # we try to block it as early and possible
+                if source == self.stage_widget and not self.cardinalStageMoving and datetime.datetime.now() > self.lastCardinalStageMove + datetime.timedelta(milliseconds = self.KEYSTROKE_TIMEOUT):
+                    if evtkey == QtCore.Qt.Key_Up:
+                        self.cardinalMoveStage(self.UP)
 
-                if evtkey == QtCore.Qt.Key_Down and source == self.stage_widget and not self.cardinalStageMoving:
-                    # print("Down")
-                    self.cardinalMoveStage(self.DOWN)
+                    if evtkey == QtCore.Qt.Key_Down:
+                        self.cardinalMoveStage(self.DOWN)
 
-                if evtkey == QtCore.Qt.Key_Left and source == self.stage_widget and not self.cardinalStageMoving:
-                    # print("Left")
-                    self.cardinalMoveStage(self.LEFT)
+                    if evtkey == QtCore.Qt.Key_Left:
+                        self.cardinalMoveStage(self.LEFT)
 
-                if evtkey == QtCore.Qt.Key_Right and source == self.stage_widget and not self.cardinalStageMoving:
-                    # print("Right")
-                    self.cardinalMoveStage(self.RIGHT)
+                    if evtkey == QtCore.Qt.Key_Right:
+                        self.cardinalMoveStage(self.RIGHT)
 
         # return QtWidgets.QWidget.eventFilter(self, source, evt)
         return super(QtWidgets.QWidget, self).eventFilter(source, evt)
@@ -928,6 +929,8 @@ class MicroGui(QtWidgets.QMainWindow):
 
             self.stageControl.controller.rmove(x = dir[0] * distance, y = dir[1] * distance)
             self.updatePositionDisplay()
+
+            self.lastCardinalStageMove = datetime.datetime.now() # We just completed a move
 
             self.cardinalStageMoving = False
 

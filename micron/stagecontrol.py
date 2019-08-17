@@ -73,7 +73,6 @@ class StageControl():
 		# implement button for relative move directly
 		distance /= 1.414213562373095
 		self.controller.rmove(x = distance * self.invertx, y = distance * self.inverty)
-		pass
 
 	# most basic, single rectangle cut rastering
 	def singleraster(self, velocity, xDist, yDist, rasterSettings, returnToOrigin = False, estimateTime = True, onlyEstimate = False):
