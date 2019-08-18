@@ -64,7 +64,7 @@ LIBS += -lpython3
 LIBS += -lsip
 LIBS += -lz
 
-ANDROID_EXTRA_LIBS += /home/sunyudong/git/photonLauncher/micron/project_guimicro/sysroot-android-64/lib/libbz2.so /home/sunyudong/git/photonLauncher/micron/project_guimicro/sysroot-android-64/lib/libz.so
+ANDROID_EXTRA_LIBS += /home/sunyudong/git/photonLauncher/micron/project_guimicro/sysroot-android-64/lib/libz.so /home/sunyudong/git/photonLauncher/micron/project_guimicro/sysroot-android-64/lib/libbz2.so
 
 cython.name = Cython compiler
 cython.input = CYTHONSOURCES

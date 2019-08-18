@@ -88,3 +88,4 @@ micron/videos/*
 !/micron/project_guimicro/build-android-64/
 !/micron/project_guimicro/build-android-64/*
 !/micron/project_guimicro/build-android-64/**/*
+/micron/project_guimicro/dependencies/sources/*

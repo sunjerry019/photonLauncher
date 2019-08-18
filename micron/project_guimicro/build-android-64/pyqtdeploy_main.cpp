@@ -71,7 +71,7 @@ static struct _inittab extension_modules[] = {
     {NULL, NULL}
 };
 static const char *path_dirs[] = {
-    "/home/sunyudong/git/photonLauncher/micron/",
+    "/mnt/YSunDisk/sysroot/",
     NULL
 };
 

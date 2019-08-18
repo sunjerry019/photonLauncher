@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# pyqtdeploy shutterbtn.pdy
+
+pyqtdeploy-sysroot shutterbtn.sysroot.json --sysroot ./dependencies/sysroot --source-dir ./dependencies/sources # --target android-64
+
 pyqtdeploy-build shutterbtn.pdy --target android-64
 cd build-android-64
 
