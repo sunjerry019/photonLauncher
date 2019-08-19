@@ -958,9 +958,11 @@ class MicroGui(QtWidgets.QMainWindow):
                 #     self.numEvents = 0
                 #
                 # self.numEvents += 1
-                # we deduce about 66 events / second
+                # ==> we deduce about 66 events / second
 
                 # we try to block it as early and possible
+                # WARNING: This still doesn't work as expected like in the previous VBA iteration of this
+
                 if source == self.stage_widget and not self.cardinalStageMoving and datetime.datetime.now() > self.lastCardinalStageMove + datetime.timedelta(milliseconds = self.KEYSTROKE_TIMEOUT):
 
                     if evtkey == QtCore.Qt.Key_Up:
