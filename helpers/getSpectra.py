@@ -106,6 +106,9 @@ class Icecube(object):
         else:
             raise Exception('ADC Read unsuccessful')
 
+    def getSerial(self):
+        return self.getSingleEEPROM(0)
+
     """ integrationTime is in milliseconds for convenience """
     def setIntegrationTime(self, x):
         t = struct.pack('<I', int(x * 1000))
@@ -134,6 +137,7 @@ class Icecube(object):
             for i in range(256):
                 x = data[j][2*i:(i+1)*2]
                 _data.append(struct.unpack('<h', x)[0])
+
         return [(self.wavelengths[i], self.autonulling * _data[i]) for i in range(len(self.wavelengths))]
 
     def __enter__(self):
