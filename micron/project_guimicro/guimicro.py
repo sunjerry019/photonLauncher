@@ -1049,8 +1049,10 @@ class MicroGui(QtWidgets.QMainWindow):
             vel_0 = float(self._AR_init_velocity.text())
             pow_0 = int(self._AR_init_power.text())
 
-            step_along_x = self._AR_raster_x.checkState()
-            step_along_y = self._AR_raster_y.checkState()
+            # we convert 2 to 1 since .checkState gives 0 = unchecked, 2 = checked
+            step_along_x = True if self._AR_raster_x.checkState() else False
+            step_along_y = True if self._AR_raster_y.checkState() else False
+
             step_size = float(self._AR_step_size.text())
 
             # 0 = Velocity, 1 = Power
@@ -1064,7 +1066,7 @@ class MicroGui(QtWidgets.QMainWindow):
             y_rows = int(self._AR_rows.text())
             y_spac = float(self._AR_Y_spacing.text())
 
-            returnToOrigin = self._AR_retToOri.checkState()
+            returnToOrigin = True if self._AR_retToOri.checkState() else False
 
             # sizes
             # y, x
