@@ -1285,8 +1285,15 @@ def moveToCentre(QtObj, host = None):
         QtObj.move(hostRect.center() - QtObj.rect().center())
     else:
         screenGeometry = QtWidgets.QDesktopWidget().availableGeometry()
-        _x = (screenGeometry.width() - QtObj.width()) / 2;
-        _y = (screenGeometry.height() - QtObj.height()) / 2;
+        try:
+            ObjWidth = QtObj.width()
+            ObjHeight = QtObj.height()
+        except TypeError as e:
+            ObjWidth = QtObj.width
+            ObjHeight = QtObj.height
+
+        _x = (screenGeometry.width() - ObjWidth) / 2;
+        _y = (screenGeometry.height() - ObjHeight) / 2;
         QtObj.move(_x, _y);
 
 def main(**kwargs):
