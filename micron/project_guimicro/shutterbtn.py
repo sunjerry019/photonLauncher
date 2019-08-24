@@ -9,7 +9,7 @@ from PyQt5.QtCore import pyqtSlot, Qt
 sys.path.insert(0, '../')
 # import stagecontrol
 import servos
-from guimicro import moveToCentre
+from extraFunctions import moveToCentre
 
 class Butt(QWidget):
 

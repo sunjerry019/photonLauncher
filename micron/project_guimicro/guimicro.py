@@ -33,6 +33,8 @@ sys.path.insert(0, '../')
 import stagecontrol
 import servos
 
+from extraFunctions import moveToCentre
+
 class MicroGui(QtWidgets.QMainWindow):
     def __init__(self, devMode = False, noHome = False):
         super().__init__()
@@ -1274,27 +1276,6 @@ class aboutPopUp(QtWidgets.QDialog):
 #     _centerPoint = QtWidgets.QDesktopWidget().availableGeometry().center()
 #     _qtRectangle.moveCenter(_centerPoint)
 #     QtObj.move(_qtRectangle.topLeft())
-
-def moveToCentre(QtObj, host = None):
-    # https://stackoverflow.com/a/42326134/3211506
-    if host is None:
-        host = QtObj.parentWidget()
-
-    if host:
-        hostRect = host.frameGeometry()
-        QtObj.move(hostRect.center() - QtObj.rect().center())
-    else:
-        screenGeometry = QtWidgets.QDesktopWidget().availableGeometry()
-        try:
-            ObjWidth = QtObj.width()
-            ObjHeight = QtObj.height()
-        except TypeError as e:
-            ObjWidth = QtObj.width
-            ObjHeight = QtObj.height
-
-        _x = (screenGeometry.width() - ObjWidth) / 2;
-        _y = (screenGeometry.height() - ObjHeight) / 2;
-        QtObj.move(_x, _y);
 
 def main(**kwargs):
     app = QtWidgets.QApplication(sys.argv)
