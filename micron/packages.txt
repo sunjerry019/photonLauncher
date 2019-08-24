@@ -1,1 +1,13 @@
 https://stackoverflow.com/questions/18109859/how-to-install-matplotlib-basemap-module-on-windows-7-with-winpython-or-any-pyt
+
+
+Windows:
+    PIP packages:
+        pyserial
+        pyqt5
+        Pillow
+        playsound
+        random2
+    Anaconda Packages:
+        conda install -c anaconda pyaudio
+        conda install -c conda-forge pydub
