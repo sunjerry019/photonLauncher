@@ -5,11 +5,13 @@
 // Script will throw an error trying to parse this file
 // Remove all these comments for the actual local file
 // .gitignore will automatically ignore config.local.json
+
 // You may use any other filename, but you have to supply it into micron.Micos(devConfig = "/path/to/file")
 // micron.Micos(devConfig = {"port": "/some/other/port"}) is also valid
 
 // The config file can contain just the changed parameters from the default ones listed below
 // On Linux, the port is automatically defaulted to /dev/ttySUB0
+// BEWARE: If you are using USB to RS232 on Windows, it might not be COM1!
 
 {
 	"port"      : "COM1",
