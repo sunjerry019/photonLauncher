@@ -84,6 +84,9 @@ spectra_log
 micron/results/*
 micron/videos/*
 
+# micron
+config.local.json
+
 # Project MicroGUI
 !/micron/project_guimicro/build-android-64/
 !/micron/project_guimicro/build-android-64/*

@@ -81,8 +81,9 @@ class Stage():
 		self.y = y
 
 class Micos():
-	def __init__(self, stageConfig = None, noCtrlCHandler = False, unit = "um", noHome = False, shutterAbsolute = False, GUI_Object = None, devMode = False, shutter_channel = servos.Servo.LEFTCH):
-		# stageConfig can be a dictionary or a json filename
+	def __init__(self, devConfig = None, stageConfig = None, noCtrlCHandler = False, unit = "um", noHome = False, shutterAbsolute = False, GUI_Object = None, devMode = False, shutter_channel = servos.Servo.LEFTCH):
+		# stageConfig and devConfig can be a dictionary or a json filename
+		# devConfig can just contain any values that differ from the default values
 		# See self.help for documentation
 
 		self.devMode = devMode
@@ -100,6 +101,31 @@ class Micos():
 		# Windows = Windows, Linux = Linux, Mac = Darwin
 		if platform.system() == "Linux":
 			cfg["port"] = '/dev/ttyUSB0'
+
+		if devConfig:
+			if type(devConfig) is str:
+				with open(devConfig, 'r') as f:
+					devConfig = json.load(f)
+
+			cfg.update(devConfig)
+		else:
+			# We attempt to load the config from a default "config.local.json" if it exists
+			base_dir = os.path.dirname(os.path.realpath(__file__))
+			local_conf = os.path.join(base_dir, "config.local.json")
+
+			if os.path.isfile(local_conf):
+				try:
+					with open(local_conf, 'r') as f:
+						devConfig = json.load(f)
+				except json.decoder.JSONDecodeError as e:
+					if devMode:
+						warnings.warn("Invalid local config file, not loaded!\n\nError: {}\n\n".format(e))
+					else:
+						raise RuntimeError("Invalid config.local.json found! Delete or correct errors!\n\nError: {}".format(e))
+						
+				cfg.update(devConfig)
+
+
 
 		self.ENTER = b'\x0D' #chr(13)  # CR
 
