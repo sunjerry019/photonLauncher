@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QGridLayout, QSizePolicy
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QGridLayout, QHBoxLayout, QSizePolicy
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot, Qt
 
@@ -32,24 +32,39 @@ class Butt(QWidget):
         moveToCentre(self)
 
         self._layout = QGridLayout()
-
         self.textbox = QLabel(self)
-        self.textbox.setText("HELLO WORLD")
+        self.textbox.setText("HELLO WORLD\n")
         self.setStyleSheet("QLabel {font-weight: bold; font-size: 18pt; font-family: Roboto, 'Segoe UI'; }")
         self.textbox.setMaximumHeight(100)
-
+        # self.textbox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         button = QPushButton('LAUNCH\nSEQUENCE', self)
         button.setToolTip('A single button. Click it maybe?')
-        button.setStyleSheet("QPushButton {background-color: red; color: black; font-weight: bold; font-size: 20pt; font-family: Roboto, 'Segoe UI'; }")
+        button.setStyleSheet("QPushButton {background-color: red; color: black; font-weight: bold; font-size: 20pt; font-family: Roboto, 'Segoe UI';}")
         button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         button.setMaximumHeight(300)
         button.setMaximumWidth(350)
         button.clicked.connect(self.on_click)
 
         self._layout.addWidget(self.textbox, 0, 0)
-        self._layout.addWidget(button, 1, 0)
-        # self._layout.setAlignment(button, Qt.AlignHCenter)
+
+        # https://stackoverflow.com/a/25515321/3211506
+        self.horizontal_wrapper = QWidget()
+        self.horizontal_wrapper_layout = QHBoxLayout()
+        self.horizontal_wrapper_layout.setContentsMargins(0, 0, 0, 0)
+        self.horizontal_wrapper_layout.addStretch(1)
+        self.horizontal_wrapper_layout.addWidget(button)
+        self.horizontal_wrapper_layout.setStretchFactor(button, 3)
+        self.horizontal_wrapper_layout.addStretch(1)
+        self.horizontal_wrapper.setLayout(self.horizontal_wrapper_layout)
+
+        self._layout.addWidget(self.horizontal_wrapper, 1, 0)
+
+
+
+        # We still set this as this is not default behaviour on Windows
+        self._layout.setAlignment(self.textbox, Qt.AlignCenter)
+        # self._layout.setAlignment(button, Qt.AlignCenter)
 
         self.setLayout(self._layout)
 
