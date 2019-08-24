@@ -1,0 +1,9 @@
+.
+./zlib-1.2.11.tar.gz
+./openssl-1.0.2r.tar.gz
+./Python-3.7.2.tar.xz
+./sip-4.19.18.tar.gz
+./openssl-1.1.0j.tar.gz
+./qt-everywhere-src-5.13.0.tar.xz
+./PyQt5_gpl-5.13.0.tar.gz
+./files.txt
