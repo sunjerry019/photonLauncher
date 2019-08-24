@@ -13,8 +13,9 @@ from extraFunctions import moveToCentre
 
 class Butt(QWidget):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args):
+        super().__init__(*args)
+
         self.title = 'Optical audio shutter'
         self.left = 10
         self.top = 10
@@ -34,13 +35,13 @@ class Butt(QWidget):
 
         self.textbox = QLabel(self)
         self.textbox.setText("HELLO WORLD")
-        self.setStyleSheet("QLabel {font: bold 18pt Roboto}")
+        self.setStyleSheet("QLabel {font-weight: bold; font-size: 18pt; font-family: Roboto, 'Segoe UI'; }")
         self.textbox.setMaximumHeight(100)
 
 
         button = QPushButton('LAUNCH\nSEQUENCE', self)
         button.setToolTip('A single button. Click it maybe?')
-        button.setStyleSheet('QPushButton {background-color: red; color: black; font: bold 20pt Roboto}')
+        button.setStyleSheet("QPushButton {background-color: red; color: black; font-weight: bold; font-size: 20pt; font-family: Roboto, 'Segoe UI'; }")
         button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         button.setMaximumHeight(300)
         button.setMaximumWidth(350)
