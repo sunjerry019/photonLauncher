@@ -64,10 +64,13 @@ class Stage():
 		return (self.x, self.y)
 
 	def update(self, stageAsDict):
-		for k, v in stageAsDict.items():
-			if k.endswith("lim") and type(v) is not list:
-				raise TypeError("Limit must be a list [lower, upper]")
-			setattr(self, k, v)
+		if isinstance(stageAsDict, dict):
+			for k, v in stageAsDict.items():
+				if k.endswith("lim") and type(v) is not list:
+					raise TypeError("Limit must be a list [lower, upper]")
+				setattr(self, k, v)
+		else:
+			warnings.warn("Non-dictionary supplied to stage. Skipped: {}".format(stageAsDict))
 
 	def setpos(self, x, y):
 		# We keep track of our own coordinates
@@ -102,12 +105,17 @@ class Micos():
 		if platform.system() == "Linux":
 			cfg["port"] = '/dev/ttyUSB0'
 
+
+		# We try to load device configuration if provided
 		if devConfig:
 			if type(devConfig) is str:
 				with open(devConfig, 'r') as f:
 					devConfig = json.load(f)
 
-			cfg.update(devConfig)
+			if isinstance(devConfig, dict):
+				cfg.update(devConfig)
+			else:
+				warnings.warn("Non-dictionary devConfig. Skipped: {}".format(devConfig))
 		else:
 			# We attempt to load the config from a default "config.local.json" if it exists
 			base_dir = os.path.dirname(os.path.realpath(__file__))
@@ -122,9 +130,9 @@ class Micos():
 						warnings.warn("Invalid local config file, not loaded!\n\nError: {}\n\n".format(e))
 					else:
 						raise RuntimeError("Invalid config.local.json found! Delete or correct errors!\n\nError: {}".format(e))
-						
-				cfg.update(devConfig)
-
+				else:
+					# We are guaranteed its a dict
+					cfg.update(devConfig)
 
 
 		self.ENTER = b'\x0D' #chr(13)  # CR

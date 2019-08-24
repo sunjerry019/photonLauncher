@@ -1,10 +1,12 @@
 // configuration settings for talking to Micos SMC Basic microcontroller box
 
 // IMPORTANT:
-// THIS IS NOT A VALID JSON FILE, PLEASE COPY OUT TO ANOTHER FILE TO USE FOR LOADING
+// THIS IS NOT A VALID JSON FILE, PLEASE COPY OUT TO 'config.local.json' TO USE FOR LOADING
 // Script will throw an error trying to parse this file
 // Remove all these comments for the actual local file
-// Please rename the actual local config file as config.local.json. .gitignore will automatically ignore it
+// .gitignore will automatically ignore config.local.json
+// You may use any other filename, but you have to supply it into micron.Micos(devConfig = "/path/to/file")
+// micron.Micos(devConfig = {"port": "/some/other/port"}) is also valid
 
 // The config file can contain just the changed parameters from the default ones listed below
 // On Linux, the port is automatically defaulted to /dev/ttySUB0
