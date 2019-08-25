@@ -86,6 +86,7 @@ micron/videos/*
 
 # micron
 config.local.json
+*.local.*
 
 # Project MicroGUI
 !/micron/project_guimicro/build-android-64/
