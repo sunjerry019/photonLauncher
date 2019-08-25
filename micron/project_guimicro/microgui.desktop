@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Micos Stage Controller
 Comment=GUI to control Optical Shutter and Micos SMC Basic Microcontroller
-GenericName=StageController
+GenericName=Microcontroller
 Exec=/path/to/micron/project_guimicro/guimicro.py
 Terminal=false
 Type=Application
