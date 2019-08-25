@@ -1,7 +1,9 @@
-import sys
+import sys, os
 import argparse
 
-sys.path.insert(0, '../helpers/')
+base_dir = os.path.dirname(os.path.realpath(__file__))
+root_dir = os.path.abspath(os.path.join(base_dir, "..", "helpers"))
+sys.path.insert(0, root_dir)
 
 from teaspoon import parse
 
