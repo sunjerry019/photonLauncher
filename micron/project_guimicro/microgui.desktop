@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Micos Stage Controller
+Comment=Micos Stage Controller
+GenericName=StageController
+Exec=/path/to/micron/project_guimicro/guimicro.py
+Terminal=false
+Type=Application
+Icon=/path/to/micron/project_guimicro/icons/guimicro.svg
+Categories=Others;
+StartupNotify=true

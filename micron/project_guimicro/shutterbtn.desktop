@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Shutter Button
+Comment=Shutter Button
+GenericName=Button
+Exec=/path/to/micron/project_guimicro/shutterbtn.py
+Terminal=false
+Type=Application
+Icon=/path/to/micron/project_guimicro/icons/shutterbtn.svg
+Categories=Others;
+StartupNotify=true

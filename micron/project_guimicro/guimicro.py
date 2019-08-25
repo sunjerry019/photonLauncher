@@ -45,6 +45,8 @@ class MicroGui(QtWidgets.QMainWindow):
 
         self.noHome = noHome
 
+        self.customicon = './icons/guimicro.svg'
+
         # symboldefs
         self.MICROSYMBOL = u"\u00B5"
 
@@ -60,7 +62,7 @@ class MicroGui(QtWidgets.QMainWindow):
         moveToCentre(self)
 
         self.setWindowTitle('Micos Stage Controller MARK II 0.1a')
-        self.setWindowIcon(QtGui.QIcon('./pictures/icon.bmp'))
+        self.setWindowIcon(QtGui.QIcon(self.customicon))
 
         # Essentially the steps for the gui works like this
         # Create a widget -> Create a layout -> Add widgets to layout -> Assign layout to widget -> Assign widget to window
@@ -157,6 +159,7 @@ class MicroGui(QtWidgets.QMainWindow):
         self.setOperationStatus("Initializing StageControl()")
         initWindow.setGeometry(50, 50, 300, 200)
         initWindow.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.Dialog | QtCore.Qt.WindowMaximizeButtonHint | QtCore.Qt.CustomizeWindowHint)
+        initWindow.setWindowIcon(QtGui.QIcon(self.customicon))
         moveToCentre(initWindow)
 
         initWindow_layout = QtWidgets.QVBoxLayout()
