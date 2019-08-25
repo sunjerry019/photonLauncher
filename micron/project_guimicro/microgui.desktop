@@ -8,3 +8,12 @@ Type=Application
 Icon=/path/to/micron/project_guimicro/icons/guimicro.svg
 Categories=Utility;Electronics;
 StartupNotify=false
+Actions=dev-mode;start-without-homing;
+
+[Desktop Action dev-mode]
+Name=Developer Mode
+Exec=/path/to/micron/project_guimicro/guimicro.py --devMode
+
+[Desktop Action start-without-homing]
+Name=No Homing
+Exec=/path/to/micron/project_guimicro/guimicro.py --noHome
