@@ -1,0 +1,7 @@
+shutter/absoluteMode
+shutter/channel
+power/absoluteMode
+stage/noHome
+stage/invertx
+stage/inverty
+stage/config -> dict?

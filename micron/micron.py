@@ -84,7 +84,11 @@ class Stage():
 		self.y = y
 
 class Micos():
-	def __init__(self, devConfig = None, stageConfig = None, noCtrlCHandler = False, unit = "um", noHome = False, shutterAbsolute = False, GUI_Object = None, devMode = False, shutter_channel = servos.Servo.LEFTCH):
+	def __init__(self,
+			devConfig = None, stageConfig = None, noCtrlCHandler = False, unit = "um",
+			noHome = False, shutterAbsolute = False, shutter_channel = servos.Servo.LEFTCH,
+			powerAbsolute = False, GUI_Object = None, devMode = False
+		):
 		# stageConfig and devConfig can be a dictionary or a json filename
 		# devConfig can just contain any values that differ from the default values
 		# See self.help for documentation
@@ -178,7 +182,7 @@ class Micos():
 		self.shutter = servos.Shutter(absoluteMode = shutterAbsolute, GUI_Object = GUI_Object, channel = shutter_channel)
 		self.shutter.close()
 
-		self.powerServo = servos.Power(absoluteMode = False, channel = shutter_channel * (-1))
+		self.powerServo = servos.Power(absoluteMode = powerAbsolute, channel = shutter_channel * (-1))
 
 		# BEGIN INITIALIZATION
 		print("Stage Initialization...", end="\r")
