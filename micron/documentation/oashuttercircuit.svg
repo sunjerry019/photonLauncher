@@ -15,7 +15,7 @@
    viewBox="0 0 297 210"
    version="1.1"
    id="svg8"
-   inkscape:version="0.92.4 5da689c313, 2019-01-14"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
    sodipodi:docname="oashuttercircuit.svg"
    inkscape:export-filename="/home/sunyudong/git/photonLauncher/micron/documentation/oashuttercircuit.png"
    inkscape:export-xdpi="24.0578"
@@ -25,49 +25,51 @@
     <marker
        inkscape:stockid="Arrow1Mend"
        orient="auto"
-       refY="0.0"
-       refX="0.0"
+       refY="0"
+       refX="0"
        id="Arrow1Mend"
-       style="overflow:visible;"
+       style="overflow:visible"
        inkscape:isstock="true">
       <path
          id="path994"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         style="fill-rule:evenodd;stroke:#fff9f9;stroke-width:1pt;stroke-opacity:1;fill:#fff9f9;fill-opacity:1"
-         transform="scale(0.4) rotate(180) translate(10,0)" />
+         d="M 0,0 5,-5 -12.5,0 5,5 Z"
+         style="fill:#fff9f9;fill-opacity:1;fill-rule:evenodd;stroke:#fff9f9;stroke-width:1.00000003pt;stroke-opacity:1"
+         transform="matrix(-0.4,0,0,-0.4,-4,0)"
+         inkscape:connector-curvature="0" />
     </marker>
     <marker
        inkscape:stockid="Arrow2Lend"
        orient="auto"
-       refY="0.0"
-       refX="0.0"
+       refY="0"
+       refX="0"
        id="Arrow2Lend"
-       style="overflow:visible;"
+       style="overflow:visible"
        inkscape:isstock="true">
       <path
          id="path1006"
-         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#fff9f9;stroke-opacity:1;fill:#fff9f9;fill-opacity:1"
-         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
-         transform="scale(1.1) rotate(180) translate(1,0)" />
+         style="fill:#fff9f9;fill-opacity:1;fill-rule:evenodd;stroke:#fff9f9;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)"
+         inkscape:connector-curvature="0" />
     </marker>
   </defs>
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
+     bordercolor="#000000"
+     borderopacity="1"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.70710678"
-     inkscape:cx="513.37602"
-     inkscape:cy="395.86983"
+     inkscape:zoom="1"
+     inkscape:cx="555.41425"
+     inkscape:cy="456.14708"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
-     showgrid="false"
+     showgrid="true"
      inkscape:window-width="1920"
-     inkscape:window-height="1020"
+     inkscape:window-height="1005"
      inkscape:window-x="0"
-     inkscape:window-y="32"
+     inkscape:window-y="38"
      inkscape:window-maximized="1"
      showguides="false" />
   <metadata
@@ -78,7 +80,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -96,7 +98,7 @@
          sodipodi:role="line"
          id="tspan825"
          x="151.47395"
-         y="184.09673"
+         y="183.80499"
          style="stroke-width:0.26458332" /></text>
     <rect
        style="fill:#aa0000;stroke:#000000;stroke-width:0.18785325;stroke-opacity:1"
@@ -123,7 +125,7 @@
        xml:space="preserve"
        id="flowRoot817-7-1"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:13.15845108px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none"
-       transform="matrix(0.26809978,0,0,0.26809978,45.396415,113.47361)"><flowRegion
+       transform="matrix(0.26809978,0,0,0.26809978,42.221413,113.47361)"><flowRegion
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:13.15845108px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1"
          id="flowRegion819-8-2"><rect
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:13.15845108px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1"
@@ -132,7 +134,7 @@
            height="129.19572"
            x="457.14285"
            y="268.34366" /></flowRegion><flowPara
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:13.15845108px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14.47429562px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1"
          id="flowPara8919">LM358N Dual OpAmp Chip</flowPara></flowRoot>    <path
        inkscape:connector-curvature="0"
        id="path1007"
@@ -181,7 +183,7 @@
        sodipodi:arg1="0.93971694"
        sodipodi:r2="3.8499334"
        sodipodi:r1="4.7587795"
-       sodipodi:cy="233.97367"
+       sodipodi:cy="233.97366"
        sodipodi:cx="160.88168"
        sodipodi:sides="5"
        id="path1137"
@@ -206,7 +208,7 @@
        style="fill:none;stroke:#000000;stroke-width:0.29427308px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <rect
        transform="rotate(90)"
-       style="fill:#3d3d3d;fill-opacity:1;stroke:none;stroke-width:0.188;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.18799999;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect815-7"
        width="61.506317"
        height="41.795635"
@@ -225,7 +227,7 @@
            height="146.67598"
            x="457.14285"
            y="268.34366" /></flowRegion><flowPara
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:26.66604805px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#ffffff;fill-opacity:1"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:28.55932236px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#ffffff;fill-opacity:1"
          id="flowPara5002">3.5mm TRS auxiliary cable jack input </flowPara></flowRoot>    <flowRoot
        xml:space="preserve"
        id="flowRoot817-7-1-5-6"
@@ -352,7 +354,7 @@
        xml:space="preserve"
        id="flowRoot817-7-1-2-6"
        style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-       transform="matrix(0.15488934,0,0,0.15488934,25.161448,128.62822)"><flowRegion
+       transform="matrix(0.24206562,0,0,0.27358092,-15.598319,93.106673)"><flowRegion
          id="flowRegion819-8-2-4-5"><rect
            id="rect821-5-6-9-0"
            width="217.14288"
@@ -374,7 +376,7 @@
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;stroke:#000000;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 247.77288,150.96892 -19.21064,0 v 62.08259 h -11.90625 c 0,0 0.33074,3.87426 -3.9215,3.92151 -4.25223,0.0472 -4.06324,-3.77977 -4.06324,-3.77977 l -13.60714,0.14174 0.0472,-5.95312"
+       d="m 247.77288,150.96892 h -19.21064 v 62.08259 h -11.90625 c 0,0 0.33074,3.87426 -3.9215,3.92151 -4.25223,0.0472 -4.06324,-3.77977 -4.06324,-3.77977 l -13.60714,0.14174 0.0472,-5.95312"
        id="path5422"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cccccccc" />
@@ -389,7 +391,7 @@
        sodipodi:arg1="0.93971694"
        sodipodi:r2="3.8499334"
        sodipodi:r1="4.7587795"
-       sodipodi:cy="274.66396"
+       sodipodi:cy="274.66397"
        sodipodi:cx="240.30122"
        sodipodi:sides="5"
        id="path1137-3"
@@ -406,7 +408,7 @@
        sodipodi:arg1="0.93971694"
        sodipodi:r2="3.8499334"
        sodipodi:r1="4.7587795"
-       sodipodi:cy="274.66396"
+       sodipodi:cy="274.66397"
        sodipodi:cx="257.13776"
        sodipodi:sides="5"
        id="path1137-9"
@@ -423,7 +425,7 @@
        sodipodi:arg1="0.93971694"
        sodipodi:r2="3.8499334"
        sodipodi:r1="4.7587795"
-       sodipodi:cy="97.556106"
+       sodipodi:cy="97.556107"
        sodipodi:cx="204.14841"
        sodipodi:sides="5"
        id="path1137-3-8"
@@ -440,7 +442,7 @@
        sodipodi:arg1="0.93971694"
        sodipodi:r2="3.8499334"
        sodipodi:r1="4.7587795"
-       sodipodi:cy="97.556106"
+       sodipodi:cy="97.556107"
        sodipodi:cx="220.98531"
        sodipodi:sides="5"
        id="path1137-9-5"
@@ -457,7 +459,7 @@
        sodipodi:arg1="0.93971694"
        sodipodi:r2="3.8499334"
        sodipodi:r1="4.7587795"
-       sodipodi:cy="287.16817"
+       sodipodi:cy="287.16818"
        sodipodi:cx="152.19366"
        sodipodi:sides="5"
        id="path1137-7"
@@ -467,17 +469,17 @@
        xml:space="preserve"
        id="flowRoot817-7-1-9"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.89507055px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#362121;fill-opacity:1;stroke:none"
-       transform="matrix(0.26809978,0,0,0.26809978,112.18864,89.810179)"><flowRegion
+       transform="matrix(0.26809978,0,0,0.26809978,119.33239,90.074762)"><flowRegion
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.89507055px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#362121;fill-opacity:1"
          id="flowRegion819-8-2-84"><rect
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.89507055px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#362121;fill-opacity:1"
            id="rect821-5-6-7"
-           width="204.58194"
-           height="49.642853"
+           width="183.85738"
+           height="75.301834"
            x="457.14285"
            y="268.34366" /></flowRegion><flowPara
          id="flowPara5536"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:13.15845108px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:justify;writing-mode:lr-tb;text-anchor:start">* These connections are interchangable, just that it changes the output terminals.</flowPara></flowRoot>    <flowRoot
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14.47429562px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:justify;writing-mode:lr-tb;text-anchor:start">* These connections are interchangable, just that it changes the output terminals.</flowPara></flowRoot>    <flowRoot
        xml:space="preserve"
        id="flowRoot817-7-1-9-8-1"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.89507055px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#362121;fill-opacity:1;stroke:none"
@@ -703,12 +705,12 @@
          id="flowRegion819-8-2-84-1"><rect
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.89507055px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#362121;fill-opacity:1"
            id="rect821-5-6-7-3"
-           width="90.137444"
-           height="45.45586"
+           width="109.58826"
+           height="51.040115"
            x="457.14285"
            y="268.34366" /></flowRegion><flowPara
          id="flowPara5536-7"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:13.15845108px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start">Servo output signal pin </flowPara></flowRoot>    <flowRoot
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14.47429562px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start">Servo output signal pin </flowPara></flowRoot>    <flowRoot
        xml:space="preserve"
        id="flowRoot817-7-1-9-0-0"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.89507055px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#362121;fill-opacity:1;stroke:none"
@@ -717,12 +719,12 @@
          id="flowRegion819-8-2-84-1-7"><rect
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.89507055px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#362121;fill-opacity:1"
            id="rect821-5-6-7-3-0"
-           width="90.137444"
-           height="45.45586"
+           width="126.02136"
+           height="49.244701"
            x="457.14285"
            y="268.34366" /></flowRegion><flowPara
          id="flowPara5536-7-8"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:13.15845108px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start">Servo output signal pin </flowPara></flowRoot>    <image
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14.47429562px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start">Servo output signal pin </flowPara></flowRoot>    <image
        width="23.403339"
        height="8.7762527"
        preserveAspectRatio="none"
@@ -765,31 +767,31 @@
        xml:space="preserve"
        id="flowRoot817-7-1-9-0-4"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.89507055px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#362121;fill-opacity:1;stroke:none"
-       transform="matrix(0.26809978,0,0,0.26809978,60.291985,184.06254)"><flowRegion
+       transform="matrix(0.26809978,0,0,0.26809978,59.762818,184.59171)"><flowRegion
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.89507055px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#362121;fill-opacity:1"
          id="flowRegion819-8-2-84-1-5"><rect
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.89507055px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#362121;fill-opacity:1"
            id="rect821-5-6-7-3-6"
-           width="90.137444"
-           height="45.45586"
+           width="100.99314"
+           height="41.508335"
            x="457.14285"
            y="268.34366" /></flowRegion><flowPara
          id="flowPara5536-7-3"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:13.15845108px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start">Left Channel circuit</flowPara></flowRoot>    <flowRoot
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14.47429562px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start">Left Channel circuit</flowPara></flowRoot>    <flowRoot
        xml:space="preserve"
        id="flowRoot817-7-1-9-0-4-4"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.89507055px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#362121;fill-opacity:1;stroke:none"
-       transform="matrix(0.26809978,0,0,0.26809978,77.718936,42.309518)"><flowRegion
+       transform="matrix(0.26809978,0,0,0.26809978,77.718936,40.192851)"><flowRegion
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.89507055px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#362121;fill-opacity:1"
          id="flowRegion819-8-2-84-1-5-3"><rect
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.89507055px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#362121;fill-opacity:1"
            id="rect821-5-6-7-3-6-9"
-           width="97.464699"
-           height="33.941662"
+           width="117.20237"
+           height="34.928535"
            x="457.14285"
            y="268.34366" /></flowRegion><flowPara
          id="flowPara5536-7-3-3"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:13.15845108px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start">Right Channel circuit</flowPara></flowRoot>    <path
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14.47429562px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start">Right Channel circuit</flowPara></flowRoot>    <path
        style="fill:none;stroke:#000000;stroke-width:0.60799998;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 154.35981,180.94837 c 9.83803,0.0212 9.63017,13.2157 0,13.23232"
        id="path8975"
@@ -799,7 +801,7 @@
        xml:space="preserve"
        id="flowRoot817-7-1-2-6-6"
        style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-       transform="matrix(0.15488934,0,0,0.15488934,27.461977,147.8363)"><flowRegion
+       transform="matrix(0.56015834,0,0,0.340743,-160.97727,92.743754)"><flowRegion
          id="flowRegion819-8-2-4-5-5"><rect
            id="rect821-5-6-9-0-8"
            width="217.14288"
