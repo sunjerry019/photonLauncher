@@ -160,7 +160,7 @@ class Power(Servo):
 
 
 if __name__ == '__main__':
-    with Shutter(channel = Servo.LEFTCH, absoluteMode = True) as s:
+    with Servo(channel = Servo.LEFTCH, absoluteMode = False) as s:
         print("\n\nUse s as Shutter()\n\n")
         # import pdb; pdb.set_trace()
         import code; code.interact(local=locals())

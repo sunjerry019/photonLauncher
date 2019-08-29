@@ -245,7 +245,7 @@ class StageControl():
 			self.controller.rmove(x = oX - cX, y = oY - cY)
 			self.controller.setvel(velocity)
 
-		self.finishTone()
+		#self.finishTone()
 
 	# overpowered, omni-potent rastering solution for both laser power and velocity
 	def arrayraster(self, inivel, inipower, x_isVel, ncols, xincrement, xGap, y_isVel, nrows, yincrement, yGap, xDist, yDist, rasterSettings, returnToOrigin = True):
