@@ -33,7 +33,7 @@ class Butt(QWidget):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
 
-        self.setWindowIcon(QtGui.QIcon(self.customicon))
+        self.setWindowIcon(QIcon(self.customicon))
 
         moveToCentre(self)
 
