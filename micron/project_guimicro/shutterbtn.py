@@ -18,6 +18,8 @@ class Butt(QWidget):
     def __init__(self, *args):
         super().__init__(*args)
 
+        self.customicon = os.path.join(base_dir, 'icons', 'shutterbtn.svg')
+
         self.title = 'Optical audio shutter'
         self.left = 10
         self.top = 10
@@ -30,6 +32,8 @@ class Butt(QWidget):
     def initUI(self):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
+
+        self.setWindowIcon(QtGui.QIcon(self.customicon))
 
         moveToCentre(self)
 
