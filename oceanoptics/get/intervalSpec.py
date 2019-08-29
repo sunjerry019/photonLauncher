@@ -10,8 +10,10 @@ from __future__ import print_function
 
 from builtins import str
 from builtins import range
-import sys
-sys.path.insert(0, '../../helpers/')
+import sys, os
+base_dir = os.path.dirname(os.path.realpath(__file__))
+root_dir = os.path.abspath(os.path.join(base_dir, "..", "..", "helpers"))
+sys.path.insert(0, root_dir)
 from getSpectra import Icecube
 from time import sleep
 import argparse

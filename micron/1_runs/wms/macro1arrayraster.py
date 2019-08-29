@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-import sys
-
-sys.path.insert(0, "../../")
+import sys, os
+base_dir = os.path.dirname(os.path.realpath(__file__))
+root_dir = os.path.abspath(os.path.join(base_dir, "..", ".."))
+sys.path.insert(0, root_dir)
 
 import stagecontrol
 import servos
@@ -20,4 +21,3 @@ for i in velocities:
 	print(i,"um/s speed done")
 s.controller.setvel(1000)
 s.controller.rmove(x = -(xgap + size[0])*len(velocities), y = 2*ygap)
-

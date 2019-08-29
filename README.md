@@ -15,7 +15,14 @@ Some documentation may be unavailable, and we apologise for the inconvenience. C
 
 **Documentation for individual scripts / experiments can be found in their respective folders.**
 
-Use ```sys.path.insert(0, '../helpers/')``` to access libraries in ```helpers```.
+Use
+```python
+# sys.path.insert(0, '../helpers/')
+base_dir = os.path.dirname(os.path.realpath(__file__))
+root_dir = os.path.abspath(os.path.join(base_dir, "..", "helpers"))
+sys.path.insert(0, root_dir)
+```
+to access libraries in ```helpers```.
 
 ## Supported equipment
 

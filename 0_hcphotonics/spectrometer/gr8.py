@@ -1,6 +1,8 @@
-import sys
+import sys, os
 import serial
-sys.path.insert(0, '../helpers')
+base_dir = os.path.dirname(os.path.realpath(__file__))
+root_dir = os.path.abspath(os.path.join(base_dir, "..", "helpers"))
+sys.path.insert(0, root_dir)
 from mjolnir import Mjolnir
 import numpy as np
 import time
@@ -12,7 +14,7 @@ kek.moveRotMotor(500)
 
 window = [0] * 10
 
-#N = 
+#N =
 n_readings = 110
 
 #dtheta = 2.0/N
@@ -39,7 +41,7 @@ for j in xrange(int(1000)):
 
                 x = float(x)
                 print x
-                x = a*x + b                
+                x = a*x + b
             except:
                 print x
                 continue

@@ -64,10 +64,13 @@ class Stage():
 		return (self.x, self.y)
 
 	def update(self, stageAsDict):
-		for k, v in stageAsDict.items():
-			if k.endswith("lim") and type(v) is not list:
-				raise TypeError("Limit must be a list [lower, upper]")
-			setattr(self, k, v)
+		if isinstance(stageAsDict, dict):
+			for k, v in stageAsDict.items():
+				if k.endswith("lim") and type(v) is not list:
+					raise TypeError("Limit must be a list [lower, upper]")
+				setattr(self, k, v)
+		else:
+			warnings.warn("Non-dictionary supplied to stage. Skipped: {}".format(stageAsDict))
 
 	def setpos(self, x, y):
 		# We keep track of our own coordinates
@@ -81,8 +84,13 @@ class Stage():
 		self.y = y
 
 class Micos():
-	def __init__(self, stageConfig = None, noCtrlCHandler = False, unit = "um", noHome = False, shutterAbsolute = False, GUI_Object = None, devMode = False, shutter_channel = servos.Servo.LEFTCH):
-		# stageConfig can be a dictionary or a json filename
+	def __init__(self,
+			devConfig = None, stageConfig = None, noCtrlCHandler = False, unit = "um",
+			noHome = False, shutterAbsolute = False, shutter_channel = servos.Servo.LEFTCH,
+			powerAbsolute = False, GUI_Object = None, devMode = False
+		):
+		# stageConfig and devConfig can be a dictionary or a json filename
+		# devConfig can just contain any values that differ from the default values
 		# See self.help for documentation
 
 		self.devMode = devMode
@@ -100,6 +108,36 @@ class Micos():
 		# Windows = Windows, Linux = Linux, Mac = Darwin
 		if platform.system() == "Linux":
 			cfg["port"] = '/dev/ttyUSB0'
+
+
+		# We try to load device configuration if provided
+		if devConfig:
+			if type(devConfig) is str:
+				with open(devConfig, 'r') as f:
+					devConfig = json.load(f)
+
+			if isinstance(devConfig, dict):
+				cfg.update(devConfig)
+			else:
+				warnings.warn("Non-dictionary devConfig. Skipped: {}".format(devConfig))
+		else:
+			# We attempt to load the config from a default "config.local.json" if it exists
+			base_dir = os.path.dirname(os.path.realpath(__file__))
+			local_conf = os.path.join(base_dir, "config.local.json")
+
+			if os.path.isfile(local_conf):
+				try:
+					with open(local_conf, 'r') as f:
+						devConfig = json.load(f)
+				except json.decoder.JSONDecodeError as e:
+					if devMode:
+						warnings.warn("Invalid local config file, not loaded!\n\nError: {}\n\n".format(e))
+					else:
+						raise RuntimeError("Invalid config.local.json found! Delete or correct errors!\n\nError: {}".format(e))
+				else:
+					# We are guaranteed its a dict
+					cfg.update(devConfig)
+
 
 		self.ENTER = b'\x0D' #chr(13)  # CR
 
@@ -144,7 +182,7 @@ class Micos():
 		self.shutter = servos.Shutter(absoluteMode = shutterAbsolute, GUI_Object = GUI_Object, channel = shutter_channel)
 		self.shutter.close()
 
-		self.powerServo = servos.Power(absoluteMode = False, channel = shutter_channel * (-1))
+		self.powerServo = servos.Power(absoluteMode = powerAbsolute, channel = shutter_channel * (-1))
 
 		# BEGIN INITIALIZATION
 		print("Stage Initialization...", end="\r")

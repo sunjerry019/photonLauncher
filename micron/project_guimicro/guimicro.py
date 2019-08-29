@@ -29,9 +29,15 @@ import math
 # To catch Ctrl+C
 import signal
 
-sys.path.insert(0, '../')
+
+base_dir = os.path.dirname(os.path.realpath(__file__))
+root_dir = os.path.abspath(os.path.join(base_dir, ".."))
+sys.path.insert(0, root_dir)
+
 import stagecontrol
 import servos
+
+from extraFunctions import moveToCentre
 
 class MicroGui(QtWidgets.QMainWindow):
     def __init__(self, devMode = False, noHome = False):
@@ -42,6 +48,8 @@ class MicroGui(QtWidgets.QMainWindow):
         self.devMode = devMode
 
         self.noHome = noHome
+
+        self.customicon = './icons/guimicro.svg'
 
         # symboldefs
         self.MICROSYMBOL = u"\u00B5"
@@ -58,7 +66,7 @@ class MicroGui(QtWidgets.QMainWindow):
         moveToCentre(self)
 
         self.setWindowTitle('Micos Stage Controller MARK II 0.1a')
-        self.setWindowIcon(QtGui.QIcon('./pictures/icon.bmp'))
+        self.setWindowIcon(QtGui.QIcon(self.customicon))
 
         # Essentially the steps for the gui works like this
         # Create a widget -> Create a layout -> Add widgets to layout -> Assign layout to widget -> Assign widget to window
@@ -116,6 +124,7 @@ class MicroGui(QtWidgets.QMainWindow):
         # WRAP UP
         self.setCentralWidget(self.window_widget)
 
+        self.initSettings()
         self.initializeDevice()
         self.initEventListeners()
         self.recalculateARValues()
@@ -125,6 +134,39 @@ class MicroGui(QtWidgets.QMainWindow):
 
         # Show actual window
         self.show()
+
+    def initSettings(self):
+        # Here we make a QSettings Object and read data from it to populate default variables
+        QtCore.QCoreApplication.setOrganizationName("NUS Nanomaterials Lab")
+        QtCore.QCoreApplication.setOrganizationDomain("physics.nus.edu.sg")
+        QtCore.QCoreApplication.setApplicationName("Micos Stage Controller and Shutter")
+        # These settings are to be shared between this and shutterbtn
+
+        self.qsettings = QtCore.QSettings()
+
+        self.set_shutterAbsoluteMode = self.qsettings.value("shutter/absoluteMode", True, type = bool)
+        self.set_shutterChannel      = self.qsettings.value("shutter/channel", servos.Servo.RIGHTCH, type = int)
+        self.set_powerAbsoluteMode   = self.qsettings.value("power/absoluteMode", False, type = bool)
+        self.set_invertx             = self.qsettings.value("stage/invertx", False, type = bool)
+        self.set_inverty             = self.qsettings.value("stage/inverty", False, type = bool)
+        self.set_stageConfig         = self.qsettings.value("stage/config", None, type = dict) # Should be a dictionary
+        self.noHome                  = self.qsettings.value("stage/noHome", False, type = bool) if not self.noHome else self.noHome
+
+        self.logconsole("Settings Loaded:\n\tShutterAbsolute = {}\n\tShutterChannel = {}\n\tPowerAbsolute = {}\n\tInvert-X = {}\n\tInvert-Y = {}\n\tStageConfig = {}\n\tnoHome = {}".format(
+            self.set_shutterAbsoluteMode ,
+            self.set_shutterChannel      ,
+            self.set_powerAbsoluteMode   ,
+            self.set_invertx             ,
+            self.set_inverty             ,
+            self.set_stageConfig         ,
+            self.noHome                  ,
+        ))
+
+        # TODO: Update GUI checkboxes
+        self._SL_invertx_checkbox.setChecked(self.set_invertx)
+        self._SL_inverty_checkbox.setChecked(self.set_inverty)
+
+        # self.qsettings.sync()
 
     def startInterruptHandler(self):
         # Usually not started because signal doesn't work with PyQt anyway
@@ -155,6 +197,7 @@ class MicroGui(QtWidgets.QMainWindow):
         self.setOperationStatus("Initializing StageControl()")
         initWindow.setGeometry(50, 50, 300, 200)
         initWindow.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.Dialog | QtCore.Qt.WindowMaximizeButtonHint | QtCore.Qt.CustomizeWindowHint)
+        initWindow.setWindowIcon(QtGui.QIcon(self.customicon))
         moveToCentre(initWindow)
 
         initWindow_layout = QtWidgets.QVBoxLayout()
@@ -204,7 +247,18 @@ class MicroGui(QtWidgets.QMainWindow):
 
                 else:
                     try:
-                        self.stageControl = stagecontrol.StageControl(noCtrlCHandler = True, GUI_Object = self, shutter_channel = servos.Servo.RIGHTCH, noHome = self.noHome)
+                        self.stageControl = stagecontrol.StageControl(
+                            noCtrlCHandler = True,
+                            GUI_Object = self,
+                            noHome = self.noHome,
+                            noinvertx = -1 if self.set_invertx else 1,
+                            noinverty = -1 if self.set_inverty else 1,
+                            stageConfig = self.set_stageConfig,
+                            shutter_channel = self.set_shutterChannel,
+                            shutterAbsolute = self.set_shutterAbsoluteMode,
+                            powerAbsolute = self.set_powerAbsoluteMode,
+                        )
+
                     except RuntimeError as e:
                         initWindow.close()
                         msgBox = QtWidgets.QMessageBox()
@@ -221,6 +275,15 @@ class MicroGui(QtWidgets.QMainWindow):
 
                         ret = msgBox.exec_()
                         os._exit(1)             # For the exit to propogate upwards
+
+            # Clean up unneeded settings
+
+            del self.set_shutterChannel
+            del self.set_shutterAbsoluteMode
+            del self.set_powerAbsoluteMode
+            del self.set_invertx
+            del self.set_inverty
+            del self.set_stageConfig
 
             self.micronInitialized = True
             self.setOperationStatus("StageControl Initialized")
@@ -1027,6 +1090,10 @@ class MicroGui(QtWidgets.QMainWindow):
         self.stageControl.noinvertx = -1 if self._SL_invertx_checkbox.checkState() else 1
         self.stageControl.noinverty = -1 if self._SL_inverty_checkbox.checkState() else 1
 
+        self.qsettings.setValue("stage/invertx", True) if self.stageControl.noinvertx == -1 else self.qsettings.setValue("stage/invertx", False)
+        self.qsettings.setValue("stage/inverty", True) if self.stageControl.noinverty == -1 else self.qsettings.setValue("stage/inverty", False)
+        self.qsettings.sync()
+
         # TODO: Update the checkbox in settings
 
     def recalculateKeystrokeTimeout(self):
@@ -1049,8 +1116,10 @@ class MicroGui(QtWidgets.QMainWindow):
             vel_0 = float(self._AR_init_velocity.text())
             pow_0 = int(self._AR_init_power.text())
 
-            step_along_x = self._AR_raster_x.checkState()
-            step_along_y = self._AR_raster_y.checkState()
+            # we convert 2 to 1 since .checkState gives 0 = unchecked, 2 = checked
+            step_along_x = True if self._AR_raster_x.checkState() else False
+            step_along_y = True if self._AR_raster_y.checkState() else False
+
             step_size = float(self._AR_step_size.text())
 
             # 0 = Velocity, 1 = Power
@@ -1064,7 +1133,7 @@ class MicroGui(QtWidgets.QMainWindow):
             y_rows = int(self._AR_rows.text())
             y_spac = float(self._AR_Y_spacing.text())
 
-            returnToOrigin = self._AR_retToOri.checkState()
+            returnToOrigin = True if self._AR_retToOri.checkState() else False
 
             # sizes
             # y, x
@@ -1272,20 +1341,6 @@ class aboutPopUp(QtWidgets.QDialog):
 #     _centerPoint = QtWidgets.QDesktopWidget().availableGeometry().center()
 #     _qtRectangle.moveCenter(_centerPoint)
 #     QtObj.move(_qtRectangle.topLeft())
-
-def moveToCentre(QtObj, host = None):
-    # https://stackoverflow.com/a/42326134/3211506
-    if host is None:
-        host = QtObj.parentWidget()
-
-    if host:
-        hostRect = host.frameGeometry()
-        QtObj.move(hostRect.center() - QtObj.rect().center())
-    else:
-        screenGeometry = QtWidgets.QDesktopWidget().availableGeometry()
-        _x = (screenGeometry.width() - QtObj.width()) / 2;
-        _y = (screenGeometry.height() - QtObj.height()) / 2;
-        QtObj.move(_x, _y);
 
 def main(**kwargs):
     app = QtWidgets.QApplication(sys.argv)

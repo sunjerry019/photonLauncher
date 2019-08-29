@@ -2,9 +2,12 @@
 
 # For OSCAR
 
-import sys
+import sys, os
 
-sys.path.insert(0, "../../")
+
+base_dir = os.path.dirname(os.path.realpath(__file__))
+root_dir = os.path.abspath(os.path.join(base_dir, "..", ".."))
+sys.path.insert(0, root_dir)
 
 import picConv, micron
 import servos

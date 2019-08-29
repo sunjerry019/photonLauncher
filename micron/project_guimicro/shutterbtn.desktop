@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Shutter Button
+Comment=GUI to control Optical Shutter operated by a PWM servo
+GenericName=Button
+Exec=/path/to/micron/project_guimicro/shutterbtn.py
+Terminal=false
+Type=Application
+Icon=/path/to/micron/project_guimicro/icons/shutterbtn.svg
+Categories=Utility;Electronics;
+StartupNotify=false

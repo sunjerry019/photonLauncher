@@ -1,19 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel
+import sys, os
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QGridLayout, QHBoxLayout, QSizePolicy
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import pyqtSlot, Qt
 
-sys.path.insert(0, '../')
+base_dir = os.path.dirname(os.path.realpath(__file__))
+root_dir = os.path.abspath(os.path.join(base_dir, ".."))
+sys.path.insert(0, root_dir)
 # import stagecontrol
 import servos
+from extraFunctions import moveToCentre
 
 class Butt(QWidget):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args):
+        super().__init__(*args)
+
         self.title = 'Optical audio shutter'
         self.left = 10
         self.top = 10
@@ -27,19 +31,44 @@ class Butt(QWidget):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
 
-        self.textbox = QLabel(self)
-        self.textbox.move(100, 20)
-        self.textbox.resize(350,80)
-        self.textbox.setText("HELLO WORLD")
-        self.setStyleSheet("QLabel {font: bold 18pt Roboto}")
+        moveToCentre(self)
 
+        self._layout = QGridLayout()
+        self.textbox = QLabel(self)
+        self.textbox.setText("HELLO WORLD\n")
+        self.setStyleSheet("QLabel {font-weight: bold; font-size: 18pt; font-family: Roboto, 'Segoe UI'; }")
+        self.textbox.setMaximumHeight(100)
+        # self.textbox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         button = QPushButton('LAUNCH\nSEQUENCE', self)
         button.setToolTip('A single button. Click it maybe?')
-        button.move(125,125)
-        button.resize(250,250)
-        button.setStyleSheet('QPushButton {background-color: red; color: black; font: bold 20pt Roboto}')
+        button.setStyleSheet("QPushButton {background-color: red; color: black; font-weight: bold; font-size: 20pt; font-family: Roboto, 'Segoe UI';}")
+        button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        button.setMaximumHeight(300)
+        button.setMaximumWidth(350)
         button.clicked.connect(self.on_click)
+
+        self._layout.addWidget(self.textbox, 0, 0)
+
+        # https://stackoverflow.com/a/25515321/3211506
+        self.horizontal_wrapper = QWidget()
+        self.horizontal_wrapper_layout = QHBoxLayout()
+        self.horizontal_wrapper_layout.setContentsMargins(0, 0, 0, 0)
+        self.horizontal_wrapper_layout.addStretch(1)
+        self.horizontal_wrapper_layout.addWidget(button)
+        self.horizontal_wrapper_layout.setStretchFactor(button, 3)
+        self.horizontal_wrapper_layout.addStretch(1)
+        self.horizontal_wrapper.setLayout(self.horizontal_wrapper_layout)
+
+        self._layout.addWidget(self.horizontal_wrapper, 1, 0)
+
+
+
+        # We still set this as this is not default behaviour on Windows
+        self._layout.setAlignment(self.textbox, Qt.AlignCenter)
+        # self._layout.setAlignment(button, Qt.AlignCenter)
+
+        self.setLayout(self._layout)
 
         self.show()
 
