@@ -92,11 +92,11 @@ class Butt(QWidget):
 
 def main():
     # https://stackoverflow.com/a/1857/3211506
-	# Windows = Windows, Linux = Linux, Mac = Darwin
+    # Windows = Windows, Linux = Linux, Mac = Darwin
     # For setting icon on Windows
-	if platform.system() == "Windows":
+    if platform.system() == "Windows":
         # https://stackoverflow.com/a/1552105/3211506
-		myappid = 'NUS.Nanomaterials.ShutterBtn.0.16' # arbitrary string
+        myappid = 'NUS.Nanomaterials.ShutterBtn.0.16' # arbitrary string
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
     app = QApplication(sys.argv)
