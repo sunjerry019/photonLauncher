@@ -13,6 +13,8 @@ sys.path.insert(0, root_dir)
 import servos
 from extraFunctions import moveToCentre
 
+import platform, ctypes
+
 class Butt(QWidget):
 
     def __init__(self, *args):
@@ -27,6 +29,15 @@ class Butt(QWidget):
         self.height = 500
         self.shutter = servos.Shutter(absoluteMode = True, channel = servos.Servo.RIGHTCH)
         self.isOpen = False
+
+        # https://stackoverflow.com/a/1857/3211506
+		# Windows = Windows, Linux = Linux, Mac = Darwin
+        # For setting icon on Windows
+		if platform.system() == "Windows":
+            # https://stackoverflow.com/a/1552105/3211506
+			myappid = 'NUS.Nanomaterials.ShutterBtn.0.16' # arbitrary string
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+
         self.initUI()
 
     def initUI(self):
