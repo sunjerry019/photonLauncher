@@ -30,14 +30,6 @@ class Butt(QWidget):
         self.shutter = servos.Shutter(absoluteMode = True, channel = servos.Servo.RIGHTCH)
         self.isOpen = False
 
-        # https://stackoverflow.com/a/1857/3211506
-		# Windows = Windows, Linux = Linux, Mac = Darwin
-        # For setting icon on Windows
-		if platform.system() == "Windows":
-            # https://stackoverflow.com/a/1552105/3211506
-			myappid = 'NUS.Nanomaterials.ShutterBtn.0.16' # arbitrary string
-            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
-
         self.initUI()
 
     def initUI(self):
@@ -99,6 +91,14 @@ class Butt(QWidget):
             self.textbox.setText("You opened the shutter\nWE'RE DOOMED!!")
 
 def main():
+    # https://stackoverflow.com/a/1857/3211506
+	# Windows = Windows, Linux = Linux, Mac = Darwin
+    # For setting icon on Windows
+	if platform.system() == "Windows":
+        # https://stackoverflow.com/a/1552105/3211506
+		myappid = 'NUS.Nanomaterials.ShutterBtn.0.16' # arbitrary string
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+
     app = QApplication(sys.argv)
     ex = Butt()
     sys.exit(app.exec_())
