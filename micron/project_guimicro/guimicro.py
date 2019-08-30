@@ -49,7 +49,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
         self.noHome = noHome
 
-        self.customicon = './icons/guimicro.svg'
+        self.customicon = os.path.join(base_dir, 'icons', 'guimicro.svg')
 
         # symboldefs
         self.MICROSYMBOL = u"\u00B5"
