@@ -29,6 +29,7 @@ import math
 # To catch Ctrl+C
 import signal
 
+import platform, ctypes # For Windows Icon
 
 base_dir = os.path.dirname(os.path.realpath(__file__))
 root_dir = os.path.abspath(os.path.join(base_dir, ".."))
@@ -65,7 +66,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
         moveToCentre(self)
 
-        self.setWindowTitle('Micos Stage Controller MARK II 0.1a')
+        self.setWindowTitle('Micos Stage Controller MARK II 0.10a')
         self.setWindowIcon(QtGui.QIcon(self.customicon))
 
         # Essentially the steps for the gui works like this
@@ -1343,6 +1344,14 @@ class aboutPopUp(QtWidgets.QDialog):
 #     QtObj.move(_qtRectangle.topLeft())
 
 def main(**kwargs):
+    # https://stackoverflow.com/a/1857/3211506
+    # Windows = Windows, Linux = Linux, Mac = Darwin
+    # For setting icon on Windows
+    if platform.system() == "Windows":
+        # https://stackoverflow.com/a/1552105/3211506
+        myappid = u'NUS.Nanomaterials.MicroGUI.0.10a' # arbitrary string
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+
     app = QtWidgets.QApplication(sys.argv)
     window = MicroGui(**kwargs)
     # Start the signal handler

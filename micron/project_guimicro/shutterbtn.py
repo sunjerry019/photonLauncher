@@ -96,7 +96,7 @@ def main():
     # For setting icon on Windows
     if platform.system() == "Windows":
         # https://stackoverflow.com/a/1552105/3211506
-        myappid = 'NUS.Nanomaterials.ShutterBtn.0.16' # arbitrary string
+        myappid = u'NUS.Nanomaterials.ShutterBtn.0.16' # arbitrary string
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
     app = QApplication(sys.argv)
