@@ -151,7 +151,9 @@ class MicroGui(QtWidgets.QMainWindow):
         self.set_invertx             = self.qsettings.value("stage/invertx", False, type = bool)
         self.set_inverty             = self.qsettings.value("stage/inverty", False, type = bool)
         self.set_stageConfig         = self.qsettings.value("stage/config", None, type = dict) # Should be a dictionary
+        self.explicitNoHomeSet = self.noHome
         self.noHome                  = self.qsettings.value("stage/noHome", False, type = bool) if not self.noHome else self.noHome
+        # Load nohome from settings only if not explicitly specified ^
 
         self.logconsole("Settings Loaded:\n\tShutterAbsolute = {}\n\tShutterChannel = {}\n\tPowerAbsolute = {}\n\tInvert-X = {}\n\tInvert-Y = {}\n\tStageConfig = {}\n\tnoHome = {}".format(
             self.set_shutterAbsoluteMode ,
@@ -163,9 +165,11 @@ class MicroGui(QtWidgets.QMainWindow):
             self.noHome                  ,
         ))
 
-        # TODO: Update GUI checkboxes
+        # Update GUI Checkboxes
         self._SL_invertx_checkbox.setChecked(self.set_invertx)
         self._SL_inverty_checkbox.setChecked(self.set_inverty)
+
+        # Settings will be reloaded whenever the settings window is called
 
         # self.qsettings.sync()
 
@@ -181,7 +185,7 @@ class MicroGui(QtWidgets.QMainWindow):
         self.setOperationStatus("^C Detected: Aborting the FIFO stack. Shutter will be closed as part of the aborting process.")
 
         if not self.devMode:
-            self.StageControl.controller.shutter.close()
+            self.stageControl.controller.shutter.close()
             self.stageControl.controller.abort()
 
             # Some code here to detect printing/array state
@@ -353,7 +357,7 @@ class MicroGui(QtWidgets.QMainWindow):
         settings = QtWidgets.QAction("Settings", self)
         settings.setShortcut("Ctrl+,")
         settings.setStatusTip('Configure the application')
-        # settings.triggered.connect(self.showSettings)
+        settings.triggered.connect(self.showSettings)
         file_menu.addAction(settings)
 
         quit = QtWidgets.QAction("Quit", self)
@@ -371,11 +375,14 @@ class MicroGui(QtWidgets.QMainWindow):
         help_menu.addAction(about)
 
     def showAbout(self):
-        self.exPopup = aboutPopUp()
-        self.exPopup.setGeometry(100, 200, 200, 300)
-        self.exPopup.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose)
+        self.exPopup = aboutPopUp(parent = self)
         self.exPopup.exec_()  # show()
         # buttonReply = QtWidgets.QMessageBox.about(self, 'About', "Made 2019, Sun Yudong, Wu Mingsong\n\nsunyudong [at] outlook [dot] sg\n\nmingsongwu [at] outlook [dot] sg")
+
+    def showSettings(self):
+        self.settingsScreen = SettingsScreen(parent = self)
+        self.settingsScreen.exec_()
+
 
 # Top row buttons
     @make_widget_from_layout
@@ -1327,21 +1334,84 @@ class MicroGui(QtWidgets.QMainWindow):
 # Status Bar
 
 class aboutPopUp(QtWidgets.QDialog):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.initUI()
 
     def initUI(self):
-        lblName = QtWidgets.QLabel("Made by\n\nSun Yudong, Wu Mingsong\n\n2019\n\nsunyudong [at] outlook [dot] sg\n\nmingsongwu[at] outlook [dot] sg", self)
+        # x, y, w, h
+        self.setGeometry(0, 0, 250, 200)
+        self.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose)
+        self.setWindowTitle("About")
+        moveToCentre(self)
 
-# def moveToCentre(QtObj):
-#     # Get center of the window and move the window to the centre
-#     # Remember to setGeometry of the object first
-#     # https://pythonprogramminglanguage.com/pyqt5-center-window/
-#     _qtRectangle = QtObj.frameGeometry()
-#     _centerPoint = QtWidgets.QDesktopWidget().availableGeometry().center()
-#     _qtRectangle.moveCenter(_centerPoint)
-#     QtObj.move(_qtRectangle.topLeft())
+        self._main_layout = QtWidgets.QVBoxLayout()
+        # setContentsMargins(left, top, right, bottom)
+        self._main_layout.setContentsMargins(10, 10, 10, 10)
+
+        one = QtWidgets.QLabel("Made by")
+        one.setAlignment(QtCore.Qt.AlignCenter)
+        two = QtWidgets.QLabel("Sun Yudong, Wu Mingsong\n2019")
+        two.setAlignment(QtCore.Qt.AlignCenter)
+        ema = QtWidgets.QLabel()
+
+        dianyous = [
+            ["sunyudong", "outlook.sg"],
+            ["mingsongwu", "outlook.sg"]
+        ]
+
+        ema.setText("<a href=\"mailto:{}\" title=\"Please don't spam us thanks\">sunyudong [at] outlook [dot] sg</a><br/><a href=\"mailto:{}\" title=\"Please don't spam us thanks\">mingsongwu [at] outlook [dot] sg</a>".format(*map("@".join, dianyous)))
+        ema.setTextFormat(QtCore.Qt.RichText)
+        ema.setTextInteractionFlags(QtCore.Qt.TextBrowserInteraction)
+        ema.setOpenExternalLinks(True)
+        ema.setAlignment(QtCore.Qt.AlignCenter)
+
+        thr = QtWidgets.QLabel("NUS Nanomaterials Lab")
+        thr.setAlignment(QtCore.Qt.AlignCenter)
+
+        self._main_layout.addWidget(one)
+        self._main_layout.addWidget(two)
+        self._main_layout.addWidget(ema)
+        self._main_layout.addWidget(thr)
+
+        self.setLayout(self._main_layout)
+
+class SettingsScreen(QtWidgets.QDialog):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        self.microGUIParent = self.parentWidget()
+
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowTitle("Settings")
+        # x, y ,w, h
+        self.setGeometry(0, 0, 300, 200)
+        self.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose)
+
+        moveToCentre(self)
+
+        self.loadSettings()
+        self.makeUI()
+        self.initEventListeners()
+
+    def loadSettings(self):
+        self.set_shutterAbsoluteMode = self.microGUIParent.qsettings.value("shutter/absoluteMode", True, type = bool)
+        self.set_shutterChannel      = self.microGUIParent.qsettings.value("shutter/channel", servos.Servo.RIGHTCH, type = int)
+        self.set_powerAbsoluteMode   = self.microGUIParent.qsettings.value("power/absoluteMode", False, type = bool)
+        self.set_invertx             = self.microGUIParent.qsettings.value("stage/invertx", False, type = bool)
+        self.set_inverty             = self.microGUIParent.qsettings.value("stage/inverty", False, type = bool)
+        self.set_stageConfig         = self.microGUIParent.qsettings.value("stage/config", None, type = dict) # Should be a dictionary
+        self.set_noHome              = self.microGUIParent.qsettings.value("stage/noHome", False, type = bool)
+
+    def makeUI(self):
+
+        pass
+
+    def initEventListeners(self):
+        pass
+
 
 def main(**kwargs):
     # https://stackoverflow.com/a/1857/3211506
@@ -1367,3 +1437,14 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     main(devMode = args.devMode, noHome = args.noHome)
+
+
+# ARCHIVE CODE
+# def moveToCentre(QtObj):
+#     # Get center of the window and move the window to the centre
+#     # Remember to setGeometry of the object first
+#     # https://pythonprogramminglanguage.com/pyqt5-center-window/
+#     _qtRectangle = QtObj.frameGeometry()
+#     _centerPoint = QtWidgets.QDesktopWidget().availableGeometry().center()
+#     _qtRectangle.moveCenter(_centerPoint)
+#     QtObj.move(_qtRectangle.topLeft())
