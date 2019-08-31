@@ -28,6 +28,7 @@ to access libraries in ```helpers```.
 
 Location | Equipment name
 --- | ---
+```micron/``` | Micos SMC Basic Microcontroller  (This is old)
 ```oceanoptics/get/icecube.py```| OceanOptics Spectrometer, USB2000, USB4000 and Spectra Series
 ```0_hcphotonics/helpers/lecroy.py``` | Oscilloscope, Lecroy 9384TM (this is ancient)
 ```0_hcphotonics/helpers/mjolnir.py```| Thorlabs TDC01 Controller Cube (CR1-Z7, MTS50-Z8)
