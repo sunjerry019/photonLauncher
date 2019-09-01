@@ -63,7 +63,7 @@ class MicroGui(QtWidgets.QMainWindow):
         self.initUI()
 
     def initUI(self):
-        self.setGeometry(50, 50, 800, 600) # x, y, w, h
+        self.setGeometry(50, 50, 800, 700) # x, y, w, h
 
         moveToCentre(self)
 
@@ -180,16 +180,24 @@ class MicroGui(QtWidgets.QMainWindow):
         # https://stackoverflow.com/a/4205386/3211506
         signal.signal(signal.SIGINT, self.KeyboardInterruptHandler)
 
-    def KeyboardInterruptHandler(self, signal = None, frame = None):
+    def KeyboardInterruptHandler(self, signal = None, frame = None, abortTrigger = False):
         # 2 args above for use with signal.signal
 
-        self.setOperationStatus("^C Detected: Aborting the FIFO stack. Shutter will be closed as part of the aborting process.")
+        self.stageControl.controller.shutter.quietLog = True
+
+        if not abortTrigger:
+            self.setOperationStatus("^C Detected: Aborting the FIFO stack. Shutter will be closed as part of the aborting process.")
+        else:
+            self.setOperationStatus("Aborting the FIFO stack. Shutter will be closed as part of the aborting process.")
         self.stageControl.controller.shutter.close()
-        self._SR_start.setEnabled(True)
-        self._AR_start.setEnabled(True)
+
+        self.stageControl.controller.shutter.quietLog = False
 
         if not self.devMode:
             self.stageControl.controller.abort()
+
+        self._SR_start.setEnabled(True)
+        self._AR_start.setEnabled(True)
 
             # Some code here to detect printing/array state
 
@@ -426,21 +434,25 @@ class MicroGui(QtWidgets.QMainWindow):
 
     @make_widget_from_layout
     def create_shutter_control(self, widget):
-        _shutter_layout = QtWidgets.QHBoxLayout()
+        _shutter_layout = QtWidgets.QGridLayout()
 
         # Shutter controls
         self._shutter_label = QtWidgets.QLabel("Shutter Controls")
         self._shutter_state = QtWidgets.QLabel() # Change color
         self._open_shutter  = QtWidgets.QPushButton("&Open")
         self._close_shutter = QtWidgets.QPushButton("&Close")
+        self._abortBtn      = QtWidgets.QPushButton("A&bort")
 
         self._shutter_state.setStyleSheet("QLabel { background-color: #DF2928; }")
         self._shutter_state.setAlignment(QtCore.Qt.AlignCenter)
+        self._abortBtn.setMinimumHeight(50)
+        self._abortBtn.setStyleSheet("background-color: #DF2928;")
 
-        _shutter_layout.addWidget(self._shutter_label)
-        _shutter_layout.addWidget(self._shutter_state)
-        _shutter_layout.addWidget(self._open_shutter)
-        _shutter_layout.addWidget(self._close_shutter)
+        _shutter_layout.addWidget(self._shutter_label, 0, 0)
+        _shutter_layout.addWidget(self._shutter_state, 0, 1)
+        _shutter_layout.addWidget(self._open_shutter, 0, 2)
+        _shutter_layout.addWidget(self._close_shutter, 0, 3)
+        _shutter_layout.addWidget(self._abortBtn, 1, 0, 1, 4)
 
         return _shutter_layout
 
@@ -1054,6 +1066,8 @@ class MicroGui(QtWidgets.QMainWindow):
         # SHUTTER
         self._close_shutter.clicked.connect(lambda: self.stageControl.controller.shutter.close())
         self._open_shutter.clicked.connect(lambda: self.stageControl.controller.shutter.open())
+
+        self._abortBtn.clicked.connect(lambda: threading.Thread(target = self.KeyboardInterruptHandler, kwargs = dict(abortTrigger = True)).start())
 
     # keyPressEvent(self, evt)
 
