@@ -384,7 +384,6 @@ class MicroGui(QtWidgets.QMainWindow):
         self.settingsScreen = SettingsScreen(parent = self)
         self.settingsScreen.exec_()
 
-
 # Top row buttons
     @make_widget_from_layout
     def createModes(self, widget):
@@ -927,7 +926,6 @@ class MicroGui(QtWidgets.QMainWindow):
         return _drawpic_layout
 
 # INTERACTION FUNCTONS
-
     def initEventListeners(self):
 
         # STAGE
@@ -1052,6 +1050,7 @@ class MicroGui(QtWidgets.QMainWindow):
         # return QtWidgets.QWidget.eventFilter(self, source, evt)
         return super(QtWidgets.QWidget, self).eventFilter(source, evt)
 
+# Custom functions
     def homeStage(self):
         if not self.devMode:
             self.setOperationStatus("Homing stage...If any error arises, abort immediately with Ctrl + C")
@@ -1298,6 +1297,7 @@ class MicroGui(QtWidgets.QMainWindow):
                 # Alert got error
                 self.criticalDialog(message = "Error in array raster settings.\nPlease check again!", host = self)
 
+# Helper functions
     def setOperationStatus(self, status, printToTerm = True, **printArgs):
         self.currentStatus = status
         if printToTerm:
@@ -1663,7 +1663,6 @@ class SettingsScreen(QtWidgets.QDialog):
 
         if not noDialog:
             self.microGUIParent.informationDialog(message = "Settings saved successfully.", title="Yay!", host = self)
-
 
 def main(**kwargs):
     # https://stackoverflow.com/a/1857/3211506
