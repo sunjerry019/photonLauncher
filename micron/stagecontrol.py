@@ -155,7 +155,7 @@ class StageControl():
 				_doneTime   = datetime.datetime.now() + datetime.timedelta(seconds = _totalTime)
 
 				if not quietLog:
-					self.logconsole("Total Time = {} Est Done = {}".format(_totaltime, _doneTime.strftime('%Y-%m-%d %H:%M:%S')))
+					self.logconsole("Total Time = {} Est Done = {}".format(_totalTime, _doneTime.strftime('%Y-%m-%d %H:%M:%S')))
 
 			# Relative moves are blocking, so we can flood the FIFO stack after we are sure all commands have been cleared
 			self.controller.waitClear()
