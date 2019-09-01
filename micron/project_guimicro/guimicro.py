@@ -1387,7 +1387,7 @@ class aboutPopUp(QtWidgets.QDialog):
     def initUI(self):
         # x, y, w, h
         self.setGeometry(0, 0, 250, 200)
-        self.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose)
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose) # WidgetAttribute.
         self.setWindowTitle("About")
         moveToCentre(self)
 
@@ -1434,7 +1434,7 @@ class SettingsScreen(QtWidgets.QDialog):
         self.setWindowTitle("Settings")
         # x, y ,w, h
         self.setGeometry(0, 0, 500, 300)
-        self.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose)
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
 
         moveToCentre(self)
 
