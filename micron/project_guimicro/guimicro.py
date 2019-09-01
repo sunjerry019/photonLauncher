@@ -184,9 +184,11 @@ class MicroGui(QtWidgets.QMainWindow):
         # 2 args above for use with signal.signal
 
         self.setOperationStatus("^C Detected: Aborting the FIFO stack. Shutter will be closed as part of the aborting process.")
+        self.stageControl.controller.shutter.close()
+        self._SR_start.setEnabled(True)
+        self._AR_start.setEnabled(True)
 
         if not self.devMode:
-            self.stageControl.controller.shutter.close()
             self.stageControl.controller.abort()
 
             # Some code here to detect printing/array state
@@ -554,8 +556,42 @@ class MicroGui(QtWidgets.QMainWindow):
         _single_raster_layout = QtWidgets.QGridLayout()
 
         # Velocity and power adjustments
+        _SR_params = QtWidgets.QGroupBox("Parameters")
+        _SR_params_layout = QtWidgets.QGridLayout()
 
-        # Start button
+        _SR_vel_label = QtWidgets.QLabel("Velocity ({}m/s)".format(self.MICROSYMBOL))
+        _SR_vel_label.setAlignment(QtCore.Qt.AlignHCenter| QtCore.Qt.AlignVCenter)
+
+        _SR_pow_label = QtWidgets.QLabel("Power (steps)")
+        _SR_pow_label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+
+        self._SR_pow_up = QtWidgets.QPushButton("++")
+        self._SR_pow_up.setToolTip("Increase Power")
+        self._SR_pow_dn = QtWidgets.QPushButton("--")
+        self._SR_pow_dn.setToolTip("Decrease Power")
+        self._SR_pow_step = QtWidgets.QLineEdit()
+        self._SR_pow_step.setText('1')
+        self._SR_pow_step.setValidator(QtGui.QIntValidator(0,10000))
+        self._SR_pow_step.setAlignment(QtCore.Qt.AlignHCenter)
+
+        self._SR_velocity = QtWidgets.QLineEdit()
+        self._SR_velocity.setText('100')
+        self._SR_velocity.setValidator(QtGui.QDoubleValidator(0,10000, 12))
+        self._SR_velocity.setAlignment(QtCore.Qt.AlignHCenter)
+
+        _SR_params_layout.addWidget(_SR_vel_label, 0, 0, 1, 1)
+        _SR_params_layout.addWidget(self._SR_velocity, 1, 0, 1, 1)
+        _SR_params_layout.addWidget(_SR_pow_label, 0, 1, 1, 1)
+        _SR_params_layout.addWidget(self._SR_pow_step, 1, 1, 1, 1)
+        _SR_params_layout.addWidget(self._SR_pow_up, 0, 2, 1, 1)
+        _SR_params_layout.addWidget(self._SR_pow_dn, 1, 2, 1, 1)
+
+        _SR_params_layout.setColumnStretch(0, 1)
+        _SR_params_layout.setColumnStretch(1, 1)
+        _SR_params_layout.setColumnStretch(2, 1)
+
+        _SR_params.setLayout(_SR_params_layout)
+        # / Velocity and power adjustments
 
         # Box Settings
         _SR_settings = QtWidgets.QGroupBox("Settings")
@@ -602,9 +638,33 @@ class MicroGui(QtWidgets.QMainWindow):
         _SR_settings_layout.addWidget(self._SR_size_x, 2, 1)
         _SR_settings_layout.addWidget(self._SR_raster_style, 3, 0, 1, 3)
         _SR_settings.setLayout(_SR_settings_layout)
-        # / Settings
+        # / Box Settings
 
-        _single_raster_layout.addWidget(_SR_settings)
+        # Action Buttons
+        _SR_action_btns = QtWidgets.QWidget()
+        _SR_action_btns_layout = QtWidgets.QGridLayout()
+
+        # https://stackoverflow.com/a/33793752/3211506
+        _SR_action_btns_spacer = QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self._SR_retToOri = QtWidgets.QCheckBox("Return to Origin")
+        self._SR_retToOri.setChecked(True)
+        self._SR_start = QtWidgets.QPushButton("START")
+
+        _SR_action_btns_layout.setColumnStretch(0, 0)
+
+        _SR_action_btns_layout.addItem(_SR_action_btns_spacer, 0, 0)
+        _SR_action_btns_layout.addWidget(self._SR_retToOri, 1, 0)
+        _SR_action_btns_layout.addWidget(self._SR_start, 2, 0)
+        _SR_action_btns.setLayout(_SR_action_btns_layout)
+        # / Action Buttons
+
+        _single_raster_layout.addWidget(_SR_settings, 0, 1, 1, 1)
+        _single_raster_layout.addWidget(_SR_params, 1, 1, 1, 1)
+        _single_raster_layout.addWidget(_SR_action_btns, 2, 1, 1, 1)
+
+        _single_raster_layout.setColumnStretch(0, 1)
+        _single_raster_layout.setColumnStretch(1, 2)
+        _single_raster_layout.setColumnStretch(2, 1)
 
         return _single_raster_layout
 
@@ -957,6 +1017,21 @@ class MicroGui(QtWidgets.QMainWindow):
         self.stage_widget.installEventFilter(self)
         self.installEventFilter(self)
 
+        # note that the following you cannot connect(self.checkSRValues) because the value will be passed in as an argument to self.checkSRValues
+
+        # SINGLE RASTER
+        self._SR_velocity.textChanged.connect(lambda: self.checkSRValues())
+        self._SR_size_x.textChanged.connect(lambda: self.checkSRValues())
+        self._SR_size_y.textChanged.connect(lambda: self.checkSRValues())
+        self._SR_step_size.textChanged.connect(lambda: self.checkSRValues())
+        self._SR_raster_x.stateChanged.connect(lambda: self.checkSRValues())
+        self._SR_raster_y.stateChanged.connect(lambda: self.checkSRValues())
+        self._SR_retToOri.stateChanged.connect(lambda: self.checkSRValues())
+        self._SR_start.clicked.connect(lambda: self.checkSRValues(startRaster = True))
+        self._SR_pow_up.clicked.connect(lambda: self.adjustPower(direction = "+"))
+        self._SR_pow_dn.clicked.connect(lambda: self.adjustPower(direction = "-"))
+        self._SR_pow_step.textChanged.connect(lambda: self._SR_pow_step.setStyleSheet("background-color: none; color: #000;"))
+
         # ARRAY RASTER
         self._AR_init_velocity.textChanged.connect(lambda: self.recalculateARValues())
         self._AR_init_power.textChanged.connect(lambda: self.recalculateARValues())
@@ -1059,20 +1134,20 @@ class MicroGui(QtWidgets.QMainWindow):
         else:
             self.setOperationStatus("devMode, not homing...")
 
-    def cardinalMoveStage(self, dir):
+    def cardinalMoveStage(self, direction):
         # Get the distance
         dist = float(self._SL_step_size.text())
         vel  = float(self._SL_velocity.text())
 
         # Move the stage
         if not self.devMode:
-            self.moveStage(dir, distance = dist, velocity = vel)
+            self.moveStage(direction, distance = dist, velocity = vel)
 
-    def moveStage(self, dir, distance, velocity):
-        # dir is a (dx, dy) tuple/vector that defines the direction that gets multiplied by distance
-        if sum(map(abs, dir)) > 1:
-            _mag = math.sqrt(dir[0]**2 + dir[1]**2)
-            dir = (dir[0] / _mag , dir[1] / _mag)
+    def moveStage(self, direction, distance, velocity):
+        # direction is a (dx, dy) tuple/vector that defines the direction that gets multiplied by distance
+        if sum(map(abs, direction)) > 1:
+            _mag = math.sqrt(direction[0]**2 + direction[1]**2)
+            direction = (direction[0] / _mag , direction[1] / _mag)
 
         if not self.cardinalStageMoving:
             self.cardinalStageMoving = True
@@ -1081,7 +1156,7 @@ class MicroGui(QtWidgets.QMainWindow):
                 # We reset the velocity if it is different
                 self.stageControl.controller.setvel(velocity)
 
-            self.stageControl.controller.rmove(x = dir[0] * distance * self.stageControl.noinvertx, y = dir[1] * distance * self.stageControl.noinverty)
+            self.stageControl.controller.rmove(x = direction[0] * distance * self.stageControl.noinvertx, y = direction[1] * distance * self.stageControl.noinverty)
             self.updatePositionDisplay()
 
             self.lastCardinalStageMove = datetime.datetime.now()
@@ -1114,6 +1189,152 @@ class MicroGui(QtWidgets.QMainWindow):
         except Exception as e:
             self.logconsole(e)
             self.KEYSTROKE_TIMEOUT = 10
+
+    def adjustPower(self, direction):
+        try:
+            assert direction == "+" or direction == "-", "Invalid Direction"
+            _step = int(self._SR_pow_step.text())
+        except ValueError as e:
+            self._SR_pow_step.setStyleSheet("background-color: #DF2928; color: #fff;")
+            return
+        except AssertionError as e:
+            self.logconsole("Invalid call to MicroGUI.adjustPower(direction = {})".format(direction))
+            return
+
+        self._SR_pow_step.setStyleSheet("background-color: none; color: #000;")
+
+        self.setOperationStatus("Adjusting power...")
+        self._SR_pow_up.setEnabled(False)
+        self._SR_pow_dn.setEnabled(False)
+
+        powerThread = threading.Thread(target = self._adjustPower, kwargs = dict(_step = _step, direction = direction))
+        powerThread.start()
+
+        # self._adjustPower()
+
+    def _adjustPower(self, _step, direction):
+        self.stageControl.controller.powerServo.powerstep(number = (-1 * _step) if direction == "-" else (_step))
+        self._SR_pow_up.setEnabled(True)
+        self._SR_pow_dn.setEnabled(True)
+        self.setOperationStatus("Ready.")
+
+    def checkSRValues(self, startRaster = False):
+        _got_error = False
+        try:
+            # Recalculate the values for Array Raster
+            _vel = float(self._SR_velocity.text())
+
+            # we convert 2 to 1 since .checkState gives 0 = unchecked, 2 = checked
+            step_along_x = not not self._SR_raster_x.checkState()
+            step_along_y = not not self._SR_raster_y.checkState()
+
+            step_size = float(self._SR_step_size.text())
+
+            returnToOrigin = not not self._SR_retToOri.checkState()
+
+            # sizes
+            # y, x
+            size = [float(self._SR_size_y.text()), float(self._SR_size_x.text())]
+
+            # Recalculate size based on flooring calculations
+            _lines = math.floor(abs(size[step_along_x] / step_size))
+            size[step_along_x] = _lines * step_size
+
+            # Indivdual Raster Type
+            indiv_type = "square" if size[0] == size[1] else "rectangle"
+
+            # catch all errors:
+            _got_error = (size[1] <= 0 or size[0] <= 0 or _vel <= 0)
+
+            self._SR_size_x.setStyleSheet("background-color: #DF2928; color: #fff;") if size[1] <= 0 else self._SR_size_x.setStyleSheet("background-color: none; color: #000;")
+            self._SR_size_y.setStyleSheet("background-color: #DF2928; color: #fff;") if size[0] <= 0 else self._SR_size_y.setStyleSheet("background-color: none; color: #000;")
+
+            # If power, ensure changes are integer
+
+            # RASTER SETTINGS
+            self._SR_raster_style.setStyleSheet("background-color: none; color: #000;")
+            if step_along_x and step_along_y:
+                self._SR_raster_style.setText("Unfilled {}\nDrawing an outline".format(indiv_type))
+                self._SR_step_size.setReadOnly(True)
+                self._SR_step_size.setStyleSheet("background-color: #ccc; color: #555;")
+            elif step_along_x:
+                self._SR_raster_style.setText("Filled {}\nStepping along x-axis".format(indiv_type))
+                self._SR_step_size.setReadOnly(False)
+                self._SR_step_size.setStyleSheet("background-color: none; color: #000;")
+            elif step_along_y:
+                self._SR_raster_style.setText("Filled {}\nStepping along y-axis".format(indiv_type))
+                self._SR_step_size.setReadOnly(False)
+                self._SR_step_size.setStyleSheet("background-color: none; color: #000;")
+            else:
+                _got_error = True
+                self._SR_raster_style.setText("No axis selected\nChoose at least one axis")
+                self._SR_raster_style.setStyleSheet("background-color: #DF2928; color: #fff;")
+                self._SR_step_size.setReadOnly(False)
+                self._SR_step_size.setStyleSheet("background-color: none; color: #000;")
+
+        except Exception as e:
+            # We assume the user is not done entering the data
+            self.logconsole("{}: {}".format(type(e).__name__, e))
+            self._SR_size_x.setStyleSheet("background-color: none; color: #000;")
+            self._SR_size_y.setStyleSheet("background-color: none; color: #000;")
+
+            self._SR_raster_style.setText("-\n")
+            self._SR_raster_style.setStyleSheet("background-color: none; color: #000;")
+
+        # Check if the values are even valid
+        # Change background if necessary
+        else:
+            # There are no errors, and we check if startRaster
+            if startRaster and not _got_error:
+                # JUMP TO DEF
+                # def singleraster(self, velocity, xDist, yDist, rasterSettings, returnToOrigin = False, estimateTime = True, onlyEstimate = False):
+
+                # Raster in a rectangle
+        		# rasterSettings = {
+        		# 	"direction": "x" || "y" || "xy", 		# Order matters here xy vs yx
+        		# 	"step": 1								# If set to xy, step is not necessary
+        		# }
+                if not step_along_x and not step_along_y:
+                    self.setOperationStatus("Step-axis not selected!")
+                    return
+
+                rsSettingsDir = ""
+                rsSettingsDir += "x" if step_along_x else ""
+                rsSettingsDir += "y" if step_along_y else ""
+
+                if step_along_x and step_along_y:
+                    rsSettings = { "direction" : rsSettingsDir }
+                else:
+                    rsSettings = { "direction" : rsSettingsDir, "step": step_size }
+
+                self.setOperationStatus("Starting Single Raster...")
+
+                self._SR_start.setEnabled(False)
+                sr_thread = threading.Thread(target = self._singleRaster, kwargs = dict(
+                    velocity       = _vel,
+                    xDist          = size[1],
+                    yDist          = size[0],
+                    rasterSettings = rsSettings,
+                    returnToOrigin = returnToOrigin
+                ))
+                sr_thread.start()
+
+            elif startRaster:
+                # Alert got error
+                self.criticalDialog(message = "Error in single raster settings.\nPlease check again!", host = self)
+
+    def _singleRaster(self, **kwargs):
+        try:
+            self.stageControl.singleraster(**kwargs)
+        except Exception as e:
+            self.setOperationStatus("Error Occurred. {}".format(e))
+        else:
+            # If no error
+            self.setOperationStatus("Ready.")
+        finally:
+            # Always run
+            self._SR_start.setEnabled(True)
+
 
     def recalculateARValues(self, startRaster = False):
         _got_error = False
@@ -1281,9 +1502,9 @@ class MicroGui(QtWidgets.QMainWindow):
                 else:
                     rsSettings = { "direction" : rsSettingsDir, "step": step_size }
 
+                self._AR_start.setEnabled(False)
                 self.setOperationStatus("Starting Array Raster...")
-
-                self.stageControl.arrayraster(
+                ar_thread = threading.Thread(target = self._arrayraster, kwargs = dict(
                     xDist      = size[1],         yDist      = size[0],
                     xGap       = x_spac,          yGap       = y_spac,
                     nrows      = y_rows,          ncols      = x_cols,
@@ -1292,10 +1513,23 @@ class MicroGui(QtWidgets.QMainWindow):
                     xincrement = x_incr,          yincrement = y_incr,
                     rasterSettings = rsSettings,
                     returnToOrigin = returnToOrigin
-                )
+                ))
+                ar_thread.start()
+
             elif startRaster:
                 # Alert got error
                 self.criticalDialog(message = "Error in array raster settings.\nPlease check again!", host = self)
+
+    def _arrayraster(self, **kwargs):
+        self.stageControl.arrayraster(**kwargs)
+        try:
+            pass
+        except Exception as e:
+            self.setOperationStatus("Error Occurred. {}".format(e))
+        else:
+            self.setOperationStatus("Ready.")
+        finally:
+            self._AR_start.setEnabled(True)
 
 # Helper functions
     def setOperationStatus(self, status, printToTerm = True, **printArgs):
@@ -1352,7 +1586,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
         return _msgBox.exec_()
 
-    def unsavedQuestionDialog(self,message, title = "Unsaved", informativeText = None, host = None):
+    def unsavedQuestionDialog(self, message, title = "Unsaved", informativeText = None, host = None):
         _msgBox = QtWidgets.QMessageBox(host)
         _msgBox.setIcon(QtWidgets.QMessageBox.Question)
         _msgBox.setWindowTitle(title)
