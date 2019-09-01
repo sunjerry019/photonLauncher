@@ -82,7 +82,7 @@ class StageControl():
 		self.controller.rmove(x = distance * self.invertx, y = distance * self.inverty)
 
 	# most basic, single rectangle cut rastering
-	def singleraster(self, velocity, xDist, yDist, rasterSettings, returnToOrigin = False, estimateTime = True, onlyEstimate = False, quietLog = False):
+	def singleraster(self, velocity, xDist, yDist, rasterSettings, returnToOrigin = False, estimateTime = True, onlyEstimate = False, quietLog = False, verboseLog = False):
 		# Raster in a rectangle
 		# rasterSettings = {
 		# 	"direction": "x" || "y" || "xy", 		# Order matters here xy vs yx
@@ -154,7 +154,7 @@ class StageControl():
 
 				_doneTime   = datetime.datetime.now() + datetime.timedelta(seconds = _totalTime)
 
-				if logStuff:
+				if not quietLog:
 					self.logconsole("Total Time = {} Est Done = {}".format(_totaltime, _doneTime.strftime('%Y-%m-%d %H:%M:%S')))
 
 			# Relative moves are blocking, so we can flood the FIFO stack after we are sure all commands have been cleared
@@ -239,7 +239,7 @@ class StageControl():
 			self.controller.waitClear()
 			t2 = datetime.datetime.now()
 
-			if not quietLog:
+			if verboseLog:
 				self.logconsole("\nTimes = {}, {}".format(t1 - t0, t2 - t0))
 			print("\nSTATUS = ",self.controller.getStatus(),"\n")
 			self.controller.shutter.close()
