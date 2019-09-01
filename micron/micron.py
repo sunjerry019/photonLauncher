@@ -33,6 +33,9 @@ import servos
 import math
 
 class Stage():
+	DEFAULT_XLIM = [-20000, 0]
+	DEFAULT_YLIM = [-20000, 0]
+
 	def __init__(self, stageAsDict = None):
 		# WARNING: THIS IS A STATIC OBJECT THAT DOES NOT DO ANY STAGE MANIPULATION
 		# MEANT TO STORE LIMITS AND POSITIONING DATA OF STAGE
@@ -48,8 +51,8 @@ class Stage():
 
 		# Set xlim and ylim to be 2 identical value for it to automatically find the range (USE WITH CAUTION)
 
-		self.xlim = [-20000, 0]
-		self.ylim = [-20000, 0]
+		self.xlim = self.DEFAULT_XLIM
+		self.ylim = self.DEFAULT_YLIM
 		self.x    = 0
 		self.y    = 0
 
@@ -194,9 +197,12 @@ class Micos():
 			xl = abs(self.stage.xlim[1] - self.stage.xlim[0])
 			yl = abs(self.stage.ylim[1] - self.stage.ylim[0])
 
-			self.stage.setpos(x = -xl/2, y = -yl/2)
+			dx = max(self.stage.xlim) - xl/2
+			dy = max(self.stage.ylim) - yl/2
 
-			warnings.warn("Stage will not be homed. Proceed with caution., set to (-{}, -{})".format(xl/2, yl/2), RuntimeWarning)
+			self.stage.setpos(x = dx, y = dy)
+
+			warnings.warn("Stage will not be homed. Proceed with caution., set to ({}, {})".format(dx, dy), RuntimeWarning)
 		else:
 			print("Homing stage")
 			self.homeStage()
@@ -231,7 +237,7 @@ class Micos():
 			# Home the stage
 			self.send("rm") 			# send to maximum
 			self.waitClear()
-			self.setpos(0, 0)
+			self.setpos(max(self.stage.xlim), max(self.stage.ylim))
 			self.setlimits(self.stage.xlim[0], self.stage.ylim[0], self.stage.xlim[1], self.stage.ylim[1])
 			self.rmove(x = -xl/2, y = -yl/2)
 			self.waitClear()

@@ -37,6 +37,7 @@ sys.path.insert(0, root_dir)
 
 import stagecontrol
 import servos
+from micron import Stage as mstage # for default x and y lims
 
 from extraFunctions import moveToCentre
 
@@ -1102,8 +1103,6 @@ class MicroGui(QtWidgets.QMainWindow):
         self.qsettings.setValue("stage/inverty", True) if self.stageControl.noinverty == -1 else self.qsettings.setValue("stage/inverty", False)
         self.qsettings.sync()
 
-        # TODO: Update the checkbox in settings
-
     def recalculateKeystrokeTimeout(self):
         try:
             vel = float(self._SL_velocity.text())
@@ -1125,8 +1124,8 @@ class MicroGui(QtWidgets.QMainWindow):
             pow_0 = int(self._AR_init_power.text())
 
             # we convert 2 to 1 since .checkState gives 0 = unchecked, 2 = checked
-            step_along_x = True if self._AR_raster_x.checkState() else False
-            step_along_y = True if self._AR_raster_y.checkState() else False
+            step_along_x = not not self._AR_raster_x.checkState()
+            step_along_y = not not self._AR_raster_y.checkState()
 
             step_size = float(self._AR_step_size.text())
 
@@ -1141,7 +1140,7 @@ class MicroGui(QtWidgets.QMainWindow):
             y_rows = int(self._AR_rows.text())
             y_spac = float(self._AR_Y_spacing.text())
 
-            returnToOrigin = True if self._AR_retToOri.checkState() else False
+            returnToOrigin = not not self._AR_retToOri.checkState()
 
             # sizes
             # y, x
@@ -1312,7 +1311,7 @@ class MicroGui(QtWidgets.QMainWindow):
     def criticalDialog(self, message, title = "Oh no!", informativeText = None, host = None):
         _msgBox = QtWidgets.QMessageBox(host)
         _msgBox.setIcon(QtWidgets.QMessageBox.Critical)
-        _msgBox.setWindowTitle("Oh no!")
+        _msgBox.setWindowTitle(title)
         _msgBox.setText(message)
         if informativeText is not None:
             _msgBox.setInformativeText(informativeText)
@@ -1328,6 +1327,53 @@ class MicroGui(QtWidgets.QMainWindow):
         # mb.setDetailedText(message)
 
         _msgBox.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextSelectableByMouse)
+
+        return _msgBox.exec_()
+
+    def informationDialog(self, message, title = "Information", informativeText = None, host = None):
+        _msgBox = QtWidgets.QMessageBox(host)
+        _msgBox.setIcon(QtWidgets.QMessageBox.Information)
+        _msgBox.setWindowTitle(title)
+        _msgBox.setText(message)
+        if informativeText is not None:
+            _msgBox.setInformativeText(informativeText)
+
+        # Get height and width
+        _h = _msgBox.height()
+        _w = _msgBox.width()
+        _msgBox.setGeometry(0, 0, _w, _h)
+
+        moveToCentre(_msgBox)
+
+        # mb.setTextFormat(Qt.RichText)
+        # mb.setDetailedText(message)
+
+        # _msgBox.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextSelectableByMouse)
+
+        return _msgBox.exec_()
+
+    def unsavedQuestionDialog(self,message, title = "Unsaved", informativeText = None, host = None):
+        _msgBox = QtWidgets.QMessageBox(host)
+        _msgBox.setIcon(QtWidgets.QMessageBox.Question)
+        _msgBox.setWindowTitle(title)
+        _msgBox.setText(message)
+        if informativeText is not None:
+            _msgBox.setInformativeText(informativeText)
+
+        _msgBox.setStandardButtons(QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Discard | QtWidgets.QMessageBox.Cancel)
+        _msgBox.setDefaultButton(QtWidgets.QMessageBox.Cancel)
+
+        # Get height and width
+        _h = _msgBox.height()
+        _w = _msgBox.width()
+        _msgBox.setGeometry(0, 0, _w, _h)
+
+        moveToCentre(_msgBox)
+
+        # mb.setTextFormat(Qt.RichText)
+        # mb.setDetailedText(message)
+
+        # _msgBox.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextSelectableByMouse)
 
         return _msgBox.exec_()
 
@@ -1387,16 +1433,131 @@ class SettingsScreen(QtWidgets.QDialog):
     def initUI(self):
         self.setWindowTitle("Settings")
         # x, y ,w, h
-        self.setGeometry(0, 0, 300, 200)
+        self.setGeometry(0, 0, 500, 300)
         self.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose)
 
         moveToCentre(self)
 
-        self.loadSettings()
         self.makeUI()
+        self.loadSettings()
         self.initEventListeners()
 
+    def makeUI(self):
+        self._main_layout = QtWidgets.QGridLayout()
+
+        # Optomechanical
+        _servos = QtWidgets.QGroupBox("Optomechanical")
+        _servos_layout = QtWidgets.QGridLayout()
+
+        self._shutterAbsoluteMode  = QtWidgets.QCheckBox("Use Absolute Mode for Shutter")
+        self._powerAbsoluteMode    = QtWidgets.QCheckBox("Use Absolute Mode for Power")
+        _shutterChannel_label_main = QtWidgets.QLabel("Shutter Channel")
+        _shutterChannel_label_left = QtWidgets.QLabel("Left")
+        _shutterChannel_label_righ = QtWidgets.QLabel("Right")
+        _shutterChannel_label_main.setAlignment(QtCore.Qt.AlignTop)
+        _shutterChannel_label_left.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+        _shutterChannel_label_righ.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
+        self._shutterChannel       = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        self._shutterChannel.setTickPosition(QtWidgets.QSlider.TicksBothSides)
+        self._shutterChannel.setRange(0, 1)
+        self._shutterChannel.setSingleStep(1)
+        self._shutterChannel.setPageStep(1)
+        self._shutterChannel.setTickInterval(1)
+        # WE USE THIS WORKAROUND OF SETTING 0 TO 1 BECAUSE MOUSEEVENTS ARE NOT AFFECTED BY ABOVE SETTINGS
+
+        # addWidget(QWidget * widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = 0)
+        _servos_layout.addWidget(self._shutterAbsoluteMode, 0, 0, 1, 3)
+        _servos_layout.addWidget(self._powerAbsoluteMode, 1, 0, 1, 3)
+        _servos_layout.addWidget(_shutterChannel_label_main, 2, 0, 2, 1)
+        _servos_layout.addWidget(self._shutterChannel, 2, 1, 1, 2)
+        _servos_layout.addWidget(_shutterChannel_label_left, 3, 1, 1, 1)
+        _servos_layout.addWidget(_shutterChannel_label_righ, 3, 2, 1, 1)
+
+        _servos_layout.setColumnStretch(0, 2)
+        _servos_layout.setColumnStretch(1, 1)
+        _servos_layout.setColumnStretch(2, 1)
+
+        _servos.setLayout(_servos_layout)
+        # / Optomechanical
+
+        # Stage Configuration
+        # These are the initialization settings and does not affect the current session!
+        _stage = QtWidgets.QGroupBox("Stage Settings")
+        _stage_layout = QtWidgets.QGridLayout()
+
+        _stage_xlim_label = QtWidgets.QLabel("X-Limits")
+        self._stage_xlim_lower = QtWidgets.QLineEdit()
+        self._stage_xlim_lower.setValidator(QtGui.QDoubleValidator()) # Accept any Double
+        self._stage_xlim_upper = QtWidgets.QLineEdit()
+        self._stage_xlim_upper.setValidator(QtGui.QDoubleValidator()) # Accept any Double
+
+        _stage_ylim_label = QtWidgets.QLabel("Y-Limits")
+        self._stage_ylim_lower = QtWidgets.QLineEdit()
+        self._stage_ylim_lower.setValidator(QtGui.QDoubleValidator()) # Accept any Double
+        self._stage_ylim_upper = QtWidgets.QLineEdit()
+        self._stage_ylim_upper.setValidator(QtGui.QDoubleValidator()) # Accept any Double
+
+        self._noHome = QtWidgets.QCheckBox("Do not home stage on start")
+
+        _note = QtWidgets.QLabel("Limits and Homing Settings take effect only after app restart!\nStage will be initialised in the center of the limits")
+        _note.setStyleSheet("color: red;")
+
+        self._invertx = QtWidgets.QCheckBox("Invert Horizontal")
+        self._inverty = QtWidgets.QCheckBox("Invert Vertical")
+
+        _stage_layout.addWidget(_stage_xlim_label, 0, 0)
+        _stage_layout.addWidget(self._stage_xlim_lower, 0, 1)
+        _stage_layout.addWidget(QtWidgets.QLabel("to"), 0, 2)
+        _stage_layout.addWidget(self._stage_xlim_upper, 0, 3)
+        _stage_layout.addWidget(_stage_ylim_label, 1, 0)
+        _stage_layout.addWidget(self._stage_ylim_lower, 1, 1)
+        _stage_layout.addWidget(QtWidgets.QLabel("to"), 1, 2)
+        _stage_layout.addWidget(self._stage_ylim_upper, 1, 3)
+        _stage_layout.addWidget(self._noHome, 2, 0, 1, 4)
+        _stage_layout.addWidget(_note, 3, 0, 1, 4)
+        _stage_layout.addWidget(self._invertx, 4, 0, 1, 2)
+        _stage_layout.addWidget(self._inverty, 4, 2, 1, 2)
+
+        # TODO: Add some way of moving dx and dy
+
+        _stage.setLayout(_stage_layout)
+        # / Stage Configuration
+
+        # Labels and warnings
+        _persistent = QtWidgets.QLabel("These settings persists across launches! Refer to documentation for more information.")
+        # / Labels and warnings
+
+        # Buttons
+        self._buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Apply | QtWidgets.QDialogButtonBox.RestoreDefaults | QtWidgets.QDialogButtonBox.Close)
+        # / Buttons
+
+        self._main_layout.addWidget(_servos, 0, 0)
+        self._main_layout.addWidget(_stage, 0, 1)
+        self._main_layout.addWidget(_persistent, 1, 0, 1, 2)
+        self._main_layout.addWidget(self._buttonBox, 2, 0, 1, 2)
+
+        self._main_layout.setColumnStretch(0, 1)
+        self._main_layout.setColumnStretch(1, 1)
+
+        self.setLayout(self._main_layout)
+
+    def initEventListeners(self):
+        self._buttonBox.rejected.connect(self.closeCheck)
+        self._buttonBox.button(QtWidgets.QDialogButtonBox.RestoreDefaults).clicked.connect(self.reset)
+        self._buttonBox.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.apply)
+
+    @property
+    def set_shutterChannel(self):
+        # THIS is gonna be abit confusing argh
+        return servos.Servo.LEFTCH if self._set_shutterChannel == 0 else servos.Servo.RIGHTCH
+
+    @set_shutterChannel.setter
+    def set_shutterChannel(self, x):
+        self._set_shutterChannel = 0 if x == servos.Servo.LEFTCH else 1
+
     def loadSettings(self):
+        self.microGUIParent.qsettings.sync()
+
         self.set_shutterAbsoluteMode = self.microGUIParent.qsettings.value("shutter/absoluteMode", True, type = bool)
         self.set_shutterChannel      = self.microGUIParent.qsettings.value("shutter/channel", servos.Servo.RIGHTCH, type = int)
         self.set_powerAbsoluteMode   = self.microGUIParent.qsettings.value("power/absoluteMode", False, type = bool)
@@ -1405,12 +1566,103 @@ class SettingsScreen(QtWidgets.QDialog):
         self.set_stageConfig         = self.microGUIParent.qsettings.value("stage/config", None, type = dict) # Should be a dictionary
         self.set_noHome              = self.microGUIParent.qsettings.value("stage/noHome", False, type = bool)
 
-    def makeUI(self):
+        # Update the GUI with the settings
+        self._shutterAbsoluteMode.setChecked(self.set_shutterAbsoluteMode)
+        self._powerAbsoluteMode.setChecked(self.set_powerAbsoluteMode)
+        self._shutterChannel.setValue(self._set_shutterChannel) # we use the _ value to get 0 and 1
+        self._invertx.setChecked(self.set_invertx)
+        self._inverty.setChecked(self.set_inverty)
 
-        pass
+        if not self.set_stageConfig:
+            self.set_stageConfig = {
+                "xlim" : mstage.DEFAULT_XLIM ,
+                "ylim" : mstage.DEFAULT_YLIM
+            }
+        self._stage_xlim_lower.setText(str(self.set_stageConfig["xlim"][0]))
+        self._stage_xlim_upper.setText(str(self.set_stageConfig["xlim"][1]))
+        self._stage_ylim_lower.setText(str(self.set_stageConfig["ylim"][0]))
+        self._stage_ylim_upper.setText(str(self.set_stageConfig["ylim"][1]))
 
-    def initEventListeners(self):
-        pass
+    def getStageConfigFromGUI(self):
+        try:
+            return {
+                "xlim" : [float(self._stage_xlim_lower.text()), float(self._stage_xlim_upper.text())] ,
+                "ylim" : [float(self._stage_ylim_lower.text()), float(self._stage_ylim_upper.text())]
+            }
+        except ValueError as e:
+            return None
+
+
+    def settingsEdited(self):
+        return not (self.set_shutterAbsoluteMode == (not not self._shutterAbsoluteMode.checkState()) and \
+                    self._set_shutterChannel     == self._shutterChannel.value() and \
+                    self.set_powerAbsoluteMode   == (not not self._powerAbsoluteMode.checkState()) and \
+                    self.set_invertx             == (not not self._invertx.checkState()) and \
+                    self.set_inverty             == (not not self._inverty.checkState()) and \
+                    self.set_stageConfig         == self.getStageConfigFromGUI() and \
+                    self.set_noHome              == (not not self._noHome.checkState()) \
+        )
+
+    def closeCheck(self):
+        if self.settingsEdited():
+            # Alert saying changes not saved
+            ret = self.microGUIParent.unsavedQuestionDialog(message = "Settings Changed", informativeText = "Save or Discard?\nClick Cancel to go back.", title = "Unsaved settings", host = self)
+
+            if ret == QtWidgets.QMessageBox.Save:
+                self.apply(noDialog = False)
+                return self.close()
+            elif ret == QtWidgets.QMessageBox.Discard:
+                self.microGUIParent.setOperationStatus("Changed settings discarded! Ready.")
+                return self.close()
+        else:
+            self.microGUIParent.setOperationStatus("Ready.")
+            return self.close()
+
+    def reset(self):
+        self._shutterAbsoluteMode.setChecked(True)
+        self._powerAbsoluteMode.setChecked(False)
+        self._shutterChannel.setValue(servos.Servo.RIGHTCH) # This is fine since its = 1
+
+        self._stage_xlim_lower.setText(str(mstage.DEFAULT_XLIM[0]))
+        self._stage_xlim_upper.setText(str(mstage.DEFAULT_XLIM[1]))
+        self._stage_ylim_lower.setText(str(mstage.DEFAULT_YLIM[0]))
+        self._stage_ylim_upper.setText(str(mstage.DEFAULT_YLIM[1]))
+
+        self._invertx.setChecked(False)
+        self._inverty.setChecked(False)
+
+    def apply(self, noDialog = False):
+        # TODO: Check for sane stage config values
+        newStageConfig = self.getStageConfigFromGUI()
+        if newStageConfig is None:
+            return self.microGUIParent.criticalDialog(message = "Error parsing Stage limits!", host = self)
+        elif newStageConfig["xlim"][0] >= newStageConfig["xlim"][1] or newStageConfig["ylim"][0] >= newStageConfig["ylim"][1]:
+            return self.microGUIParent.criticalDialog(message = "Stage lower limit must be strictly lower than higher limit!", host = self)
+
+        self.set_shutterChannel = self._shutterChannel.value() # Convert to PAN values
+        self.microGUIParent.qsettings.setValue("shutter/channel", self.set_shutterChannel)
+
+        self.microGUIParent.qsettings.setValue("shutter/absoluteMode", not not self._shutterAbsoluteMode.checkState())
+        self.microGUIParent.qsettings.setValue("power/absoluteMode", not not self._powerAbsoluteMode.checkState())
+        self.microGUIParent.qsettings.setValue("stage/invertx", not not self._invertx.checkState())
+        self.microGUIParent.qsettings.setValue("stage/inverty", not not self._inverty.checkState())
+        self.microGUIParent.qsettings.setValue("stage/noHome", not not self._noHome.checkState())
+        self.microGUIParent.qsettings.setValue("stage/config", newStageConfig) # Should be a dictionary
+
+        self.microGUIParent.qsettings.sync()
+
+        # Set the settings in the main GUI also
+        # We do this after sync because invertCheck() calls sync as well
+        self.microGUIParent._SL_invertx_checkbox.setChecked(not not self._invertx.checkState())
+        self.microGUIParent._SL_inverty_checkbox.setChecked(not not self._inverty.checkState())
+        self.microGUIParent.invertCheck() # This will auto update the necessary variables
+
+        # Reload from memory
+        self.loadSettings()
+        self.microGUIParent.setOperationStatus("Settings saved. Ready.")
+
+        if not noDialog:
+            self.microGUIParent.informationDialog(message = "Settings saved successfully.", title="Yay!", host = self)
 
 
 def main(**kwargs):
