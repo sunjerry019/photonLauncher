@@ -249,7 +249,7 @@ class MicroGui(QtWidgets.QMainWindow):
                     # for i in range(2):
                     #     print("Message number:", i)
                     #     time.sleep(1)
-                    self.stageControl = stagecontrol.StageControl(noCtrlCHandler = True, devMode = True, GUI_Object = self)
+                    self.stageControl = stagecontrol.StageControl(noCtrlCHandler = True, devMode = True, GUI_Object = self, shutter_channel = self.set_shutterChannel, shutterAbsolute = self.set_shutterAbsoluteMode, powerAbsolute = self.set_powerAbsoluteMode,)
 
                 else:
                     try:
@@ -1639,7 +1639,7 @@ class SettingsScreen(QtWidgets.QDialog):
         elif newStageConfig["xlim"][0] >= newStageConfig["xlim"][1] or newStageConfig["ylim"][0] >= newStageConfig["ylim"][1]:
             return self.microGUIParent.criticalDialog(message = "Stage lower limit must be strictly lower than higher limit!", host = self)
 
-        self.set_shutterChannel = self._shutterChannel.value() # Convert to PAN values
+        self._set_shutterChannel = self._shutterChannel.value() # Convert to PAN values
         self.microGUIParent.qsettings.setValue("shutter/channel", self.set_shutterChannel)
 
         self.microGUIParent.qsettings.setValue("shutter/absoluteMode", not not self._shutterAbsoluteMode.checkState())
@@ -1656,6 +1656,12 @@ class SettingsScreen(QtWidgets.QDialog):
         self.microGUIParent._SL_invertx_checkbox.setChecked(not not self._invertx.checkState())
         self.microGUIParent._SL_inverty_checkbox.setChecked(not not self._inverty.checkState())
         self.microGUIParent.invertCheck() # This will auto update the necessary variables
+
+        # Update the servos absoluteMode
+        self.microGUIParent.stageControl.controller.shutter.absoluteMode = (not not self._shutterAbsoluteMode.checkState())
+        self.microGUIParent.stageControl.controller.powerServo.absoluteMode = (not not self._powerAbsoluteMode.checkState())
+        self.microGUIParent.stageControl.controller.shutter.channel = self.set_shutterChannel
+        self.microGUIParent.stageControl.controller.powerServo.channel = self.set_shutterChannel * -1
 
         # Reload from memory
         self.loadSettings()
