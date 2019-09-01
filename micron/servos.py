@@ -63,10 +63,11 @@ class Servo():
 class Shutter(Servo):
     NONABSOLUTE_DURATION = 100
 
-    def __init__(self, GUI_Object = None, *args, **kwargs):
+    def __init__(self, GUI_Object = None, quietLog = False, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.GUI_Object = GUI_Object
+        self.quietLog = quietLog
 
         self.homeclose() if not self.absoluteMode else self.close()
         self.isOpen = False
@@ -76,7 +77,7 @@ class Shutter(Servo):
     def close(self, shutter_state_label = None):
         self.absolute(0.15) if self.absoluteMode else self.absolute(0.09, duration = self.NONABSOLUTE_DURATION)
 
-        if self.GUI_Object is not None:
+        if self.GUI_Object is not None and not self.quietLog:
             self.GUI_Object.setOperationStatus("Closing Shutter")
         else:
             print("Closing Shutter")
@@ -91,14 +92,12 @@ class Shutter(Servo):
             shutter_state_label.setStyleSheet("QLabel { background-color: #00A151; color: #fff; }")
             shutter_state_label.setText("Closed")
 
-
-
         return True
 
     def open(self, shutter_state_label = None):
         self.absolute(0.1) if self.absoluteMode else self.absolute(0.06, duration = self.NONABSOLUTE_DURATION)
 
-        if self.GUI_Object is not None:
+        if self.GUI_Object is not None and not self.quietLog:
             self.GUI_Object.setOperationStatus("Opening Shutter")
         else:
             print("Opening Shutter")
@@ -147,7 +146,7 @@ class Power(Servo):
             raise RuntimeException("Displacement must be an integer")
 
         if number < 0:
-            for i in range(number):
+            for i in range(-1 * number):
                 self.absolute(0.07, duration = 130)
                 self._displacement += 1
                 time.sleep(0.5)
