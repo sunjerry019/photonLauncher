@@ -51,8 +51,10 @@ class StageControl():
 	def finishTone(self):
 		# Play sound to let user know that the action is completed
 		# TODO: Devise a way for the user to stop the music
-		x = threading.Thread(target=self.jukethreads, daemon=True) #args=(,)
-		x.start()
+		# x = threading.Thread(target=self.jukethreads, daemon=True) #args=(,)
+		# x.start()
+		# time.sleep(1)
+		pass
 
 	def jukethreads(self, **kwargs):
 		return jukebox.JukeBox(**kwargs)
@@ -80,7 +82,7 @@ class StageControl():
 		self.controller.rmove(x = distance * self.invertx, y = distance * self.inverty)
 
 	# most basic, single rectangle cut rastering
-	def singleraster(self, velocity, xDist, yDist, rasterSettings, returnToOrigin = False, estimateTime = True, onlyEstimate = False):
+	def singleraster(self, velocity, xDist, yDist, rasterSettings, returnToOrigin = False, estimateTime = True, onlyEstimate = False, quietLog = False, verboseLog = False):
 		# Raster in a rectangle
 		# rasterSettings = {
 		# 	"direction": "x" || "y" || "xy", 		# Order matters here xy vs yx
@@ -121,6 +123,10 @@ class StageControl():
 		if onlyEstimate:
 			estimateTime = True
 
+		# Set shutter to not output logs
+		# To ensure the timing is displayed
+		self.controller.shutter.quietLog = True
+
 		# ACTUAL FUNCTION
 		self.controller.setvel(velocity)
 
@@ -148,7 +154,8 @@ class StageControl():
 
 				_doneTime   = datetime.datetime.now() + datetime.timedelta(seconds = _totalTime)
 
-				self.logconsole("Total Time = {} Est Done = {}".format(_totaltime, _doneTime.strftime('%Y-%m-%d %H:%M:%S')))
+				if not quietLog:
+					self.logconsole("Total Time = {} Est Done = {}".format(_totalTime, _doneTime.strftime('%Y-%m-%d %H:%M:%S')))
 
 			# Relative moves are blocking, so we can flood the FIFO stack after we are sure all commands have been cleared
 			self.controller.waitClear()
@@ -201,7 +208,8 @@ class StageControl():
 				_doneTime    = datetime.datetime.now() + _deltaTime
 
 				# "Time/line =", _timeperline,
-				self.logconsole("Total Time = {} Lines = {} Est Done = {}".format(_deltaTime, _lines, _doneTime.strftime('%Y-%m-%d %H:%M:%S')))
+				if not quietLog:
+					self.logconsole("Total Time = {} Lines = {} Est Done = {}".format(_deltaTime, _lines, _doneTime.strftime('%Y-%m-%d %H:%M:%S')))
 
 			_step = -rasterSettings["step"] if distances[b] < 0 else rasterSettings["step"]
 
@@ -231,7 +239,8 @@ class StageControl():
 			self.controller.waitClear()
 			t2 = datetime.datetime.now()
 
-			self.logconsole("\nTimes = {}, {}".format(t1 - t0, t2 - t0))
+			if verboseLog:
+				self.logconsole("\nTimes = {}, {}".format(t1 - t0, t2 - t0))
 			print("\nSTATUS = ",self.controller.getStatus(),"\n")
 			self.controller.shutter.close()
 
@@ -245,7 +254,9 @@ class StageControl():
 			self.controller.rmove(x = oX - cX, y = oY - cY)
 			self.controller.setvel(velocity)
 
-		#self.finishTone()
+		self.controller.shutter.quietLog = False
+
+		self.finishTone()
 
 	# overpowered, omni-potent rastering solution for both laser power and velocity
 	def arrayraster(self, inivel, inipower, x_isVel, ncols, xincrement, xGap, y_isVel, nrows, yincrement, yGap, xDist, yDist, rasterSettings, returnToOrigin = True):
@@ -258,6 +269,10 @@ class StageControl():
 		# Struct [
 		#     [(Init Pos), [velocity, power]], ...
 		# ]
+
+		# Set shutter to not output logs
+		# To ensure the timing is displayed
+		self.controller.shutter.quietLog = True
 
 		xone = self.controller.stage.x
 		yone = self.controller.stage.y
@@ -314,7 +329,9 @@ class StageControl():
 		_deltaTime = datetime.timedelta(seconds = totaltime)
 		doneTime = datetime.datetime.now() + _deltaTime
 
-		self.logconsole("Est time = {} Est Done = {}".format(_deltaTime, doneTime.strftime('%Y-%m-%d %H:%M:%S')))
+		estTimeString = "Est time = {} Est Done = {}".format(_deltaTime, doneTime.strftime('%Y-%m-%d %H:%M:%S'))
+
+		self.logconsole(estTimeString)
 
 		oX, oY = self.controller.stage.x, self.controller.stage.y
 
@@ -322,11 +339,11 @@ class StageControl():
 		for i in range(nrows):
 			for u in range(ncols):
 				self.controller.powerServo.powerstep(moal[u + i*ncols][1][1])
-				self.singleraster(velocity = moal[u + i*ncols][1][0], xDist = xDist, yDist = yDist, rasterSettings = rasterSettings, returnToOrigin = True, estimateTime = False)
+				self.singleraster(velocity = moal[u + i*ncols][1][0], xDist = xDist, yDist = yDist, rasterSettings = rasterSettings, returnToOrigin = True, estimateTime = False, quietLog = True)
 				self.controller.setvel(500)
 				self.controller.rmove(x = xGap + xDist, y = 0)
 
-				self.logconsole('(',i,',',u,') raster completed! :D')
+				self.logconsole(estTimeString + ' ({}, {}) raster completed! :D'.format(i, u))
 
 			self.controller.rmove(x = -ncols * (xGap + xDist), y = yDist + yGap)
 
@@ -336,16 +353,18 @@ class StageControl():
 			# we /could/ use self.controller.move() but I don't really trust it
 			# so...relative move
 			cX, cY = self.controller.stage.x, self.controller.stage.y
+			oV = self.controller.velocity
 			self.controller.setvel(1000)
 			self.controller.rmove(x = oX - cX, y = oY - cY)
-			self.controller.setvel(velocity)
-
-		self.finishTone()
+			self.controller.setvel(oV)
+			# We set the velocity to the last velocity
 
 		if self.GUI_Object is not None:
 			self.GUI_Object.setOperationStatus("Raster Finished. Have a g8 day. Ready.")
 		else:
 			print('raster compeleted, have a gr8 day. Self-destruct sequence initiated (T-10).')
+
+		self.controller.shutter.quietLog = False
 
 		self.finishTone()
 

@@ -9,7 +9,7 @@ import servos
 
 s = stagecontrol.StageControl(shutter_channel = servos.Servo.RIGHTCH, shutterAbsolute = True, noHome = True)
 
-velocities = [25, 25]
+velocities = [100, 75, 50, 25, 12, 6]
 size = (30, 30)
 xgap = 30
 ygap = 30

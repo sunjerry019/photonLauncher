@@ -29,6 +29,7 @@ import math
 # To catch Ctrl+C
 import signal
 
+import platform, ctypes # For Windows Icon
 
 base_dir = os.path.dirname(os.path.realpath(__file__))
 root_dir = os.path.abspath(os.path.join(base_dir, ".."))
@@ -36,6 +37,7 @@ sys.path.insert(0, root_dir)
 
 import stagecontrol
 import servos
+from micron import Stage as mstage # for default x and y lims
 
 from extraFunctions import moveToCentre
 
@@ -61,11 +63,11 @@ class MicroGui(QtWidgets.QMainWindow):
         self.initUI()
 
     def initUI(self):
-        self.setGeometry(50, 50, 800, 600) # x, y, w, h
+        self.setGeometry(50, 50, 800, 700) # x, y, w, h
 
         moveToCentre(self)
 
-        self.setWindowTitle('Micos Stage Controller MARK II 0.1a')
+        self.setWindowTitle('Micos Stage Controller MARK II 0.10a')
         self.setWindowIcon(QtGui.QIcon(self.customicon))
 
         # Essentially the steps for the gui works like this
@@ -150,7 +152,9 @@ class MicroGui(QtWidgets.QMainWindow):
         self.set_invertx             = self.qsettings.value("stage/invertx", False, type = bool)
         self.set_inverty             = self.qsettings.value("stage/inverty", False, type = bool)
         self.set_stageConfig         = self.qsettings.value("stage/config", None, type = dict) # Should be a dictionary
+        self.explicitNoHomeSet = self.noHome
         self.noHome                  = self.qsettings.value("stage/noHome", False, type = bool) if not self.noHome else self.noHome
+        # Load nohome from settings only if not explicitly specified ^
 
         self.logconsole("Settings Loaded:\n\tShutterAbsolute = {}\n\tShutterChannel = {}\n\tPowerAbsolute = {}\n\tInvert-X = {}\n\tInvert-Y = {}\n\tStageConfig = {}\n\tnoHome = {}".format(
             self.set_shutterAbsoluteMode ,
@@ -162,9 +166,11 @@ class MicroGui(QtWidgets.QMainWindow):
             self.noHome                  ,
         ))
 
-        # TODO: Update GUI checkboxes
+        # Update GUI Checkboxes
         self._SL_invertx_checkbox.setChecked(self.set_invertx)
         self._SL_inverty_checkbox.setChecked(self.set_inverty)
+
+        # Settings will be reloaded whenever the settings window is called
 
         # self.qsettings.sync()
 
@@ -174,14 +180,24 @@ class MicroGui(QtWidgets.QMainWindow):
         # https://stackoverflow.com/a/4205386/3211506
         signal.signal(signal.SIGINT, self.KeyboardInterruptHandler)
 
-    def KeyboardInterruptHandler(self, signal = None, frame = None):
+    def KeyboardInterruptHandler(self, signal = None, frame = None, abortTrigger = False):
         # 2 args above for use with signal.signal
 
-        self.setOperationStatus("^C Detected: Aborting the FIFO stack. Shutter will be closed as part of the aborting process.")
+        self.stageControl.controller.shutter.quietLog = True
+
+        if not abortTrigger:
+            self.setOperationStatus("^C Detected: Aborting the FIFO stack. Shutter will be closed as part of the aborting process.")
+        else:
+            self.setOperationStatus("Aborting the FIFO stack. Shutter will be closed as part of the aborting process.")
+        self.stageControl.controller.shutter.close()
+
+        self.stageControl.controller.shutter.quietLog = False
 
         if not self.devMode:
-            self.StageControl.controller.shutter.close()
             self.stageControl.controller.abort()
+
+        self._SR_start.setEnabled(True)
+        self._AR_start.setEnabled(True)
 
             # Some code here to detect printing/array state
 
@@ -243,7 +259,7 @@ class MicroGui(QtWidgets.QMainWindow):
                     # for i in range(2):
                     #     print("Message number:", i)
                     #     time.sleep(1)
-                    self.stageControl = stagecontrol.StageControl(noCtrlCHandler = True, devMode = True, GUI_Object = self)
+                    self.stageControl = stagecontrol.StageControl(noCtrlCHandler = True, devMode = True, GUI_Object = self, shutter_channel = self.set_shutterChannel, shutterAbsolute = self.set_shutterAbsoluteMode, powerAbsolute = self.set_powerAbsoluteMode,)
 
                 else:
                     try:
@@ -352,7 +368,7 @@ class MicroGui(QtWidgets.QMainWindow):
         settings = QtWidgets.QAction("Settings", self)
         settings.setShortcut("Ctrl+,")
         settings.setStatusTip('Configure the application')
-        # settings.triggered.connect(self.showSettings)
+        settings.triggered.connect(self.showSettings)
         file_menu.addAction(settings)
 
         quit = QtWidgets.QAction("Quit", self)
@@ -370,11 +386,13 @@ class MicroGui(QtWidgets.QMainWindow):
         help_menu.addAction(about)
 
     def showAbout(self):
-        self.exPopup = aboutPopUp()
-        self.exPopup.setGeometry(100, 200, 200, 300)
-        self.exPopup.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose)
+        self.exPopup = aboutPopUp(parent = self)
         self.exPopup.exec_()  # show()
         # buttonReply = QtWidgets.QMessageBox.about(self, 'About', "Made 2019, Sun Yudong, Wu Mingsong\n\nsunyudong [at] outlook [dot] sg\n\nmingsongwu [at] outlook [dot] sg")
+
+    def showSettings(self):
+        self.settingsScreen = SettingsScreen(parent = self)
+        self.settingsScreen.exec_()
 
 # Top row buttons
     @make_widget_from_layout
@@ -416,21 +434,25 @@ class MicroGui(QtWidgets.QMainWindow):
 
     @make_widget_from_layout
     def create_shutter_control(self, widget):
-        _shutter_layout = QtWidgets.QHBoxLayout()
+        _shutter_layout = QtWidgets.QGridLayout()
 
         # Shutter controls
         self._shutter_label = QtWidgets.QLabel("Shutter Controls")
         self._shutter_state = QtWidgets.QLabel() # Change color
         self._open_shutter  = QtWidgets.QPushButton("&Open")
         self._close_shutter = QtWidgets.QPushButton("&Close")
+        self._abortBtn      = QtWidgets.QPushButton("A&bort")
 
         self._shutter_state.setStyleSheet("QLabel { background-color: #DF2928; }")
         self._shutter_state.setAlignment(QtCore.Qt.AlignCenter)
+        self._abortBtn.setMinimumHeight(50)
+        self._abortBtn.setStyleSheet("background-color: #DF2928;")
 
-        _shutter_layout.addWidget(self._shutter_label)
-        _shutter_layout.addWidget(self._shutter_state)
-        _shutter_layout.addWidget(self._open_shutter)
-        _shutter_layout.addWidget(self._close_shutter)
+        _shutter_layout.addWidget(self._shutter_label, 0, 0)
+        _shutter_layout.addWidget(self._shutter_state, 0, 1)
+        _shutter_layout.addWidget(self._open_shutter, 0, 2)
+        _shutter_layout.addWidget(self._close_shutter, 0, 3)
+        _shutter_layout.addWidget(self._abortBtn, 1, 0, 1, 4)
 
         return _shutter_layout
 
@@ -546,8 +568,42 @@ class MicroGui(QtWidgets.QMainWindow):
         _single_raster_layout = QtWidgets.QGridLayout()
 
         # Velocity and power adjustments
+        _SR_params = QtWidgets.QGroupBox("Parameters")
+        _SR_params_layout = QtWidgets.QGridLayout()
 
-        # Start button
+        _SR_vel_label = QtWidgets.QLabel("Velocity ({}m/s)".format(self.MICROSYMBOL))
+        _SR_vel_label.setAlignment(QtCore.Qt.AlignHCenter| QtCore.Qt.AlignVCenter)
+
+        _SR_pow_label = QtWidgets.QLabel("Power (steps)")
+        _SR_pow_label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+
+        self._SR_pow_up = QtWidgets.QPushButton("++")
+        self._SR_pow_up.setToolTip("Increase Power")
+        self._SR_pow_dn = QtWidgets.QPushButton("--")
+        self._SR_pow_dn.setToolTip("Decrease Power")
+        self._SR_pow_step = QtWidgets.QLineEdit()
+        self._SR_pow_step.setText('1')
+        self._SR_pow_step.setValidator(QtGui.QIntValidator(0,10000))
+        self._SR_pow_step.setAlignment(QtCore.Qt.AlignHCenter)
+
+        self._SR_velocity = QtWidgets.QLineEdit()
+        self._SR_velocity.setText('100')
+        self._SR_velocity.setValidator(QtGui.QDoubleValidator(0,10000, 12))
+        self._SR_velocity.setAlignment(QtCore.Qt.AlignHCenter)
+
+        _SR_params_layout.addWidget(_SR_vel_label, 0, 0, 1, 1)
+        _SR_params_layout.addWidget(self._SR_velocity, 1, 0, 1, 1)
+        _SR_params_layout.addWidget(_SR_pow_label, 0, 1, 1, 1)
+        _SR_params_layout.addWidget(self._SR_pow_step, 1, 1, 1, 1)
+        _SR_params_layout.addWidget(self._SR_pow_up, 0, 2, 1, 1)
+        _SR_params_layout.addWidget(self._SR_pow_dn, 1, 2, 1, 1)
+
+        _SR_params_layout.setColumnStretch(0, 1)
+        _SR_params_layout.setColumnStretch(1, 1)
+        _SR_params_layout.setColumnStretch(2, 1)
+
+        _SR_params.setLayout(_SR_params_layout)
+        # / Velocity and power adjustments
 
         # Box Settings
         _SR_settings = QtWidgets.QGroupBox("Settings")
@@ -594,9 +650,33 @@ class MicroGui(QtWidgets.QMainWindow):
         _SR_settings_layout.addWidget(self._SR_size_x, 2, 1)
         _SR_settings_layout.addWidget(self._SR_raster_style, 3, 0, 1, 3)
         _SR_settings.setLayout(_SR_settings_layout)
-        # / Settings
+        # / Box Settings
 
-        _single_raster_layout.addWidget(_SR_settings)
+        # Action Buttons
+        _SR_action_btns = QtWidgets.QWidget()
+        _SR_action_btns_layout = QtWidgets.QGridLayout()
+
+        # https://stackoverflow.com/a/33793752/3211506
+        _SR_action_btns_spacer = QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self._SR_retToOri = QtWidgets.QCheckBox("Return to Origin")
+        self._SR_retToOri.setChecked(True)
+        self._SR_start = QtWidgets.QPushButton("START")
+
+        _SR_action_btns_layout.setColumnStretch(0, 0)
+
+        _SR_action_btns_layout.addItem(_SR_action_btns_spacer, 0, 0)
+        _SR_action_btns_layout.addWidget(self._SR_retToOri, 1, 0)
+        _SR_action_btns_layout.addWidget(self._SR_start, 2, 0)
+        _SR_action_btns.setLayout(_SR_action_btns_layout)
+        # / Action Buttons
+
+        _single_raster_layout.addWidget(_SR_settings, 0, 1, 1, 1)
+        _single_raster_layout.addWidget(_SR_params, 1, 1, 1, 1)
+        _single_raster_layout.addWidget(_SR_action_btns, 2, 1, 1, 1)
+
+        _single_raster_layout.setColumnStretch(0, 1)
+        _single_raster_layout.setColumnStretch(1, 2)
+        _single_raster_layout.setColumnStretch(2, 1)
 
         return _single_raster_layout
 
@@ -918,7 +998,6 @@ class MicroGui(QtWidgets.QMainWindow):
         return _drawpic_layout
 
 # INTERACTION FUNCTONS
-
     def initEventListeners(self):
 
         # STAGE
@@ -950,6 +1029,21 @@ class MicroGui(QtWidgets.QMainWindow):
         self.stage_widget.installEventFilter(self)
         self.installEventFilter(self)
 
+        # note that the following you cannot connect(self.checkSRValues) because the value will be passed in as an argument to self.checkSRValues
+
+        # SINGLE RASTER
+        self._SR_velocity.textChanged.connect(lambda: self.checkSRValues())
+        self._SR_size_x.textChanged.connect(lambda: self.checkSRValues())
+        self._SR_size_y.textChanged.connect(lambda: self.checkSRValues())
+        self._SR_step_size.textChanged.connect(lambda: self.checkSRValues())
+        self._SR_raster_x.stateChanged.connect(lambda: self.checkSRValues())
+        self._SR_raster_y.stateChanged.connect(lambda: self.checkSRValues())
+        self._SR_retToOri.stateChanged.connect(lambda: self.checkSRValues())
+        self._SR_start.clicked.connect(lambda: self.checkSRValues(startRaster = True))
+        self._SR_pow_up.clicked.connect(lambda: self.adjustPower(direction = "+"))
+        self._SR_pow_dn.clicked.connect(lambda: self.adjustPower(direction = "-"))
+        self._SR_pow_step.textChanged.connect(lambda: self._SR_pow_step.setStyleSheet("background-color: none; color: #000;"))
+
         # ARRAY RASTER
         self._AR_init_velocity.textChanged.connect(lambda: self.recalculateARValues())
         self._AR_init_power.textChanged.connect(lambda: self.recalculateARValues())
@@ -972,6 +1066,8 @@ class MicroGui(QtWidgets.QMainWindow):
         # SHUTTER
         self._close_shutter.clicked.connect(lambda: self.stageControl.controller.shutter.close())
         self._open_shutter.clicked.connect(lambda: self.stageControl.controller.shutter.open())
+
+        self._abortBtn.clicked.connect(lambda: threading.Thread(target = self.KeyboardInterruptHandler, kwargs = dict(abortTrigger = True)).start())
 
     # keyPressEvent(self, evt)
 
@@ -1043,6 +1139,7 @@ class MicroGui(QtWidgets.QMainWindow):
         # return QtWidgets.QWidget.eventFilter(self, source, evt)
         return super(QtWidgets.QWidget, self).eventFilter(source, evt)
 
+# Custom functions
     def homeStage(self):
         if not self.devMode:
             self.setOperationStatus("Homing stage...If any error arises, abort immediately with Ctrl + C")
@@ -1051,20 +1148,20 @@ class MicroGui(QtWidgets.QMainWindow):
         else:
             self.setOperationStatus("devMode, not homing...")
 
-    def cardinalMoveStage(self, dir):
+    def cardinalMoveStage(self, direction):
         # Get the distance
         dist = float(self._SL_step_size.text())
         vel  = float(self._SL_velocity.text())
 
         # Move the stage
         if not self.devMode:
-            self.moveStage(dir, distance = dist, velocity = vel)
+            self.moveStage(direction, distance = dist, velocity = vel)
 
-    def moveStage(self, dir, distance, velocity):
-        # dir is a (dx, dy) tuple/vector that defines the direction that gets multiplied by distance
-        if sum(map(abs, dir)) > 1:
-            _mag = math.sqrt(dir[0]**2 + dir[1]**2)
-            dir = (dir[0] / _mag , dir[1] / _mag)
+    def moveStage(self, direction, distance, velocity):
+        # direction is a (dx, dy) tuple/vector that defines the direction that gets multiplied by distance
+        if sum(map(abs, direction)) > 1:
+            _mag = math.sqrt(direction[0]**2 + direction[1]**2)
+            direction = (direction[0] / _mag , direction[1] / _mag)
 
         if not self.cardinalStageMoving:
             self.cardinalStageMoving = True
@@ -1073,7 +1170,7 @@ class MicroGui(QtWidgets.QMainWindow):
                 # We reset the velocity if it is different
                 self.stageControl.controller.setvel(velocity)
 
-            self.stageControl.controller.rmove(x = dir[0] * distance * self.stageControl.noinvertx, y = dir[1] * distance * self.stageControl.noinverty)
+            self.stageControl.controller.rmove(x = direction[0] * distance * self.stageControl.noinvertx, y = direction[1] * distance * self.stageControl.noinverty)
             self.updatePositionDisplay()
 
             self.lastCardinalStageMove = datetime.datetime.now()
@@ -1094,8 +1191,6 @@ class MicroGui(QtWidgets.QMainWindow):
         self.qsettings.setValue("stage/inverty", True) if self.stageControl.noinverty == -1 else self.qsettings.setValue("stage/inverty", False)
         self.qsettings.sync()
 
-        # TODO: Update the checkbox in settings
-
     def recalculateKeystrokeTimeout(self):
         try:
             vel = float(self._SL_velocity.text())
@@ -1109,6 +1204,152 @@ class MicroGui(QtWidgets.QMainWindow):
             self.logconsole(e)
             self.KEYSTROKE_TIMEOUT = 10
 
+    def adjustPower(self, direction):
+        try:
+            assert direction == "+" or direction == "-", "Invalid Direction"
+            _step = int(self._SR_pow_step.text())
+        except ValueError as e:
+            self._SR_pow_step.setStyleSheet("background-color: #DF2928; color: #fff;")
+            return
+        except AssertionError as e:
+            self.logconsole("Invalid call to MicroGUI.adjustPower(direction = {})".format(direction))
+            return
+
+        self._SR_pow_step.setStyleSheet("background-color: none; color: #000;")
+
+        self.setOperationStatus("Adjusting power...")
+        self._SR_pow_up.setEnabled(False)
+        self._SR_pow_dn.setEnabled(False)
+
+        powerThread = threading.Thread(target = self._adjustPower, kwargs = dict(_step = _step, direction = direction))
+        powerThread.start()
+
+        # self._adjustPower()
+
+    def _adjustPower(self, _step, direction):
+        self.stageControl.controller.powerServo.powerstep(number = (-1 * _step) if direction == "-" else (_step))
+        self._SR_pow_up.setEnabled(True)
+        self._SR_pow_dn.setEnabled(True)
+        self.setOperationStatus("Ready.")
+
+    def checkSRValues(self, startRaster = False):
+        _got_error = False
+        try:
+            # Recalculate the values for Array Raster
+            _vel = float(self._SR_velocity.text())
+
+            # we convert 2 to 1 since .checkState gives 0 = unchecked, 2 = checked
+            step_along_x = not not self._SR_raster_x.checkState()
+            step_along_y = not not self._SR_raster_y.checkState()
+
+            step_size = float(self._SR_step_size.text())
+
+            returnToOrigin = not not self._SR_retToOri.checkState()
+
+            # sizes
+            # y, x
+            size = [float(self._SR_size_y.text()), float(self._SR_size_x.text())]
+
+            # Recalculate size based on flooring calculations
+            _lines = math.floor(abs(size[step_along_x] / step_size))
+            size[step_along_x] = _lines * step_size
+
+            # Indivdual Raster Type
+            indiv_type = "square" if size[0] == size[1] else "rectangle"
+
+            # catch all errors:
+            _got_error = (size[1] <= 0 or size[0] <= 0 or _vel <= 0)
+
+            self._SR_size_x.setStyleSheet("background-color: #DF2928; color: #fff;") if size[1] <= 0 else self._SR_size_x.setStyleSheet("background-color: none; color: #000;")
+            self._SR_size_y.setStyleSheet("background-color: #DF2928; color: #fff;") if size[0] <= 0 else self._SR_size_y.setStyleSheet("background-color: none; color: #000;")
+
+            # If power, ensure changes are integer
+
+            # RASTER SETTINGS
+            self._SR_raster_style.setStyleSheet("background-color: none; color: #000;")
+            if step_along_x and step_along_y:
+                self._SR_raster_style.setText("Unfilled {}\nDrawing an outline".format(indiv_type))
+                self._SR_step_size.setReadOnly(True)
+                self._SR_step_size.setStyleSheet("background-color: #ccc; color: #555;")
+            elif step_along_x:
+                self._SR_raster_style.setText("Filled {}\nStepping along x-axis".format(indiv_type))
+                self._SR_step_size.setReadOnly(False)
+                self._SR_step_size.setStyleSheet("background-color: none; color: #000;")
+            elif step_along_y:
+                self._SR_raster_style.setText("Filled {}\nStepping along y-axis".format(indiv_type))
+                self._SR_step_size.setReadOnly(False)
+                self._SR_step_size.setStyleSheet("background-color: none; color: #000;")
+            else:
+                _got_error = True
+                self._SR_raster_style.setText("No axis selected\nChoose at least one axis")
+                self._SR_raster_style.setStyleSheet("background-color: #DF2928; color: #fff;")
+                self._SR_step_size.setReadOnly(False)
+                self._SR_step_size.setStyleSheet("background-color: none; color: #000;")
+
+        except Exception as e:
+            # We assume the user is not done entering the data
+            self.logconsole("{}: {}".format(type(e).__name__, e))
+            self._SR_size_x.setStyleSheet("background-color: none; color: #000;")
+            self._SR_size_y.setStyleSheet("background-color: none; color: #000;")
+
+            self._SR_raster_style.setText("-\n")
+            self._SR_raster_style.setStyleSheet("background-color: none; color: #000;")
+
+        # Check if the values are even valid
+        # Change background if necessary
+        else:
+            # There are no errors, and we check if startRaster
+            if startRaster and not _got_error:
+                # JUMP TO DEF
+                # def singleraster(self, velocity, xDist, yDist, rasterSettings, returnToOrigin = False, estimateTime = True, onlyEstimate = False):
+
+                # Raster in a rectangle
+        		# rasterSettings = {
+        		# 	"direction": "x" || "y" || "xy", 		# Order matters here xy vs yx
+        		# 	"step": 1								# If set to xy, step is not necessary
+        		# }
+                if not step_along_x and not step_along_y:
+                    self.setOperationStatus("Step-axis not selected!")
+                    return
+
+                rsSettingsDir = ""
+                rsSettingsDir += "x" if step_along_x else ""
+                rsSettingsDir += "y" if step_along_y else ""
+
+                if step_along_x and step_along_y:
+                    rsSettings = { "direction" : rsSettingsDir }
+                else:
+                    rsSettings = { "direction" : rsSettingsDir, "step": step_size }
+
+                self.setOperationStatus("Starting Single Raster...")
+
+                self._SR_start.setEnabled(False)
+                sr_thread = threading.Thread(target = self._singleRaster, kwargs = dict(
+                    velocity       = _vel,
+                    xDist          = size[1],
+                    yDist          = size[0],
+                    rasterSettings = rsSettings,
+                    returnToOrigin = returnToOrigin
+                ))
+                sr_thread.start()
+
+            elif startRaster:
+                # Alert got error
+                self.criticalDialog(message = "Error in single raster settings.\nPlease check again!", host = self)
+
+    def _singleRaster(self, **kwargs):
+        try:
+            self.stageControl.singleraster(**kwargs)
+        except Exception as e:
+            self.setOperationStatus("Error Occurred. {}".format(e))
+        else:
+            # If no error
+            self.setOperationStatus("Ready.")
+        finally:
+            # Always run
+            self._SR_start.setEnabled(True)
+
+
     def recalculateARValues(self, startRaster = False):
         _got_error = False
         try:
@@ -1117,8 +1358,8 @@ class MicroGui(QtWidgets.QMainWindow):
             pow_0 = int(self._AR_init_power.text())
 
             # we convert 2 to 1 since .checkState gives 0 = unchecked, 2 = checked
-            step_along_x = True if self._AR_raster_x.checkState() else False
-            step_along_y = True if self._AR_raster_y.checkState() else False
+            step_along_x = not not self._AR_raster_x.checkState()
+            step_along_y = not not self._AR_raster_y.checkState()
 
             step_size = float(self._AR_step_size.text())
 
@@ -1133,7 +1374,7 @@ class MicroGui(QtWidgets.QMainWindow):
             y_rows = int(self._AR_rows.text())
             y_spac = float(self._AR_Y_spacing.text())
 
-            returnToOrigin = True if self._AR_retToOri.checkState() else False
+            returnToOrigin = not not self._AR_retToOri.checkState()
 
             # sizes
             # y, x
@@ -1275,9 +1516,9 @@ class MicroGui(QtWidgets.QMainWindow):
                 else:
                     rsSettings = { "direction" : rsSettingsDir, "step": step_size }
 
+                self._AR_start.setEnabled(False)
                 self.setOperationStatus("Starting Array Raster...")
-
-                self.stageControl.arrayraster(
+                ar_thread = threading.Thread(target = self._arrayraster, kwargs = dict(
                     xDist      = size[1],         yDist      = size[0],
                     xGap       = x_spac,          yGap       = y_spac,
                     nrows      = y_rows,          ncols      = x_cols,
@@ -1286,11 +1527,25 @@ class MicroGui(QtWidgets.QMainWindow):
                     xincrement = x_incr,          yincrement = y_incr,
                     rasterSettings = rsSettings,
                     returnToOrigin = returnToOrigin
-                )
+                ))
+                ar_thread.start()
+
             elif startRaster:
                 # Alert got error
                 self.criticalDialog(message = "Error in array raster settings.\nPlease check again!", host = self)
 
+    def _arrayraster(self, **kwargs):
+        self.stageControl.arrayraster(**kwargs)
+        try:
+            pass
+        except Exception as e:
+            self.setOperationStatus("Error Occurred. {}".format(e))
+        else:
+            self.setOperationStatus("Ready.")
+        finally:
+            self._AR_start.setEnabled(True)
+
+# Helper functions
     def setOperationStatus(self, status, printToTerm = True, **printArgs):
         self.currentStatus = status
         if printToTerm:
@@ -1304,7 +1559,7 @@ class MicroGui(QtWidgets.QMainWindow):
     def criticalDialog(self, message, title = "Oh no!", informativeText = None, host = None):
         _msgBox = QtWidgets.QMessageBox(host)
         _msgBox.setIcon(QtWidgets.QMessageBox.Critical)
-        _msgBox.setWindowTitle("Oh no!")
+        _msgBox.setWindowTitle(title)
         _msgBox.setText(message)
         if informativeText is not None:
             _msgBox.setInformativeText(informativeText)
@@ -1323,26 +1578,355 @@ class MicroGui(QtWidgets.QMainWindow):
 
         return _msgBox.exec_()
 
+    def informationDialog(self, message, title = "Information", informativeText = None, host = None):
+        _msgBox = QtWidgets.QMessageBox(host)
+        _msgBox.setIcon(QtWidgets.QMessageBox.Information)
+        _msgBox.setWindowTitle(title)
+        _msgBox.setText(message)
+        if informativeText is not None:
+            _msgBox.setInformativeText(informativeText)
+
+        # Get height and width
+        _h = _msgBox.height()
+        _w = _msgBox.width()
+        _msgBox.setGeometry(0, 0, _w, _h)
+
+        moveToCentre(_msgBox)
+
+        # mb.setTextFormat(Qt.RichText)
+        # mb.setDetailedText(message)
+
+        # _msgBox.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextSelectableByMouse)
+
+        return _msgBox.exec_()
+
+    def unsavedQuestionDialog(self, message, title = "Unsaved", informativeText = None, host = None):
+        _msgBox = QtWidgets.QMessageBox(host)
+        _msgBox.setIcon(QtWidgets.QMessageBox.Question)
+        _msgBox.setWindowTitle(title)
+        _msgBox.setText(message)
+        if informativeText is not None:
+            _msgBox.setInformativeText(informativeText)
+
+        _msgBox.setStandardButtons(QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Discard | QtWidgets.QMessageBox.Cancel)
+        _msgBox.setDefaultButton(QtWidgets.QMessageBox.Cancel)
+
+        # Get height and width
+        _h = _msgBox.height()
+        _w = _msgBox.width()
+        _msgBox.setGeometry(0, 0, _w, _h)
+
+        moveToCentre(_msgBox)
+
+        # mb.setTextFormat(Qt.RichText)
+        # mb.setDetailedText(message)
+
+        # _msgBox.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextSelectableByMouse)
+
+        return _msgBox.exec_()
+
 # Status Bar
 
 class aboutPopUp(QtWidgets.QDialog):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.initUI()
 
     def initUI(self):
-        lblName = QtWidgets.QLabel("Made by\n\nSun Yudong, Wu Mingsong\n\n2019\n\nsunyudong [at] outlook [dot] sg\n\nmingsongwu[at] outlook [dot] sg", self)
+        # x, y, w, h
+        self.setGeometry(0, 0, 250, 200)
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose) # WidgetAttribute.
+        self.setWindowTitle("About")
+        moveToCentre(self)
 
-# def moveToCentre(QtObj):
-#     # Get center of the window and move the window to the centre
-#     # Remember to setGeometry of the object first
-#     # https://pythonprogramminglanguage.com/pyqt5-center-window/
-#     _qtRectangle = QtObj.frameGeometry()
-#     _centerPoint = QtWidgets.QDesktopWidget().availableGeometry().center()
-#     _qtRectangle.moveCenter(_centerPoint)
-#     QtObj.move(_qtRectangle.topLeft())
+        self._main_layout = QtWidgets.QVBoxLayout()
+        # setContentsMargins(left, top, right, bottom)
+        self._main_layout.setContentsMargins(10, 10, 10, 10)
+
+        one = QtWidgets.QLabel("Made by")
+        one.setAlignment(QtCore.Qt.AlignCenter)
+        two = QtWidgets.QLabel("Sun Yudong, Wu Mingsong\n2019")
+        two.setAlignment(QtCore.Qt.AlignCenter)
+        ema = QtWidgets.QLabel()
+
+        dianyous = [
+            ["sunyudong", "outlook.sg"],
+            ["mingsongwu", "outlook.sg"]
+        ]
+
+        ema.setText("<a href=\"mailto:{}\" title=\"Please don't spam us thanks\">sunyudong [at] outlook [dot] sg</a><br/><a href=\"mailto:{}\" title=\"Please don't spam us thanks\">mingsongwu [at] outlook [dot] sg</a>".format(*map("@".join, dianyous)))
+        ema.setTextFormat(QtCore.Qt.RichText)
+        ema.setTextInteractionFlags(QtCore.Qt.TextBrowserInteraction)
+        ema.setOpenExternalLinks(True)
+        ema.setAlignment(QtCore.Qt.AlignCenter)
+
+        thr = QtWidgets.QLabel("NUS Nanomaterials Lab")
+        thr.setAlignment(QtCore.Qt.AlignCenter)
+
+        self._main_layout.addWidget(one)
+        self._main_layout.addWidget(two)
+        self._main_layout.addWidget(ema)
+        self._main_layout.addWidget(thr)
+
+        self.setLayout(self._main_layout)
+
+class SettingsScreen(QtWidgets.QDialog):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        self.microGUIParent = self.parentWidget()
+
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowTitle("Settings")
+        # x, y ,w, h
+        self.setGeometry(0, 0, 500, 300)
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+
+        moveToCentre(self)
+
+        self.makeUI()
+        self.loadSettings()
+        self.initEventListeners()
+
+    def makeUI(self):
+        self._main_layout = QtWidgets.QGridLayout()
+
+        # Optomechanical
+        _servos = QtWidgets.QGroupBox("Optomechanical")
+        _servos_layout = QtWidgets.QGridLayout()
+
+        self._shutterAbsoluteMode  = QtWidgets.QCheckBox("Use Absolute Mode for Shutter")
+        self._powerAbsoluteMode    = QtWidgets.QCheckBox("Use Absolute Mode for Power")
+        _shutterChannel_label_main = QtWidgets.QLabel("Shutter Channel")
+        _shutterChannel_label_left = QtWidgets.QLabel("Left")
+        _shutterChannel_label_righ = QtWidgets.QLabel("Right")
+        _shutterChannel_label_main.setAlignment(QtCore.Qt.AlignTop)
+        _shutterChannel_label_left.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+        _shutterChannel_label_righ.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
+        self._shutterChannel       = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        self._shutterChannel.setTickPosition(QtWidgets.QSlider.TicksBothSides)
+        self._shutterChannel.setRange(0, 1)
+        self._shutterChannel.setSingleStep(1)
+        self._shutterChannel.setPageStep(1)
+        self._shutterChannel.setTickInterval(1)
+        # WE USE THIS WORKAROUND OF SETTING 0 TO 1 BECAUSE MOUSEEVENTS ARE NOT AFFECTED BY ABOVE SETTINGS
+
+        # addWidget(QWidget * widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = 0)
+        _servos_layout.addWidget(self._shutterAbsoluteMode, 0, 0, 1, 3)
+        _servos_layout.addWidget(self._powerAbsoluteMode, 1, 0, 1, 3)
+        _servos_layout.addWidget(_shutterChannel_label_main, 2, 0, 2, 1)
+        _servos_layout.addWidget(self._shutterChannel, 2, 1, 1, 2)
+        _servos_layout.addWidget(_shutterChannel_label_left, 3, 1, 1, 1)
+        _servos_layout.addWidget(_shutterChannel_label_righ, 3, 2, 1, 1)
+
+        _servos_layout.setColumnStretch(0, 2)
+        _servos_layout.setColumnStretch(1, 1)
+        _servos_layout.setColumnStretch(2, 1)
+
+        _servos.setLayout(_servos_layout)
+        # / Optomechanical
+
+        # Stage Configuration
+        # These are the initialization settings and does not affect the current session!
+        _stage = QtWidgets.QGroupBox("Stage Settings")
+        _stage_layout = QtWidgets.QGridLayout()
+
+        _stage_xlim_label = QtWidgets.QLabel("X-Limits")
+        self._stage_xlim_lower = QtWidgets.QLineEdit()
+        self._stage_xlim_lower.setValidator(QtGui.QDoubleValidator()) # Accept any Double
+        self._stage_xlim_upper = QtWidgets.QLineEdit()
+        self._stage_xlim_upper.setValidator(QtGui.QDoubleValidator()) # Accept any Double
+
+        _stage_ylim_label = QtWidgets.QLabel("Y-Limits")
+        self._stage_ylim_lower = QtWidgets.QLineEdit()
+        self._stage_ylim_lower.setValidator(QtGui.QDoubleValidator()) # Accept any Double
+        self._stage_ylim_upper = QtWidgets.QLineEdit()
+        self._stage_ylim_upper.setValidator(QtGui.QDoubleValidator()) # Accept any Double
+
+        self._noHome = QtWidgets.QCheckBox("Do not home stage on start")
+
+        _note = QtWidgets.QLabel("Limits and Homing Settings take effect only after app restart!\nStage will be initialised in the center of the limits")
+        _note.setStyleSheet("color: red;")
+
+        self._invertx = QtWidgets.QCheckBox("Invert Horizontal")
+        self._inverty = QtWidgets.QCheckBox("Invert Vertical")
+
+        _stage_layout.addWidget(_stage_xlim_label, 0, 0)
+        _stage_layout.addWidget(self._stage_xlim_lower, 0, 1)
+        _stage_layout.addWidget(QtWidgets.QLabel("to"), 0, 2)
+        _stage_layout.addWidget(self._stage_xlim_upper, 0, 3)
+        _stage_layout.addWidget(_stage_ylim_label, 1, 0)
+        _stage_layout.addWidget(self._stage_ylim_lower, 1, 1)
+        _stage_layout.addWidget(QtWidgets.QLabel("to"), 1, 2)
+        _stage_layout.addWidget(self._stage_ylim_upper, 1, 3)
+        _stage_layout.addWidget(self._noHome, 2, 0, 1, 4)
+        _stage_layout.addWidget(_note, 3, 0, 1, 4)
+        _stage_layout.addWidget(self._invertx, 4, 0, 1, 2)
+        _stage_layout.addWidget(self._inverty, 4, 2, 1, 2)
+
+        # TODO: Add some way of moving dx and dy
+
+        _stage.setLayout(_stage_layout)
+        # / Stage Configuration
+
+        # Labels and warnings
+        _persistent = QtWidgets.QLabel("These settings persists across launches! Refer to documentation for more information.")
+        # / Labels and warnings
+
+        # Buttons
+        self._buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Apply | QtWidgets.QDialogButtonBox.RestoreDefaults | QtWidgets.QDialogButtonBox.Close)
+        # / Buttons
+
+        self._main_layout.addWidget(_servos, 0, 0)
+        self._main_layout.addWidget(_stage, 0, 1)
+        self._main_layout.addWidget(_persistent, 1, 0, 1, 2)
+        self._main_layout.addWidget(self._buttonBox, 2, 0, 1, 2)
+
+        self._main_layout.setColumnStretch(0, 1)
+        self._main_layout.setColumnStretch(1, 1)
+
+        self.setLayout(self._main_layout)
+
+    def initEventListeners(self):
+        self._buttonBox.rejected.connect(self.closeCheck)
+        self._buttonBox.button(QtWidgets.QDialogButtonBox.RestoreDefaults).clicked.connect(self.reset)
+        self._buttonBox.button(QtWidgets.QDialogButtonBox.Apply).clicked.connect(self.apply)
+
+    @property
+    def set_shutterChannel(self):
+        # THIS is gonna be abit confusing argh
+        return servos.Servo.LEFTCH if self._set_shutterChannel == 0 else servos.Servo.RIGHTCH
+
+    @set_shutterChannel.setter
+    def set_shutterChannel(self, x):
+        self._set_shutterChannel = 0 if x == servos.Servo.LEFTCH else 1
+
+    def loadSettings(self):
+        self.microGUIParent.qsettings.sync()
+
+        self.set_shutterAbsoluteMode = self.microGUIParent.qsettings.value("shutter/absoluteMode", True, type = bool)
+        self.set_shutterChannel      = self.microGUIParent.qsettings.value("shutter/channel", servos.Servo.RIGHTCH, type = int)
+        self.set_powerAbsoluteMode   = self.microGUIParent.qsettings.value("power/absoluteMode", False, type = bool)
+        self.set_invertx             = self.microGUIParent.qsettings.value("stage/invertx", False, type = bool)
+        self.set_inverty             = self.microGUIParent.qsettings.value("stage/inverty", False, type = bool)
+        self.set_stageConfig         = self.microGUIParent.qsettings.value("stage/config", None, type = dict) # Should be a dictionary
+        self.set_noHome              = self.microGUIParent.qsettings.value("stage/noHome", False, type = bool)
+
+        # Update the GUI with the settings
+        self._shutterAbsoluteMode.setChecked(self.set_shutterAbsoluteMode)
+        self._powerAbsoluteMode.setChecked(self.set_powerAbsoluteMode)
+        self._shutterChannel.setValue(self._set_shutterChannel) # we use the _ value to get 0 and 1
+        self._invertx.setChecked(self.set_invertx)
+        self._inverty.setChecked(self.set_inverty)
+
+        if not self.set_stageConfig:
+            self.set_stageConfig = {
+                "xlim" : mstage.DEFAULT_XLIM ,
+                "ylim" : mstage.DEFAULT_YLIM
+            }
+        self._stage_xlim_lower.setText(str(self.set_stageConfig["xlim"][0]))
+        self._stage_xlim_upper.setText(str(self.set_stageConfig["xlim"][1]))
+        self._stage_ylim_lower.setText(str(self.set_stageConfig["ylim"][0]))
+        self._stage_ylim_upper.setText(str(self.set_stageConfig["ylim"][1]))
+
+    def getStageConfigFromGUI(self):
+        try:
+            return {
+                "xlim" : [float(self._stage_xlim_lower.text()), float(self._stage_xlim_upper.text())] ,
+                "ylim" : [float(self._stage_ylim_lower.text()), float(self._stage_ylim_upper.text())]
+            }
+        except ValueError as e:
+            return None
+
+
+    def settingsEdited(self):
+        return not (self.set_shutterAbsoluteMode == (not not self._shutterAbsoluteMode.checkState()) and \
+                    self._set_shutterChannel     == self._shutterChannel.value() and \
+                    self.set_powerAbsoluteMode   == (not not self._powerAbsoluteMode.checkState()) and \
+                    self.set_invertx             == (not not self._invertx.checkState()) and \
+                    self.set_inverty             == (not not self._inverty.checkState()) and \
+                    self.set_stageConfig         == self.getStageConfigFromGUI() and \
+                    self.set_noHome              == (not not self._noHome.checkState()) \
+        )
+
+    def closeCheck(self):
+        if self.settingsEdited():
+            # Alert saying changes not saved
+            ret = self.microGUIParent.unsavedQuestionDialog(message = "Settings Changed", informativeText = "Save or Discard?\nClick Cancel to go back.", title = "Unsaved settings", host = self)
+
+            if ret == QtWidgets.QMessageBox.Save:
+                self.apply(noDialog = False)
+                return self.close()
+            elif ret == QtWidgets.QMessageBox.Discard:
+                self.microGUIParent.setOperationStatus("Changed settings discarded! Ready.")
+                return self.close()
+        else:
+            self.microGUIParent.setOperationStatus("Ready.")
+            return self.close()
+
+    def reset(self):
+        self._shutterAbsoluteMode.setChecked(True)
+        self._powerAbsoluteMode.setChecked(False)
+        self._shutterChannel.setValue(servos.Servo.RIGHTCH) # This is fine since its = 1
+
+        self._stage_xlim_lower.setText(str(mstage.DEFAULT_XLIM[0]))
+        self._stage_xlim_upper.setText(str(mstage.DEFAULT_XLIM[1]))
+        self._stage_ylim_lower.setText(str(mstage.DEFAULT_YLIM[0]))
+        self._stage_ylim_upper.setText(str(mstage.DEFAULT_YLIM[1]))
+
+        self._invertx.setChecked(False)
+        self._inverty.setChecked(False)
+
+    def apply(self, noDialog = False):
+        # TODO: Check for sane stage config values
+        newStageConfig = self.getStageConfigFromGUI()
+        if newStageConfig is None:
+            return self.microGUIParent.criticalDialog(message = "Error parsing Stage limits!", host = self)
+        elif newStageConfig["xlim"][0] >= newStageConfig["xlim"][1] or newStageConfig["ylim"][0] >= newStageConfig["ylim"][1]:
+            return self.microGUIParent.criticalDialog(message = "Stage lower limit must be strictly lower than higher limit!", host = self)
+
+        self._set_shutterChannel = self._shutterChannel.value() # Convert to PAN values
+        self.microGUIParent.qsettings.setValue("shutter/channel", self.set_shutterChannel)
+
+        self.microGUIParent.qsettings.setValue("shutter/absoluteMode", not not self._shutterAbsoluteMode.checkState())
+        self.microGUIParent.qsettings.setValue("power/absoluteMode", not not self._powerAbsoluteMode.checkState())
+        self.microGUIParent.qsettings.setValue("stage/invertx", not not self._invertx.checkState())
+        self.microGUIParent.qsettings.setValue("stage/inverty", not not self._inverty.checkState())
+        self.microGUIParent.qsettings.setValue("stage/noHome", not not self._noHome.checkState())
+        self.microGUIParent.qsettings.setValue("stage/config", newStageConfig) # Should be a dictionary
+
+        self.microGUIParent.qsettings.sync()
+
+        # Set the settings in the main GUI also
+        # We do this after sync because invertCheck() calls sync as well
+        self.microGUIParent._SL_invertx_checkbox.setChecked(not not self._invertx.checkState())
+        self.microGUIParent._SL_inverty_checkbox.setChecked(not not self._inverty.checkState())
+        self.microGUIParent.invertCheck() # This will auto update the necessary variables
+
+        # Update the servos absoluteMode
+        self.microGUIParent.stageControl.controller.shutter.absoluteMode = (not not self._shutterAbsoluteMode.checkState())
+        self.microGUIParent.stageControl.controller.powerServo.absoluteMode = (not not self._powerAbsoluteMode.checkState())
+        self.microGUIParent.stageControl.controller.shutter.channel = self.set_shutterChannel
+        self.microGUIParent.stageControl.controller.powerServo.channel = self.set_shutterChannel * -1
+
+        # Reload from memory
+        self.loadSettings()
+        self.microGUIParent.setOperationStatus("Settings saved. Ready.")
+
+        if not noDialog:
+            self.microGUIParent.informationDialog(message = "Settings saved successfully.", title="Yay!", host = self)
 
 def main(**kwargs):
+    # https://stackoverflow.com/a/1857/3211506
+    # Windows = Windows, Linux = Linux, Mac = Darwin
+    # For setting icon on Windows
+    if platform.system() == "Windows":
+        # https://stackoverflow.com/a/1552105/3211506
+        myappid = u'NUS.Nanomaterials.MicroGUI.0.10a' # arbitrary string
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+
     app = QtWidgets.QApplication(sys.argv)
     window = MicroGui(**kwargs)
     # Start the signal handler
@@ -1358,3 +1942,14 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     main(devMode = args.devMode, noHome = args.noHome)
+
+
+# ARCHIVE CODE
+# def moveToCentre(QtObj):
+#     # Get center of the window and move the window to the centre
+#     # Remember to setGeometry of the object first
+#     # https://pythonprogramminglanguage.com/pyqt5-center-window/
+#     _qtRectangle = QtObj.frameGeometry()
+#     _centerPoint = QtWidgets.QDesktopWidget().availableGeometry().center()
+#     _qtRectangle.moveCenter(_centerPoint)
+#     QtObj.move(_qtRectangle.topLeft())
