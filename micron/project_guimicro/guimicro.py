@@ -277,19 +277,17 @@ class MicroGui(QtWidgets.QMainWindow):
 
                     except RuntimeError as e:
                         initWindow.close()
-                        msgBox = QtWidgets.QMessageBox()
-                        msgBox.setIcon(QtWidgets.QMessageBox.Critical)
-                        msgBox.setWindowTitle("Oh no!")
-                        msgBox.setText("System has encountered a RuntimeError and will now exit.")
-                        msgBox.setInformativeText("Error: {}".format(e))
-                        moveToCentre(msgBox)
 
                         # mb.setTextFormat(Qt.RichText)
                         # mb.setDetailedText(message)
+                        # msgBox.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
 
-                        msgBox.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
+                        self.criticalDialog(message = "System has encountered a RuntimeError and will now exit.",
+                            title = "Oh no!",
+                            informativeText = "Error: {}".format(e),
+                            host = self
+                        )
 
-                        ret = msgBox.exec_()
                         os._exit(1)             # For the exit to propogate upwards
 
             # Clean up unneeded settings
