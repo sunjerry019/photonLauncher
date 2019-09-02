@@ -287,7 +287,7 @@ class MicroGui(QtWidgets.QMainWindow):
                         # mb.setTextFormat(Qt.RichText)
                         # mb.setDetailedText(message)
 
-                        msgBox.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextSelectableByMouse)
+                        msgBox.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
 
                         ret = msgBox.exec_()
                         os._exit(1)             # For the exit to propogate upwards
@@ -1574,7 +1574,7 @@ class MicroGui(QtWidgets.QMainWindow):
         # mb.setTextFormat(Qt.RichText)
         # mb.setDetailedText(message)
 
-        _msgBox.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextSelectableByMouse)
+        _msgBox.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
 
         return _msgBox.exec_()
 
@@ -1596,7 +1596,7 @@ class MicroGui(QtWidgets.QMainWindow):
         # mb.setTextFormat(Qt.RichText)
         # mb.setDetailedText(message)
 
-        # _msgBox.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextSelectableByMouse)
+        # _msgBox.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
 
         return _msgBox.exec_()
 
@@ -1621,7 +1621,7 @@ class MicroGui(QtWidgets.QMainWindow):
         # mb.setTextFormat(Qt.RichText)
         # mb.setDetailedText(message)
 
-        # _msgBox.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextSelectableByMouse)
+        # _msgBox.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
 
         return _msgBox.exec_()
 
