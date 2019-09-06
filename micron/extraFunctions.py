@@ -34,7 +34,7 @@ def query_yes_no(question, default="yes"):
             sys.stdout.write("Please respond with 'yes' or 'no' "
                              "(or 'y' or 'n').\n")
 
-from PyQt5 import QtCore, QtGui, QtWidgets                           
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 def moveToCentre(QtObj, host = None):
     # https://stackoverflow.com/a/42326134/3211506

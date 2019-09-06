@@ -20,7 +20,9 @@ import time, datetime
 import argparse
 
 from contextlib import redirect_stdout
-import io, threading
+import io, threading, multiprocessing
+# threading for interrupt
+# multiprocessing so we can terminate the processes on abort
 
 import traceback
 
@@ -183,15 +185,20 @@ class MicroGui(QtWidgets.QMainWindow):
     def KeyboardInterruptHandler(self, signal = None, frame = None, abortTrigger = False):
         # 2 args above for use with signal.signal
 
+        # Close shutter
         self.stageControl.controller.shutter.quietLog = True
-
         if not abortTrigger:
             self.setOperationStatus("^C Detected: Aborting the FIFO stack. Shutter will be closed as part of the aborting process.")
         else:
             self.setOperationStatus("Aborting the FIFO stack. Shutter will be closed as part of the aborting process.")
         self.stageControl.controller.shutter.close()
-
         self.stageControl.controller.shutter.quietLog = False
+        # / Close shutter
+
+        # End all running threads
+        for p in multiprocessing.active_children():
+            p.terminate()
+        # / End all running threads
 
         if not self.devMode:
             self.stageControl.controller.abort()
@@ -1219,7 +1226,7 @@ class MicroGui(QtWidgets.QMainWindow):
         self._SR_pow_up.setEnabled(False)
         self._SR_pow_dn.setEnabled(False)
 
-        powerThread = threading.Thread(target = self._adjustPower, kwargs = dict(_step = _step, direction = direction))
+        powerThread = multiprocessing.Process(target = self._adjustPower, kwargs = dict(_step = _step, direction = direction))
         powerThread.start()
 
         # self._adjustPower()
@@ -1322,7 +1329,7 @@ class MicroGui(QtWidgets.QMainWindow):
                 self.setOperationStatus("Starting Single Raster...")
 
                 self._SR_start.setEnabled(False)
-                sr_thread = threading.Thread(target = self._singleRaster, kwargs = dict(
+                sr_thread = multiprocessing.Process(target = self._singleRaster, kwargs = dict(
                     velocity       = _vel,
                     xDist          = size[1],
                     yDist          = size[0],
@@ -1516,7 +1523,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
                 self._AR_start.setEnabled(False)
                 self.setOperationStatus("Starting Array Raster...")
-                ar_thread = threading.Thread(target = self._arrayraster, kwargs = dict(
+                ar_thread = multiprocessing.Process(target = self._arrayraster, kwargs = dict(
                     xDist      = size[1],         yDist      = size[0],
                     xGap       = x_spac,          yGap       = y_spac,
                     nrows      = y_rows,          ncols      = x_cols,
