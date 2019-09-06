@@ -1237,6 +1237,10 @@ class MicroGui(QtWidgets.QMainWindow):
         self._SR_pow_dn.setEnabled(True)
         self.setOperationStatus("Ready.")
 
+    def setButtonsEnabled(self, state):
+        self._SR_start.setEnabled(state)
+        self._AR_start.setEnabled(state)
+
     def checkSRValues(self, startRaster = False):
         _got_error = False
         try:
@@ -1328,7 +1332,8 @@ class MicroGui(QtWidgets.QMainWindow):
 
                 self.setOperationStatus("Starting Single Raster...")
 
-                self._SR_start.setEnabled(False)
+                self.setStartButtonsEnabled(False)
+                self.setOperationStatus("Starting Single Raster...")
                 sr_thread = multiprocessing.Process(target = self._singleRaster, kwargs = dict(
                     velocity       = _vel,
                     xDist          = size[1],
@@ -1347,12 +1352,14 @@ class MicroGui(QtWidgets.QMainWindow):
             self.stageControl.singleraster(**kwargs)
         except Exception as e:
             self.setOperationStatus("Error Occurred. {}".format(e))
+            if devMode:
+                raise
         else:
             # If no error
             self.setOperationStatus("Ready.")
         finally:
             # Always run
-            self._SR_start.setEnabled(True)
+            self.setStartButtonsEnabled(True)
 
 
     def recalculateARValues(self, startRaster = False):
@@ -1521,7 +1528,7 @@ class MicroGui(QtWidgets.QMainWindow):
                 else:
                     rsSettings = { "direction" : rsSettingsDir, "step": step_size }
 
-                self._AR_start.setEnabled(False)
+                self.setStartButtonsEnabled(False)
                 self.setOperationStatus("Starting Array Raster...")
                 ar_thread = multiprocessing.Process(target = self._arrayraster, kwargs = dict(
                     xDist      = size[1],         yDist      = size[0],
@@ -1540,15 +1547,16 @@ class MicroGui(QtWidgets.QMainWindow):
                 self.criticalDialog(message = "Error in array raster settings.\nPlease check again!", host = self)
 
     def _arrayraster(self, **kwargs):
-        self.stageControl.arrayraster(**kwargs)
         try:
-            pass
+            self.stageControl.arrayraster(**kwargs)
         except Exception as e:
             self.setOperationStatus("Error Occurred. {}".format(e))
+            if devMode:
+                raise
         else:
             self.setOperationStatus("Ready.")
         finally:
-            self._AR_start.setEnabled(True)
+            self.setStartButtonsEnabled(True)
 
 # Helper functions
     def setOperationStatus(self, status, printToTerm = True, **printArgs):
