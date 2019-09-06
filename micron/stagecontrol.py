@@ -32,7 +32,7 @@ class InputError(Exception):
 	pass
 
 class StageControl():
-	def __init__(self, noinvertx = 1, noinverty = 1, GUI_Object = None, **kwargs):
+	def __init__(self, noinvertx = 1, noinverty = 1, GUI_Object = None, jukeboxKWArgs = {}, **kwargs):
 		# noinvertx can take values 1 and -1
 
 		assert noinvertx in (-1, 1), "No invertx can only take -1 or 1"
@@ -48,16 +48,21 @@ class StageControl():
 		# define contants
 		self.UP, self.RIGHT, self.DOWN, self.LEFT = 0, 1, 2, 3
 
+		# music thread
+		self.jukebox = jukebox.JukeBox(**jukeboxKWArgs)
+		self.musicProcess = None
+
 	def finishTone(self):
 		# Play sound to let user know that the action is completed
-		# TODO: Devise a way for the user to stop the music
-		# x = threading.Thread(target=self.jukethreads, daemon=True) #args=(,)
-		# x.start()
-		# time.sleep(1)
-		pass
+		# To stop, call self.musicProcess.terminate()
 
-	def jukethreads(self, **kwargs):
-		return jukebox.JukeBox(**kwargs)
+		self.musicProcess = threading.Thread(target=self.jukebox.playmusic, daemon=True) #args=(,)
+
+		self.musicProcess.start()
+
+		if self.GUI_Object:
+			self.GUI_Object.informationDialog(message = "Operation Completed!", title = "Done!", host = self.GUI_Object)
+			self.musicProcess.terminate()
 
 	# implement cardinal direction movement definitions, the input cases arent actually necessary once we have buttons paired to commands on guimicro
 	def rcardinal(self, direction, distance):

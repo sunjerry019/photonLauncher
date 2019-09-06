@@ -1237,7 +1237,7 @@ class MicroGui(QtWidgets.QMainWindow):
         self._SR_pow_dn.setEnabled(True)
         self.setOperationStatus("Ready.")
 
-    def setButtonsEnabled(self, state):
+    def setStartButtonsEnabled(self, state):
         self._SR_start.setEnabled(state)
         self._AR_start.setEnabled(state)
 

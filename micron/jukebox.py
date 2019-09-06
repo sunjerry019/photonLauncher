@@ -16,11 +16,11 @@ from pwmaudio import noALSAerror
 
 class JukeBox():
 
-    def __init__(self, tempo = 300, length = 40, scale = 'cpent', playmusic = True):
+    def __init__(self, tempo = 300, length = 40, scale = 'cpent', playmusic = False):
         self.scale(scale = scale)
         self.tempo = tempo
         self.length = length
-        print('Now playing: Debussys greatest hits')
+        print("Loading Melodies")
         self.melodygen(tempo = self.tempo, length = self.length)
 
         if playmusic:
@@ -61,6 +61,7 @@ class JukeBox():
         return self.sound
 
     def playmusic(self):
+        print('Now playing: Debussys greatest hits')
         with noALSAerror():
             play(self.sound)
 
