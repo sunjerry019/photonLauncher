@@ -24,6 +24,8 @@ import time
 import datetime
 import threading
 
+from extraFunctions import ThreadWithExc
+
 import jukebox
 
 
@@ -32,7 +34,7 @@ class InputError(Exception):
 	pass
 
 class StageControl():
-	def __init__(self, noinvertx = 1, noinverty = 1, GUI_Object = None, jukeboxKWArgs = {}, **kwargs):
+	def __init__(self, noinvertx = 1, noinverty = 1, GUI_Object = None, **kwargs):
 		# noinvertx can take values 1 and -1
 
 		assert noinvertx in (-1, 1), "No invertx can only take -1 or 1"
@@ -49,20 +51,21 @@ class StageControl():
 		self.UP, self.RIGHT, self.DOWN, self.LEFT = 0, 1, 2, 3
 
 		# music thread
-		self.jukebox = jukebox.JukeBox(**jukeboxKWArgs)
 		self.musicProcess = None
 
-	def finishTone(self):
+	def finishTone(self, jukeboxKWArgs = {}):
 		# Play sound to let user know that the action is completed
 		# To stop, call self.musicProcess.terminate()
 
-		self.musicProcess = threading.Thread(target=self.jukebox.playmusic, daemon=True) #args=(,)
+		self.musicProcess = ThreadWithExc(target=self.jukeboxThread, kwargs=jukeboxKWArgs) #args=(,)
 
 		self.musicProcess.start()
 
 		if self.GUI_Object:
-			self.GUI_Object.informationDialog(message = "Operation Completed!", title = "Done!", host = self.GUI_Object)
-			self.musicProcess.terminate()
+			self.GUI_Object.finishToneGUI()
+
+	def jukeboxThread(self, **jukeboxKWArgs):
+		return jukebox.JukeBox(playmusic = True, **jukeboxKWArgs)
 
 	# implement cardinal direction movement definitions, the input cases arent actually necessary once we have buttons paired to commands on guimicro
 	def rcardinal(self, direction, distance):

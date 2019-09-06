@@ -20,7 +20,7 @@ import time, datetime
 import argparse
 
 from contextlib import redirect_stdout
-import io, threading, multiprocessing
+import io, threading
 # threading for interrupt
 # multiprocessing so we can terminate the processes on abort
 
@@ -41,7 +41,7 @@ import stagecontrol
 import servos
 from micron import Stage as mstage # for default x and y lims
 
-from extraFunctions import moveToCentre
+from extraFunctions import moveToCentre, ThreadWithExc
 
 class MicroGui(QtWidgets.QMainWindow):
     def __init__(self, devMode = False, noHome = False):
@@ -196,7 +196,7 @@ class MicroGui(QtWidgets.QMainWindow):
         # / Close shutter
 
         # End all running threads
-        for p in multiprocessing.active_children():
+        for p in threading.enumerate():
             p.terminate()
         # / End all running threads
 
@@ -1226,7 +1226,7 @@ class MicroGui(QtWidgets.QMainWindow):
         self._SR_pow_up.setEnabled(False)
         self._SR_pow_dn.setEnabled(False)
 
-        powerThread = multiprocessing.Process(target = self._adjustPower, kwargs = dict(_step = _step, direction = direction))
+        powerThread = ThreadWithExc(target = self._adjustPower, kwargs = dict(_step = _step, direction = direction))
         powerThread.start()
 
         # self._adjustPower()
@@ -1334,7 +1334,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
                 self.setStartButtonsEnabled(False)
                 self.setOperationStatus("Starting Single Raster...")
-                sr_thread = multiprocessing.Process(target = self._singleRaster, kwargs = dict(
+                sr_thread = ThreadWithExc(target = self._singleRaster, kwargs = dict(
                     velocity       = _vel,
                     xDist          = size[1],
                     yDist          = size[0],
@@ -1352,7 +1352,7 @@ class MicroGui(QtWidgets.QMainWindow):
             self.stageControl.singleraster(**kwargs)
         except Exception as e:
             self.setOperationStatus("Error Occurred. {}".format(e))
-            if devMode:
+            if self.devMode:
                 raise
         else:
             # If no error
@@ -1530,7 +1530,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
                 self.setStartButtonsEnabled(False)
                 self.setOperationStatus("Starting Array Raster...")
-                ar_thread = multiprocessing.Process(target = self._arrayraster, kwargs = dict(
+                ar_thread = ThreadWithExc(target = self._arrayraster, kwargs = dict(
                     xDist      = size[1],         yDist      = size[0],
                     xGap       = x_spac,          yGap       = y_spac,
                     nrows      = y_rows,          ncols      = x_cols,
@@ -1551,7 +1551,7 @@ class MicroGui(QtWidgets.QMainWindow):
             self.stageControl.arrayraster(**kwargs)
         except Exception as e:
             self.setOperationStatus("Error Occurred. {}".format(e))
-            if devMode:
+            if self.devMode:
                 raise
         else:
             self.setOperationStatus("Ready.")
@@ -1637,6 +1637,15 @@ class MicroGui(QtWidgets.QMainWindow):
         # _msgBox.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
 
         return _msgBox.exec_()
+
+    def finishToneGUI(self):
+        self.informationDialog(message = "Operation Completed!", title = "Done!", host = self)
+
+        if self.stageControl.musicProcess and self.stageControl.musicProcess.isAlive():
+            try:
+                self.stageControl.musicProcess.terminate()
+            except Exception as e:
+                self.logconsole("{}: {}".format(type(e).__name__, e))
 
 # Status Bar
 
