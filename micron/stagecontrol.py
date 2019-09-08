@@ -264,7 +264,8 @@ class StageControl():
 
 		self.controller.shutter.quietLog = False
 
-		self.finishTone()
+		if not quietLog:
+			self.finishTone()
 
 	# overpowered, omni-potent rastering solution for both laser power and velocity
 	def arrayraster(self, inivel, inipower, x_isVel, ncols, xincrement, xGap, y_isVel, nrows, yincrement, yGap, xDist, yDist, rasterSettings, returnToOrigin = True):
