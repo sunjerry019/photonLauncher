@@ -23,7 +23,8 @@ from contextlib import contextmanager
 import time
 from pydub import AudioSegment
 from pydub.generators import SignalGenerator
-from pydub.playback import play
+# from pydub.playback import play
+from extraFunctions import play
 
 import os, sys
 

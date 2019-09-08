@@ -3,7 +3,8 @@
 from pydub import AudioSegment
 from pydub.generators import SignalGenerator
 from pydub.generators import Sine
-from pydub.playback import play
+# from pydub.playback import play
+from extraFunctions import play
 import random2
 
 from pwmaudio import noALSAerror

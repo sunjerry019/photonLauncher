@@ -1639,7 +1639,8 @@ class MicroGui(QtWidgets.QMainWindow):
         return _msgBox.exec_()
 
     def finishToneGUI(self):
-        self.informationDialog(message = "Operation Completed!", title = "Done!", host = self)
+        # we cannot set a host because host (parent, self) is in another thread
+        self.informationDialog(message = "Operation Completed!", title = "Done!")
 
         if self.stageControl.musicProcess and self.stageControl.musicProcess.isAlive():
             try:

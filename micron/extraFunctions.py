@@ -57,6 +57,48 @@ def moveToCentre(QtObj, host = None):
         _y = (screenGeometry.height() - ObjHeight) / 2;
         QtObj.move(_x, _y);
 
+# Rewritten play function
+# We enforce PyAudio
+# https://github.com/jiaaro/pydub/pull/421
+# NOTE: REMOVE IF PR IS MERGED AND DEPLOYED
+
+from pydub.utils import make_chunks
+from pydub.playback import play as pydub_play
+
+def _play_with_pyaudio(seg):
+    import pyaudio
+
+    p = pyaudio.PyAudio()
+    stream = p.open(format=p.get_format_from_width(seg.sample_width),
+                    channels=seg.channels,
+                    rate=seg.frame_rate,
+                    output=True)
+
+    # Just in case there were any exceptions/interrupts, we release the resource
+    # So as not to raise OSError: Device Unavailable should play() be used again
+    try:
+        # break audio into half-second chunks (to allows keyboard interrupts)
+        for chunk in make_chunks(seg, 500):
+            stream.write(chunk._data)
+    finally:
+        stream.stop_stream()
+        stream.close()
+
+        p.terminate()
+
+def play(audio_segment):
+    try:
+        _play_with_pyaudio(audio_segment)
+        return
+    except ImportError:
+        pass
+    else:
+        return
+
+    pydub_play(audio_segment)
+
+
+
 # https://stackoverflow.com/a/325528/3211506
 import threading, time, ctypes, inspect
 
