@@ -39,7 +39,7 @@ base_dir = os.path.dirname(os.path.realpath(__file__))
 root_dir = os.path.abspath(os.path.join(base_dir, ".."))
 sys.path.insert(0, root_dir)
 
-import stagecontrol
+import stagecontrol, picConv
 import servos
 from micron import Stage as mstage # for default x and y lims
 
@@ -190,6 +190,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
     def KeyboardInterruptHandler(self, signal = None, frame = None, abortTrigger = False):
         # 2 args above for use with signal.signal
+        # ALt + B also aborts
 
         # Disable the abort button
         self._abortBtn.setEnabled(False)
@@ -1036,10 +1037,32 @@ class MicroGui(QtWidgets.QMainWindow):
         self._DP_picture_fn  = QtWidgets.QLineEdit()
         self._DP_picture_fn.setPlaceholderText("File name")
         self._DP_picture_btn = QtWidgets.QPushButton("Browse...")
+        self._DP_picture_load = QtWidgets.QPushButton("Load")
 
-        _DP_main_layout.addWidget(_DP_picture_fn_label, 0, 0, 1, 1)
-        _DP_main_layout.addWidget(self._DP_picture_fn, 0, 1, 1, 2)
-        _DP_main_layout.addWidget(self._DP_picture_btn, 0, 3, 1, 1)
+        self._DP_picture_preview = QtWidgets.QLabel()
+        self._DP_picture_preview.setAlignment(QtCore.Qt.AlignCenter)
+
+        self._DP_picture_parse = QtWidgets.QPushButton("Parse Picture")
+
+        _DP_steps_labels = []
+        for i in range(3):
+            _temp_label = QtWidgets.QLabel("[{}]".format(i + 1))
+            _temp_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+            _temp_label.setStyleSheet("font-family: Menlo, Consolas, monospace;")
+            _DP_steps_labels.append(_temp_label)
+
+        _DP_main_layout.addWidget(self._DP_picture_preview, 0, 0, 1, 5)
+
+        _DP_main_layout.addWidget(_DP_steps_labels[0], 1, 0, 1, 1)
+        _DP_main_layout.addWidget(_DP_picture_fn_label, 1, 1, 1, 1)
+        _DP_main_layout.addWidget(self._DP_picture_fn, 1, 2, 1, 2)
+        _DP_main_layout.addWidget(self._DP_picture_btn, 1, 4, 1, 1)
+
+        _DP_main_layout.addWidget(_DP_steps_labels[1], 2, 0, 1, 1)
+        _DP_main_layout.addWidget(self._DP_picture_load, 2, 1, 1, 4)
+
+        _DP_main_layout.addWidget(_DP_steps_labels[2], 3, 0, 1, 1)
+        _DP_main_layout.addWidget(self._DP_picture_parse, 3, 1, 1, 4)
 
         for i in range(4):
             _DP_main_layout.setColumnStretch(i, 1)
@@ -1120,6 +1143,8 @@ class MicroGui(QtWidgets.QMainWindow):
 
         # DRAW PIC
         self._DP_picture_btn.clicked.connect(lambda: self._DP_getFile())
+        self._DP_picture_load.clicked.connect(lambda: self._DP_loadPicture())
+        self._DP_picture_parse.clicked.connect(lambda: self._DP_parsePicture())
 
         # SHUTTER
         self._close_shutter.clicked.connect(lambda: self.stageControl.controller.shutter.close())
@@ -1655,6 +1680,9 @@ class MicroGui(QtWidgets.QMainWindow):
         # Checks if the file exists and is valid
         # Raises ImageError if there are any errors
 
+        if not os.path.isfile(filename):
+            raise ImageError("Path is not file!")
+
         try:
             image = PILImage.open(filename)
         except Exception as e:
@@ -1677,11 +1705,53 @@ class MicroGui(QtWidgets.QMainWindow):
 
         return True
 
-    def _DP_parseFile(self):
+    def _DP_loadPicture(self):
         # run tests again
-        # Create the picConv object if all tests pass
-        pass
+        filename = self._DP_picture_fn.text()
 
+        try:
+            filename = os.path.abspath(os.path.realpath(os.path.expanduser(filename)))
+            isValid = self._DP_runChecks(filename)
+        except ImageError as e:
+            return self.criticalDialog(message = "You have selected an invalid file", informativeText = "E: {}".format(e), title = "Invalid File", host = self)
+
+        # Load picture into previewer
+        self._DP_picture_preview_pic = QtGui.QPixmap()
+        if self._DP_picture_preview_pic.load(filename):
+            self._DP_picture_preview_pic = self._DP_picture_preview_pic.scaled(self._DP_picture_preview.size(), QtCore.Qt.KeepAspectRatio)
+            self._DP_picture_preview.setPixmap(self._DP_picture_preview_pic)
+        else:
+            return self.criticalDialog(message = "Unable to load the selected file into preview", title = "Unable to load file", host = self)
+
+        # save the filename if everything passes
+        self._DP_filename_string = filename
+
+    def _DP_parsePicture(self):
+        # _DP_loadPicture has to be run first to do sanity checks
+        if not hasattr(self, "_DP_filename_string") or self._DP_filename_string is None or not len(self._DP_filename_string):
+            return self.criticalDialog(message = "Image not loaded!", informativeText = "Please load the image first before parsing. Filename not captured", title = "Image not loaded!", host = self)
+
+        # TODO: get options
+        allowDiagonals = True
+        prioritizeLeft = True
+
+        # TODO: create the picConv object
+        #    def __init__(self, filename, xscale = 1, yscale = 1, cut = 0, allowDiagonals = False, prioritizeLeft = False, flipHorizontally = False, flipVertically = False ,frames = False, simulate = False, simulateDrawing = False, micronInstance = None, shutterTime = 800):
+        self.picConv = picConv.PicConv(
+            filename = self._DP_filename_string,
+            allowDiagonals = allowDiagonals,
+            prioritizeLeft = prioritizeLeft,
+            shutterTime = self.stageControl.controller.shutter.duration * 2,
+            micronInstance = self.stageControl.controller
+        )
+
+        # TODO: Create a thread for convert() and parseLines()
+        # TODO: Add a continous bar and redirect_stdout to GUI
+
+        # Differs from Line edit, prompt to let user know
+        lefn =  self._DP_picture_fn.text()
+        if self._DP_filename_string != lefn:
+            self.informationDialog(message = "Differing filenames", informativeText = "For your information, registered filename differs from the input filename:\n\nREG:{}\nENT:{}\n\nREG has been loaded instead of ENT.".format(self._DP_filename_string, lefn))
 
 # Helper functions
     def setOperationStatus(self, status, printToTerm = True, **printArgs):

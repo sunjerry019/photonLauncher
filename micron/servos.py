@@ -63,6 +63,10 @@ class Servo():
 class Shutter(Servo):
     NONABSOLUTE_DURATION = 100
 
+    @property
+    def duration(self):
+        return self.DEFAULT_DURATION if self.absoluteMode else self.NONABSOLUTE_DURATION
+
     def __init__(self, GUI_Object = None, quietLog = False, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
