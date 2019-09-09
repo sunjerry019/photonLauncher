@@ -30,7 +30,8 @@ from extraFunctions import query_yes_no as qyn
 import datetime
 
 class PicConv():
-	def __init__(self, filename, xscale = 1, yscale = 1, cut = 0, allowDiagonals = False, prioritizeLeft = False, flipHorizontally = False, flipVertically = False ,frames = False, simulate = False, simulateDrawing = False, micronInstance = None, shutterTime = 0.8):
+	def __init__(self, filename, xscale = 1, yscale = 1, cut = 0, allowDiagonals = False, prioritizeLeft = False, flipHorizontally = False, flipVertically = False ,frames = False, simulate = False, simulateDrawing = False, micronInstance = None, shutterTime = 800):
+		# shutterTime in milliseconds
 		# Set micronInstance to False instead of None to prevent using of micron
 
 		self.filename = filename
@@ -62,7 +63,7 @@ class PicConv():
 		self.fast_velocity = 400
 		self.estimatedTime = None
 		self.estimatedVelocity = None
-		self.shutterTime = shutterTime
+		self.shutterTime = shutterTime / 1000
 
 	def convert(self):
 		self.image = Image.open(self.filename)
