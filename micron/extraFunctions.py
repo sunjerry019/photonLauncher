@@ -167,9 +167,12 @@ class ThreadWithExc(threading.Thread):
         caller thread, to raise an excpetion in the context of the
         thread represented by this instance.
         """
-        _async_raise( self._get_my_tid(), exctype )
+        if not hasattr(self, 'my_tid'):
+            self.my_tid = self._get_my_tid()
+        _async_raise( self.my_tid, exctype )
 
     def terminate(self):
-        while self.isAlive():
-            time.sleep( 0.1 )
+        if self.isAlive() and (not hasattr(self, 'terminateRequested') or not self.terminateRequested):
+            self.terminateRequested = True
             self.raiseExc(SystemExit)
+            self.join()

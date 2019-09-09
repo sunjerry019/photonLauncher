@@ -185,6 +185,10 @@ class MicroGui(QtWidgets.QMainWindow):
     def KeyboardInterruptHandler(self, signal = None, frame = None, abortTrigger = False):
         # 2 args above for use with signal.signal
 
+        # Disable the abort button
+        self._abortBtn.setEnabled(False)
+        self._abortBtn.setStyleSheet("background-color: #ccc;")
+
         # Close shutter
         self.stageControl.controller.shutter.quietLog = True
         if not abortTrigger:
@@ -196,8 +200,13 @@ class MicroGui(QtWidgets.QMainWindow):
         # / Close shutter
 
         # End all running threads
+        main_thread = threading.main_thread()
         for p in threading.enumerate():
-            p.terminate()
+            if p is main_thread:
+                continue
+
+            if isinstance(p, ThreadWithExc):
+                p.terminate()
         # / End all running threads
 
         if not self.devMode:
@@ -205,6 +214,10 @@ class MicroGui(QtWidgets.QMainWindow):
 
         self._SR_start.setEnabled(True)
         self._AR_start.setEnabled(True)
+
+        # Enable the abort button
+        self._abortBtn.setStyleSheet("background-color: #DF2928;")
+        self._abortBtn.setEnabled(True)
 
             # Some code here to detect printing/array state
 
