@@ -441,14 +441,12 @@ class MicroGui(QtWidgets.QMainWindow):
         # Page 1 = Array Raster
         # Page 2 = Single Raster
         # Page 3 = Stage Movement
-        self.main_widget.setCurrentIndex(page)
 
         # Change colour of the current tab
-        for i, btn in enumerate(self._modes):
-            if i == page:
-                btn.setStyleSheet("border : 0px; border-bottom : 4px solid #09c; padding-bottom: 3px; padding-top: -3px")
-            else:
-                btn.setStyleSheet("")
+        self._modes[self.main_widget.currentIndex()].setStyleSheet("")
+        self._modes[page].setStyleSheet("border : 0px; border-bottom : 4px solid #09c; padding-bottom: 3px; padding-top: -3px")
+
+        self.main_widget.setCurrentIndex(page)
 
         if page == 3:
             self.updatePositionDisplay()
