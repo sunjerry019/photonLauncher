@@ -14,19 +14,21 @@
 # sunyudong [at] outlook [dot] sg, mingsongwu [at] outlook [dot] sg
 
 import sys, os
+# import pathlib
 from PyQt5 import QtCore, QtGui, QtWidgets
 import time, datetime
-
+from PIL import Image as PILImage
 import argparse
 
+# AUDIO
 from contextlib import redirect_stdout
 import io, threading
 # threading for interrupt
 # multiprocessing so we can terminate the processes on abort
 
 import traceback
-
 import math
+from functools import reduce
 
 # To catch Ctrl+C
 import signal
@@ -42,6 +44,10 @@ import servos
 from micron import Stage as mstage # for default x and y lims
 
 from extraFunctions import moveToCentre, ThreadWithExc
+
+# CUSTOM ERROR FOR PICCONV:
+class ImageError(Exception):
+    pass
 
 class MicroGui(QtWidgets.QMainWindow):
     def __init__(self, devMode = False, noHome = False):
@@ -1014,7 +1020,35 @@ class MicroGui(QtWidgets.QMainWindow):
     def create_drawpic(self, widget):
         _drawpic_layout = QtWidgets.QGridLayout()
 
-        _drawpic_layout.addWidget(QtWidgets.QLabel("Draw Pic Layout"))
+        # INSTRUCTION
+        _DP_instructions = QtWidgets.QGroupBox("Instructions")
+        _DP_instructions_layout = QtWidgets.QVBoxLayout()
+
+        _DP_instructions.setLayout(_DP_instructions_layout)
+        # / INSTRUCTIONS
+
+        # DRAW PIC INTERFACE
+        _DP_main = QtWidgets.QGroupBox("Parameters")
+        _DP_main_layout = QtWidgets.QGridLayout()
+
+        _DP_picture_fn_label = QtWidgets.QLabel("File")
+        _DP_picture_fn_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self._DP_picture_fn  = QtWidgets.QLineEdit()
+        self._DP_picture_fn.setPlaceholderText("File name")
+        self._DP_picture_btn = QtWidgets.QPushButton("Browse...")
+
+        _DP_main_layout.addWidget(_DP_picture_fn_label, 0, 0, 1, 1)
+        _DP_main_layout.addWidget(self._DP_picture_fn, 0, 1, 1, 2)
+        _DP_main_layout.addWidget(self._DP_picture_btn, 0, 3, 1, 1)
+
+        for i in range(4):
+            _DP_main_layout.setColumnStretch(i, 1)
+
+        _DP_main.setLayout(_DP_main_layout)
+        # / DRAW PIC INTERFACE
+
+        _drawpic_layout.addWidget(_DP_instructions, 0, 0)
+        _drawpic_layout.addWidget(_DP_main, 0, 1)
 
         return _drawpic_layout
 
@@ -1083,6 +1117,9 @@ class MicroGui(QtWidgets.QMainWindow):
         self._AR_raster_y.stateChanged.connect(lambda: self.recalculateARValues())
         self._AR_retToOri.stateChanged.connect(lambda: self.recalculateARValues())
         self._AR_start.clicked.connect(lambda: self.recalculateARValues(startRaster = True))
+
+        # DRAW PIC
+        self._DP_picture_btn.clicked.connect(lambda: self._DP_getFile())
 
         # SHUTTER
         self._close_shutter.clicked.connect(lambda: self.stageControl.controller.shutter.close())
@@ -1572,6 +1609,79 @@ class MicroGui(QtWidgets.QMainWindow):
             self.setOperationStatus("Ready.")
         finally:
             self.setStartButtonsEnabled(True)
+
+    def _DP_getFile(self):
+        # THIS IS PURELY FOR GUI CHOOSE FILE
+
+        # Attempt to get filename from QLineEdit
+        filename = self._DP_picture_fn.text()
+        if os.path.isfile(filename):
+            filename = os.path.abspath(os.path.realpath(os.path.expanduser(filename)))
+            dirname  = os.path.dirname(filename)
+        else:
+            dirname  = base_dir # base_dir of this file
+
+        self._DP_FileDialog = QtWidgets.QFileDialog(self, "Open Image", dirname, "1-Bit Bitmap Files (*.bmp)")
+        self._DP_FileDialog.setFileMode(QtWidgets.QFileDialog.ExistingFile)
+        self._DP_FileDialog.setViewMode(QtWidgets.QFileDialog.Detail)
+
+        firstRun = True
+        isValid  = False
+        error    = None
+
+        while not os.path.isfile(filename) or not isValid:
+            if not firstRun:
+                self.criticalDialog(message = "You have selected an invalid file", informativeText = "E: {}".format(error), title = "Invalid File", host = self)
+
+            firstRun = False
+
+            if (self._DP_FileDialog.exec_()):
+                filename = self._DP_FileDialog.selectedFiles()[0]
+            else:
+                return
+            # else (i.e. the user cancelled) we just ignore and act as though nothing happened
+
+            # We run some checks here
+            try:
+                isValid = self._DP_runChecks(filename)
+            except ImageError as e:
+                isValid = False
+                error = e
+
+        if isValid:
+            self._DP_picture_fn.setText(filename)
+
+    def _DP_runChecks(self, filename):
+        # Checks if the file exists and is valid
+        # Raises ImageError if there are any errors
+
+        try:
+            image = PILImage.open(filename)
+        except Exception as e:
+            raise ImageError("({}): {}".format(type(e).__name__, e))
+
+        if image.format != "BMP":
+            raise ImageError("The selected image is not a valid .bmp file!")
+
+        if image.mode != '1':
+            raise ImageError("Your image has mode {}. Please use a 1-bit indexed (mode 1) image, see <a href='https://pillow.readthedocs.io/en/stable/handbook/concepts.html#bands'>https://pillow.readthedocs.io/en/stable/handbook/concepts.html#bands</a>. If using GIMP to convert picture to 1-bit index, ensure 'remove colour from palette' is unchecked. ".format(image.mode))
+
+        # Check size purely based on image and stage size
+        # Does not take into account the scaling factor yet
+
+        xlim = self.stageControl.controller.stage.xlim
+        ylim = self.stageControl.controller.stage.ylim
+
+        if image.size[0] > abs(xlim[1] - xlim[0]) or image.size[1] > abs(ylim[1] - ylim[0]):
+            raise ImageError("Image way too big ._., exceeds stage limits")
+
+        return True
+
+    def _DP_parseFile(self):
+        # run tests again
+        # Create the picConv object if all tests pass
+        pass
+
 
 # Helper functions
     def setOperationStatus(self, status, printToTerm = True, **printArgs):
