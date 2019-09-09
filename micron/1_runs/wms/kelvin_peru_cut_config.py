@@ -12,16 +12,16 @@ import servos
 
 import datetime
 
-_velocity = 25 # RUDOLPH = 50
+_velocity = 75 # RUDOLPH = 50
 _MODE = "RUDOLPH"
 # _FILENAME = "./split/robinson-cropped-2.bmp"
 # _FILENAME = "robinson.bmp"
-_FILENAME = "testimage.bmp" # "fuer_elise_2.bmp"
+_FILENAME = "kelvin.bmp" # "fuer_elise_2.bmp"
 # done
 # 0, 1,3
 # _FILENAME = "./split_big/robinson_big2-3.bmp" #"Australia-NewGuinea.bmp" # , #"robinson_big.bmp", #
 
-_ESTIMATEONLY = False
+_ESTIMATEONLY = True
 
 # RODULPH
 
@@ -30,7 +30,9 @@ if _MODE == "RUDOLPH":
         filename = _FILENAME,
         allowDiagonals = True,
         prioritizeLeft = True,
-        shutterTime = servos.Shutter.DEFAULT_DURATION
+        shutterTime = servos.Shutter.DEFAULT_DURATION*2,
+        yscale = 1.3,
+        xscale = 1.3
         # simulateDrawing = True,
         # simulate = True,
         # micronInstance = False # We only want to simulate drawing
