@@ -34,7 +34,7 @@ class InputError(Exception):
 	pass
 
 class StageControl():
-	def __init__(self, noinvertx = 1, noinverty = 1, GUI_Object = None, **kwargs):
+	def __init__(self, noinvertx = 1, noinverty = 1, GUI_Object = None, jukeboxKWArgs = {}, **kwargs):
 		# noinvertx can take values 1 and -1
 
 		assert noinvertx in (-1, 1), "No invertx can only take -1 or 1"
@@ -52,20 +52,24 @@ class StageControl():
 
 		# music thread
 		self.musicProcess = None
+		self.jukebox = jukebox.JukeBox(**jukeboxKWArgs) # playmusic = True,
 
-	def finishTone(self, jukeboxKWArgs = {}):
+	def finishTone(self):
 		# Play sound to let user know that the action is completed
 		# To stop, call self.musicProcess.terminate()
 
-		self.musicProcess = ThreadWithExc(target=self.jukeboxThread, kwargs=jukeboxKWArgs) #args=(,)
+		self.musicProcess = ThreadWithExc(target = self.jukebox.playmusic)
 
 		self.musicProcess.start()
 
 		if self.GUI_Object:
 			self.GUI_Object.finishToneGUI()
 
-	def jukeboxThread(self, **jukeboxKWArgs):
-		return jukebox.JukeBox(playmusic = True, **jukeboxKWArgs)
+		# ARCHIVE CODE
+		# , jukeboxKWArgs = {}
+		# target=self.jukeboxThread, kwargs=jukeboxKWArgs, args=(,)
+		# def jukeboxThread(self, **jukeboxKWArgs):
+		# 	return
 
 	# implement cardinal direction movement definitions, the input cases arent actually necessary once we have buttons paired to commands on guimicro
 	def rcardinal(self, direction, distance):
@@ -371,7 +375,7 @@ class StageControl():
 		if self.GUI_Object is not None:
 			self.GUI_Object.setOperationStatus("Raster Finished. Have a g8 day. Ready.")
 		else:
-			print('raster compeleted, have a gr8 day. Self-destruct sequence initiated (T-10).')
+			print('raster completed, have a gr8 day. Self-destruct sequence initiated (T-10).')
 
 		self.controller.shutter.quietLog = False
 
