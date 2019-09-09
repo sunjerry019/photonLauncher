@@ -219,8 +219,6 @@ class MicroGui(QtWidgets.QMainWindow):
         self._abortBtn.setStyleSheet("background-color: #DF2928;")
         self._abortBtn.setEnabled(True)
 
-            # Some code here to detect printing/array state
-
         # self.dev.close()
         # print("Exiting")
         # sys.exit(1)
@@ -416,7 +414,7 @@ class MicroGui(QtWidgets.QMainWindow):
     @make_widget_from_layout
     def createModes(self, widget):
         _mode_layout = QtWidgets.QHBoxLayout()
-        _modes = [
+        self._modes = [
             QtWidgets.QPushButton("Draw &Picture") ,
             QtWidgets.QPushButton("&Array Raster") ,
             QtWidgets.QPushButton("Single &Raster") ,
@@ -428,12 +426,12 @@ class MicroGui(QtWidgets.QMainWindow):
 
         # Somehow I cannot dynamic the showpage index
 
-        _modes[0].clicked.connect(lambda: self.showPage(0))
-        _modes[1].clicked.connect(lambda: self.showPage(1))
-        _modes[2].clicked.connect(lambda: self.showPage(2))
-        _modes[3].clicked.connect(lambda: self.showPage(3))
+        self._modes[0].clicked.connect(lambda: self.showPage(0))
+        self._modes[1].clicked.connect(lambda: self.showPage(1))
+        self._modes[2].clicked.connect(lambda: self.showPage(2))
+        self._modes[3].clicked.connect(lambda: self.showPage(3))
 
-        for btn in _modes:
+        for btn in self._modes:
             _mode_layout.addWidget(btn)
 
         return _mode_layout
@@ -444,6 +442,13 @@ class MicroGui(QtWidgets.QMainWindow):
         # Page 2 = Single Raster
         # Page 3 = Stage Movement
         self.main_widget.setCurrentIndex(page)
+
+        # Change colour of the current tab
+        for i, btn in enumerate(self._modes):
+            if i == page:
+                btn.setStyleSheet("border : 0px; border-bottom : 4px solid #09c; padding-bottom: 3px; padding-top: -3px")
+            else:
+                btn.setStyleSheet("")
 
         if page == 3:
             self.updatePositionDisplay()
@@ -1373,7 +1378,6 @@ class MicroGui(QtWidgets.QMainWindow):
         finally:
             # Always run
             self.setStartButtonsEnabled(True)
-
 
     def recalculateARValues(self, startRaster = False):
         _got_error = False

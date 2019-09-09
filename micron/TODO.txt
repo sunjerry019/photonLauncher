@@ -1,0 +1,4 @@
+TODO:
+
+1. Implement audio device switching, if not found, alarm isnt played
+2. Progress Bar
