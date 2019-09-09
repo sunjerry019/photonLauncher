@@ -16,7 +16,7 @@ _velocity = 25 # RUDOLPH = 50
 _MODE = "RUDOLPH"
 # _FILENAME = "./split/robinson-cropped-2.bmp"
 # _FILENAME = "robinson.bmp"
-_FILENAME = "testimage.bmp" # "fuer_elise_2.bmp"
+_FILENAME = "kelvin.bmp" # "fuer_elise_2.bmp"
 # done
 # 0, 1,3
 # _FILENAME = "./split_big/robinson_big2-3.bmp" #"Australia-NewGuinea.bmp" # , #"robinson_big.bmp", #
