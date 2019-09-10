@@ -163,8 +163,9 @@ class MicroGui(QtWidgets.QMainWindow):
         self.explicitNoHomeSet = self.noHome
         self.noHome                  = self.qsettings.value("stage/noHome", False, type = bool) if not self.noHome else self.noHome
         # Load nohome from settings only if not explicitly specified ^
+        self.set_noFinishTone        = self.qsettings.value("audio/noFinishTone", True, type = bool)
 
-        self.logconsole("Settings Loaded:\n\tShutterAbsolute = {}\n\tShutterChannel = {}\n\tPowerAbsolute = {}\n\tInvert-X = {}\n\tInvert-Y = {}\n\tStageConfig = {}\n\tnoHome = {}".format(
+        self.logconsole("Settings Loaded:\n\tShutterAbsolute = {}\n\tShutterChannel = {}\n\tPowerAbsolute = {}\n\tInvert-X = {}\n\tInvert-Y = {}\n\tStageConfig = {}\n\tnoHome = {}\n\tnoFinishTone = {}".format(
             self.set_shutterAbsoluteMode ,
             self.set_shutterChannel      ,
             self.set_powerAbsoluteMode   ,
@@ -172,6 +173,7 @@ class MicroGui(QtWidgets.QMainWindow):
             self.set_inverty             ,
             self.set_stageConfig         ,
             self.noHome                  ,
+            self.set_noFinishTone        ,
         ))
 
         # Update GUI Checkboxes
@@ -284,7 +286,7 @@ class MicroGui(QtWidgets.QMainWindow):
                     # for i in range(2):
                     #     print("Message number:", i)
                     #     time.sleep(1)
-                    self.stageControl = stagecontrol.StageControl(noCtrlCHandler = True, devMode = True, GUI_Object = self, shutter_channel = self.set_shutterChannel, shutterAbsolute = self.set_shutterAbsoluteMode, powerAbsolute = self.set_powerAbsoluteMode,)
+                    self.stageControl = stagecontrol.StageControl(noCtrlCHandler = True, devMode = True, GUI_Object = self, shutter_channel = self.set_shutterChannel, shutterAbsolute = self.set_shutterAbsoluteMode, powerAbsolute = self.set_powerAbsoluteMode, noFinishTone = self.set_noFinishTone)
 
                 else:
                     try:
@@ -298,6 +300,7 @@ class MicroGui(QtWidgets.QMainWindow):
                             shutter_channel = self.set_shutterChannel,
                             shutterAbsolute = self.set_shutterAbsoluteMode,
                             powerAbsolute = self.set_powerAbsoluteMode,
+                            noFinishTone = self.set_noFinishTone,
                         )
 
                     except RuntimeError as e:
@@ -323,6 +326,7 @@ class MicroGui(QtWidgets.QMainWindow):
             del self.set_invertx
             del self.set_inverty
             del self.set_stageConfig
+            del self.set_noFinishTone
 
             self.micronInitialized = True
             self.setOperationStatus("StageControl Initialized")
@@ -1731,6 +1735,16 @@ class MicroGui(QtWidgets.QMainWindow):
         if not hasattr(self, "_DP_filename_string") or self._DP_filename_string is None or not len(self._DP_filename_string):
             return self.criticalDialog(message = "Image not loaded!", informativeText = "Please load the image first before parsing. Filename not captured", title = "Image not loaded!", host = self)
 
+        # Differs from Line edit, prompt to let user know
+        lefn =  self._DP_picture_fn.text()
+        if self._DP_filename_string != lefn:
+            ret = self.unsavedQuestionDialog(message = "Load new filenames?", title = "Differing filenames",informativeText = "Registered filename differs from the input filename:\n\nREG:{}\nENT:{}\n\nSave to proceed\nDiscard/Cancel to go back".format(self._DP_filename_string, lefn))
+
+            if ret == QtWidgets.QMessageBox.Save:
+                self._DP_loadPicture()
+            else:
+                return
+
         # TODO: get options
         allowDiagonals = True
         prioritizeLeft = True
@@ -1744,14 +1758,27 @@ class MicroGui(QtWidgets.QMainWindow):
             shutterTime = self.stageControl.controller.shutter.duration * 2,
             micronInstance = self.stageControl.controller
         )
+        # def progressDialog(self, host = None, title = "Progress", labelText = None, cancelButtonText = "Cancel", range = (0, 100)):
+        pDialog = self.progressDialog(
+            host = self,
+            title = "PicConv",
+            labelText = "Converting Picture",
+        )
+        self.picConv_conversion_thread = ThreadWithExc(target = self._DP_ConvertParseLines, kwargs = {"pDialog": pDialog})
+        self.picConv_conversion_thread.start()
+        pDialog.show()
 
-        # TODO: Create a thread for convert() and parseLines()
-        # TODO: Add a continous bar and redirect_stdout to GUI
+    def _DP_ConvertParseLines(self, pDialog):
+        def cancelOperation(self):
+            return
 
-        # Differs from Line edit, prompt to let user know
-        lefn =  self._DP_picture_fn.text()
-        if self._DP_filename_string != lefn:
-            self.informationDialog(message = "Differing filenames", informativeText = "For your information, registered filename differs from the input filename:\n\nREG:{}\nENT:{}\n\nREG has been loaded instead of ENT.".format(self._DP_filename_string, lefn))
+        pDialog.canceled.connect(lambda: cancelOperation(self))
+        pDialog.setValue(0)
+
+        # Redirect output through pDialog.setLabelText()
+
+        self.picConv.convert()
+        self.picConv.parseLines()
 
 # Helper functions
     def setOperationStatus(self, status, printToTerm = True, **printArgs):
@@ -1832,6 +1859,26 @@ class MicroGui(QtWidgets.QMainWindow):
         # _msgBox.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
 
         return _msgBox.exec_()
+
+    # https://doc.qt.io/qt-5/qprogressdialog.html
+    def progressDialog(self, host = None, title = "Progress", labelText = None, cancelButtonText = "Cancel", range = (0, 100)):
+        # QProgressDialog::QProgressDialog(const QString &labelText, const QString &cancelButtonText, int minimum, int maximum, QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags())
+        # NOTE: DOES NOT EXEC
+        pDialog = QtWidgets.QProgressDialog(labelText, cancelButtonText, range[0], range[1], host)
+
+        pDialog.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.Dialog | QtCore.Qt.WindowMaximizeButtonHint | QtCore.Qt.CustomizeWindowHint)
+
+        pDialog.setWindowTitle(title)
+        pDialog.setWindowModality(QtCore.Qt.WindowModal)
+
+        # Get height and width
+        _h = pDialog.height()
+        _w = pDialog.width()
+        pDialog.setGeometry(0, 0, _w, _h)
+
+        moveToCentre(pDialog)
+
+        return pDialog
 
     def finishToneGUI(self):
         # we cannot set a host because host (parent, self) is in another thread
@@ -1989,6 +2036,19 @@ class SettingsScreen(QtWidgets.QDialog):
         _stage.setLayout(_stage_layout)
         # / Stage Configuration
 
+        # Audio
+        _audio = QtWidgets.QGroupBox("Audio")
+        _audio_layout = QtWidgets.QVBoxLayout()
+
+        self._disableFinishTone = QtWidgets.QCheckBox("Disable Finish Tone")
+        # WE USE THIS WORKAROUND OF SETTING 0 TO 1 BECAUSE MOUSEEVENTS ARE NOT AFFECTED BY ABOVE SETTINGS
+
+        # addWidget(QWidget * widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = 0)
+        _audio_layout.addWidget(self._disableFinishTone)
+
+        _audio.setLayout(_audio_layout)
+        # / Audio
+
         # Labels and warnings
         _persistent = QtWidgets.QLabel("These settings persists across launches! Refer to documentation for more information.")
         # / Labels and warnings
@@ -1997,10 +2057,11 @@ class SettingsScreen(QtWidgets.QDialog):
         self._buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Apply | QtWidgets.QDialogButtonBox.RestoreDefaults | QtWidgets.QDialogButtonBox.Close)
         # / Buttons
 
-        self._main_layout.addWidget(_servos, 0, 0)
-        self._main_layout.addWidget(_stage, 0, 1)
-        self._main_layout.addWidget(_persistent, 1, 0, 1, 2)
-        self._main_layout.addWidget(self._buttonBox, 2, 0, 1, 2)
+        self._main_layout.addWidget(_servos, 0, 0, 1, 1)
+        self._main_layout.addWidget(_audio, 1, 0, 1, 1)
+        self._main_layout.addWidget(_stage, 0, 1, 2, 1)
+        self._main_layout.addWidget(_persistent, 2, 0, 1, 2)
+        self._main_layout.addWidget(self._buttonBox, 3, 0, 1, 2)
 
         self._main_layout.setColumnStretch(0, 1)
         self._main_layout.setColumnStretch(1, 1)
@@ -2031,6 +2092,7 @@ class SettingsScreen(QtWidgets.QDialog):
         self.set_inverty             = self.microGUIParent.qsettings.value("stage/inverty", False, type = bool)
         self.set_stageConfig         = self.microGUIParent.qsettings.value("stage/config", None, type = dict) # Should be a dictionary
         self.set_noHome              = self.microGUIParent.qsettings.value("stage/noHome", False, type = bool)
+        self.set_noFinishTone        = self.microGUIParent.qsettings.value("audio/noFinishTone", True, type = bool)
 
         # Update the GUI with the settings
         self._shutterAbsoluteMode.setChecked(self.set_shutterAbsoluteMode)
@@ -2038,6 +2100,7 @@ class SettingsScreen(QtWidgets.QDialog):
         self._shutterChannel.setValue(self._set_shutterChannel) # we use the _ value to get 0 and 1
         self._invertx.setChecked(self.set_invertx)
         self._inverty.setChecked(self.set_inverty)
+        self._disableFinishTone.setChecked(self.set_noFinishTone)
 
         if not self.set_stageConfig:
             self.set_stageConfig = {
@@ -2066,7 +2129,8 @@ class SettingsScreen(QtWidgets.QDialog):
                     self.set_invertx             == (not not self._invertx.checkState()) and \
                     self.set_inverty             == (not not self._inverty.checkState()) and \
                     self.set_stageConfig         == self.getStageConfigFromGUI() and \
-                    self.set_noHome              == (not not self._noHome.checkState()) \
+                    self.set_noHome              == (not not self._noHome.checkState()) and \
+                    self.set_noFinishTone        == (not not self._disableFinishTone.checkState())
         )
 
     def closeCheck(self):
@@ -2096,6 +2160,7 @@ class SettingsScreen(QtWidgets.QDialog):
 
         self._invertx.setChecked(False)
         self._inverty.setChecked(False)
+        self._disableFinishTone.setChecked(True)
 
     def apply(self, noDialog = False):
         # TODO: Check for sane stage config values
@@ -2115,6 +2180,8 @@ class SettingsScreen(QtWidgets.QDialog):
         self.microGUIParent.qsettings.setValue("stage/noHome", not not self._noHome.checkState())
         self.microGUIParent.qsettings.setValue("stage/config", newStageConfig) # Should be a dictionary
 
+        self.microGUIParent.qsettings.setValue("audio/noFinishTone", not not self._disableFinishTone.checkState())
+
         self.microGUIParent.qsettings.sync()
 
         # Set the settings in the main GUI also
@@ -2128,6 +2195,9 @@ class SettingsScreen(QtWidgets.QDialog):
         self.microGUIParent.stageControl.controller.powerServo.absoluteMode = (not not self._powerAbsoluteMode.checkState())
         self.microGUIParent.stageControl.controller.shutter.channel = self.set_shutterChannel
         self.microGUIParent.stageControl.controller.powerServo.channel = self.set_shutterChannel * -1
+
+        # Update the finish tone
+        self.microGUIParent.stageControl.noFinishTone = (not not self._disableFinishTone.checkState())
 
         # Reload from memory
         self.loadSettings()

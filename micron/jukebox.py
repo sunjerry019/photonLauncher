@@ -61,10 +61,12 @@ class JukeBox():
                 self.rhythmgen(rclass = 'pause', note_index = 4, tempo = tempo, crossfd = crossfd)
         return self.sound
 
-    def playmusic(self):
+    def playmusic(self, quiet = False):
         print('Now playing: Debussys greatest hits')
-        with noALSAerror():
-            play(self.sound)
+
+        if not quiet:
+            with noALSAerror():
+                play(self.sound)
 
     def notegen(self, note, duration, timbre = 'marimba'):
 

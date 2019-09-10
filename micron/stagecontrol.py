@@ -34,7 +34,7 @@ class InputError(Exception):
 	pass
 
 class StageControl():
-	def __init__(self, noinvertx = 1, noinverty = 1, GUI_Object = None, jukeboxKWArgs = {}, **kwargs):
+	def __init__(self, noinvertx = 1, noinverty = 1, GUI_Object = None, jukeboxKWArgs = {}, noFinishTone = True, **kwargs):
 		# noinvertx can take values 1 and -1
 
 		assert noinvertx in (-1, 1), "No invertx can only take -1 or 1"
@@ -47,6 +47,8 @@ class StageControl():
 		# Generate filename based on the serial number of the model
 		self.serial = self.controller.getSerial()
 
+		self.noFinishTone = noFinishTone
+
 		# define contants
 		self.UP, self.RIGHT, self.DOWN, self.LEFT = 0, 1, 2, 3
 
@@ -58,7 +60,7 @@ class StageControl():
 		# Play sound to let user know that the action is completed
 		# To stop, call self.musicProcess.terminate()
 
-		self.musicProcess = ThreadWithExc(target = self.jukebox.playmusic)
+		self.musicProcess = ThreadWithExc(target = self.jukebox.playmusic, kwargs = { "quiet": self.noFinishTone })
 
 		self.musicProcess.start()
 
