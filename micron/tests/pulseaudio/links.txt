@@ -1,0 +1,5 @@
+https://wiki.ubuntu.com/PulseAudio/Log
+https://wiki.archlinux.org/index.php/PulseAudio/Troubleshooting#Prevent_Pulse_from_restarting_after_being_killed
+
+https://aweirdimagination.net/2018/12/16/pulseaudio-headphone-jack-troubles/
+https://unix.stackexchange.com/questions/401492/how-to-output-unique-audio-to-multiple-ports-profiles-of-a-pulseaudio-card/401562#401562
