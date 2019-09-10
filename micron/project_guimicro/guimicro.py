@@ -668,7 +668,7 @@ class MicroGui(QtWidgets.QMainWindow):
         _SR_raster_step_along_label = QtWidgets.QLabel("Steps?")
         _SR_raster_step_along_label.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignLeft)
 
-        self._SR_raster_style = QtWidgets.QLabel("Filled square\nStepping along y-axis")
+        self._SR_raster_style = QtWidgets.QLabel("Filled square\nContinuous along y-axis")
         self._SR_raster_style.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
 
         _SR_settings_layout.addWidget(_SR_step_size_label, 0, 0)
@@ -934,7 +934,7 @@ class MicroGui(QtWidgets.QMainWindow):
         _AR_raster_step_along_label = QtWidgets.QLabel("Steps?")
         _AR_raster_step_along_label.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignLeft)
 
-        self._AR_raster_style = QtWidgets.QLabel("Filled square\nStepping along y-axis")
+        self._AR_raster_style = QtWidgets.QLabel("Filled square\nContinuous along y-axis")
         self._AR_raster_style.setAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
 
         _AR_size_layout.addWidget(_AR_step_size_label, 0, 0)
@@ -1363,11 +1363,11 @@ class MicroGui(QtWidgets.QMainWindow):
                 self._SR_step_size.setReadOnly(True)
                 self._SR_step_size.setStyleSheet("background-color: #ccc; color: #555;")
             elif step_along_x:
-                self._SR_raster_style.setText("Filled {}\nStepping along x-axis".format(indiv_type))
+                self._SR_raster_style.setText("Filled {}\nContinuous along x-axis".format(indiv_type))
                 self._SR_step_size.setReadOnly(False)
                 self._SR_step_size.setStyleSheet("background-color: none; color: #000;")
             elif step_along_y:
-                self._SR_raster_style.setText("Filled {}\nStepping along y-axis".format(indiv_type))
+                self._SR_raster_style.setText("Filled {}\nContinuous along y-axis".format(indiv_type))
                 self._SR_step_size.setReadOnly(False)
                 self._SR_step_size.setStyleSheet("background-color: none; color: #000;")
             else:
@@ -1544,11 +1544,11 @@ class MicroGui(QtWidgets.QMainWindow):
                 self._AR_step_size.setReadOnly(True)
                 self._AR_step_size.setStyleSheet("background-color: #ccc; color: #555;")
             elif step_along_x:
-                self._AR_raster_style.setText("Filled {}\nStepping along x-axis".format(indiv_type))
+                self._AR_raster_style.setText("Filled {}\nContinuous along x-axis".format(indiv_type))
                 self._AR_step_size.setReadOnly(False)
                 self._AR_step_size.setStyleSheet("background-color: none; color: #000;")
             elif step_along_y:
-                self._AR_raster_style.setText("Filled {}\nStepping along y-axis".format(indiv_type))
+                self._AR_raster_style.setText("Filled {}\nContinuous along y-axis".format(indiv_type))
                 self._AR_step_size.setReadOnly(False)
                 self._AR_step_size.setStyleSheet("background-color: none; color: #000;")
             else:

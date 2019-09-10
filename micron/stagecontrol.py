@@ -108,6 +108,7 @@ class StageControl():
 		# xy/yx = Draw a rectangle with sides xDist and yDist
 		# x = horizontal lines will be drawn while scanning down/up
 		# y = vertical lines will be drawn while scanning right/left
+		# i.e. to say axis = continuous on which axis
 		# Negative distance to raster in the opposite direction
 		# Step must be positive
 
