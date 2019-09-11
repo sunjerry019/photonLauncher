@@ -54,6 +54,9 @@ class StageControl():
 
 		# music thread
 		self.musicProcess = None
+		# jukeboxKWArgs.update({
+		# 	"profile": "alarm"
+		# })
 		self.jukebox = jukebox.JukeBox(**jukeboxKWArgs) # playmusic = True,
 
 	def finishTone(self):
