@@ -39,6 +39,8 @@ def informationDialog(message, title = "Information", informativeText = None, ho
 
 
 class fenster(QtWidgets.QMainWindow):
+    wank = QtCore.pyqtSignal()
+
     def __init__(self):
         super().__init__()
 
@@ -56,7 +58,7 @@ class fenster(QtWidgets.QMainWindow):
         self.window_widget.setLayout(self.window_widget_layout)
         self.setCentralWidget(self.window_widget)
 
-        self.wank = QtCore.pyqtSignal()
+        # self.
         self.wank.connect(lambda: self.showDialog())
 
     def showThread(self):
