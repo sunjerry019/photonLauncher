@@ -1029,6 +1029,30 @@ class MicroGui(QtWidgets.QMainWindow):
         _DP_instructions = QtWidgets.QGroupBox("Instructions")
         _DP_instructions_layout = QtWidgets.QVBoxLayout()
 
+        _DP_instructions_scrollArea = QtWidgets.QScrollArea() # QTextBrowser
+        _DP_instructions_label = QtWidgets.QLabel()
+        _DP_instructions_string = [
+            "'Draw Picture' takes in a 1-bit BMP image and prints it out using the stage.",
+            "Each option has some hints on mouseover.",
+            "Go through each step <span style='font-family: Menlo, Consolas, monospace;'>[i]</span> sequentially to print the image. Each pixel represents 1 {}m.".format(self.MICROSYMBOL),
+            "Scale:<br>If x-scale = 2, this means that for every 1-pixel move along the x-direction the code sees, it moves 2{0}m along the x-direction. Generally, scale = beamspot-size in {0}m if x-scale = y-scale. Test and iterate to ensure.".format(self.MICROSYMBOL),
+            "Print a non-symmetrical image (e.g. <a href='{}'>fliptest.bmp</a>) to test whether the horizontal and vertical needs to be flipped. <span style='color: red;'>NOTE:</span> Flipping flips the image first before parsing its lines! To flip after, use a negative number as the scale.".format(os.path.join(root_dir, '1_runs', 'fliptest', 'fliptest.bmp')),
+            "The code will greedily search for the next pixel to the right of the current pixel to determine continuous lines. To prioritize searching the left pixel first, check 'Search left before right'."
+        ]
+
+        _DP_instructions_label.setText("<br/><br/>".join(_DP_instructions_string))
+        _DP_instructions_label.setWordWrap(True)
+        _DP_instructions_label.setTextFormat(QtCore.Qt.RichText)
+        _DP_instructions_label.setTextInteractionFlags(QtCore.Qt.TextBrowserInteraction)
+        _DP_instructions_label.setOpenExternalLinks(True)
+
+        _DP_instructions_scrollArea.setBackgroundRole(QtGui.QPalette.Light)
+        _DP_instructions_scrollArea.setWidget(_DP_instructions_label)
+        _DP_instructions_scrollArea.setWidgetResizable(True)
+        # https://www.oipapio.com/question-3065786
+
+        _DP_instructions_layout.addWidget(_DP_instructions_scrollArea)
+
         _DP_instructions.setLayout(_DP_instructions_layout)
         # / INSTRUCTIONS
 
@@ -1046,10 +1070,65 @@ class MicroGui(QtWidgets.QMainWindow):
         self._DP_picture_preview = QtWidgets.QLabel()
         self._DP_picture_preview.setAlignment(QtCore.Qt.AlignCenter)
 
+        # Options
+        # def __init__(self, filename, xscale = 1, yscale = 1, cut = 0, allowDiagonals = False, prioritizeLeft = False, flipHorizontally = False, flipVertically = False ,frames = False, simulate = False, simulateDrawing = False, micronInstance = None, shutterTime = 800)
+        _DP_options = QtWidgets.QGroupBox("Options")
+        _DP_options_layout = QtWidgets.QGridLayout()
+
+        _DP_xscale_label = QtWidgets.QLabel("X-Scale")
+        _DP_xscale_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self._DP_xscale = QtWidgets.QLineEdit("1")
+        # self._DP_xscale.setValidator(QtGui.QDoubleValidator(0,10000, 12))
+        self._DP_xscale.setValidator(QtGui.QDoubleValidator())
+        self._DP_xscale.setToolTip("This is usually your beam spot size.")
+        _DP_yscale_label = QtWidgets.QLabel("Y-Scale")
+        _DP_yscale_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self._DP_yscale = QtWidgets.QLineEdit("1")
+        # self._DP_yscale.setValidator(QtGui.QDoubleValidator(0,10000, 12))
+        self._DP_yscale.setValidator(QtGui.QDoubleValidator())
+        self._DP_yscale.setToolTip("This is usually your beam spot size.")
+
+        _DP_cutMode_label = QtWidgets.QLabel("Cut")
+        _DP_cutMode_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self._DP_cutMode = QtWidgets.QComboBox()
+        self._DP_cutMode.addItem("Black")
+        self._DP_cutMode.addItem("White")
+
+        self._DP_allowDiagonals = QtWidgets.QCheckBox("Allow Diagonals")
+        self._DP_flipVertically = QtWidgets.QCheckBox("Flip Vertically")
+        self._DP_flipHorizontally = QtWidgets.QCheckBox("Flip Horizontally")
+
+        self._DP_allowDiagonals.setToolTip("Diagonal pixels will also be considered adjacent\npixels when parsing the picture into lines.")
+        self._DP_flipVertically.setToolTip("Use a simple image to test whether flipping is necessary.\nImage is flipped BEFORE parsing it.")
+        self._DP_flipHorizontally.setToolTip("Use a simple image to test whether flipping is necessary.\nImage is flipped BEFORE parsing it.")
+
+        self._DP_prioritizeLeft = QtWidgets.QCheckBox("Search left before right")
+        self._DP_prioritizeLeft.setToolTip("Algorithm moves from right to left and searches for\na left pixel first before of the right pixel.")
+
+        _DP_options_layout.addWidget(_DP_xscale_label          , 0, 0, 1, 1)
+        _DP_options_layout.addWidget(self._DP_xscale           , 0, 1, 1, 1)
+        _DP_options_layout.addWidget(_DP_yscale_label          , 1, 0, 1, 1)
+        _DP_options_layout.addWidget(self._DP_yscale           , 1, 1, 1, 1)
+        _DP_options_layout.addWidget(_DP_cutMode_label         , 2, 0, 1, 1)
+        _DP_options_layout.addWidget(self._DP_cutMode          , 2, 1, 1, 1)
+        _DP_options_layout.addWidget(self._DP_allowDiagonals   , 2, 2, 1, 1)
+        _DP_options_layout.addWidget(self._DP_flipVertically   , 1, 2, 1, 1)
+        _DP_options_layout.addWidget(self._DP_flipHorizontally , 0, 2, 1, 1)
+        _DP_options_layout.addWidget(self._DP_prioritizeLeft   , 3, 0, 1, 3)
+
+
+        _DP_options_layout.setColumnStretch(0, 1)
+        _DP_options_layout.setColumnStretch(1, 2)
+        _DP_options_layout.setColumnStretch(2, 1)
+
+        _DP_options.setLayout(_DP_options_layout)
+        # / Options
+
+
         self._DP_picture_parse = QtWidgets.QPushButton("Parse Picture")
 
         _DP_steps_labels = []
-        for i in range(3):
+        for i in range(4):
             _temp_label = QtWidgets.QLabel("[{}]".format(i + 1))
             _temp_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
             _temp_label.setStyleSheet("font-family: Menlo, Consolas, monospace;")
@@ -1066,7 +1145,10 @@ class MicroGui(QtWidgets.QMainWindow):
         _DP_main_layout.addWidget(self._DP_picture_load, 2, 1, 1, 4)
 
         _DP_main_layout.addWidget(_DP_steps_labels[2], 3, 0, 1, 1)
-        _DP_main_layout.addWidget(self._DP_picture_parse, 3, 1, 1, 4)
+        _DP_main_layout.addWidget(_DP_options, 3, 1, 1, 4)
+
+        _DP_main_layout.addWidget(_DP_steps_labels[3], 4, 0, 1, 1)
+        _DP_main_layout.addWidget(self._DP_picture_parse, 4, 1, 1, 4)
 
         for i in range(4):
             _DP_main_layout.setColumnStretch(i, 1)
@@ -1076,6 +1158,9 @@ class MicroGui(QtWidgets.QMainWindow):
 
         _drawpic_layout.addWidget(_DP_instructions, 0, 0)
         _drawpic_layout.addWidget(_DP_main, 0, 1)
+
+        _drawpic_layout.setColumnStretch(0, 1)
+        _drawpic_layout.setColumnStretch(1, 1)
 
         return _drawpic_layout
 
@@ -1745,7 +1830,7 @@ class MicroGui(QtWidgets.QMainWindow):
             else:
                 return
 
-        # TODO: get options
+        # TODO: Get Options
         allowDiagonals = True
         prioritizeLeft = True
 
@@ -1759,26 +1844,35 @@ class MicroGui(QtWidgets.QMainWindow):
             micronInstance = self.stageControl.controller
         )
         # def progressDialog(self, host = None, title = "Progress", labelText = None, cancelButtonText = "Cancel", range = (0, 100)):
-        pDialog = self.progressDialog(
+        # Should be regenerated every time
+        if hasattr(self, "pDialog"):
+            del self.pDialog
+
+        self.pDialog = self.progressDialog(
             host = self,
             title = "PicConv",
             labelText = "Converting Picture",
         )
-        self.picConv_conversion_thread = ThreadWithExc(target = self._DP_ConvertParseLines, kwargs = {"pDialog": pDialog})
+        self.picConv_conversion_thread = ThreadWithExc(target = self._DP_ConvertParseLines)
         self.picConv_conversion_thread.start()
         pDialog.show()
 
-    def _DP_ConvertParseLines(self, pDialog):
+    def _DP_ConvertParseLines(self):
         def cancelOperation(self):
             return
 
-        pDialog.canceled.connect(lambda: cancelOperation(self))
-        pDialog.setValue(0)
+        self.pDialog.canceled.connect(lambda: cancelOperation(self))
+        self.pDialog.setValue(0)
 
         # Redirect output through pDialog.setLabelText()
 
         self.picConv.convert()
+
+        # Show test.png
+
         self.picConv.parseLines()
+
+        del self.pDialog
 
 # Helper functions
     def setOperationStatus(self, status, printToTerm = True, **printArgs):
