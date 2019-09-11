@@ -144,7 +144,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
         if platform.system() == "Windows":
             self.resize(self.minimumSizeHint())
-            
+
         moveToCentre(self)
 
         # Show actual window
@@ -1203,6 +1203,9 @@ class MicroGui(QtWidgets.QMainWindow):
 
         # note that the following you cannot connect(self.checkSRValues) because the value will be passed in as an argument to self.checkSRValues
 
+        # COMMON
+        self.operationDone.connect(self.on_operationDone)
+
         # SINGLE RASTER
         self._SR_velocity.textChanged.connect(lambda: self.checkSRValues())
         self._SR_size_x.textChanged.connect(lambda: self.checkSRValues())
@@ -1239,13 +1242,13 @@ class MicroGui(QtWidgets.QMainWindow):
         self._DP_picture_btn.clicked.connect(lambda: self._DP_getFile())
         self._DP_picture_load.clicked.connect(lambda: self._DP_loadPicture())
         self._DP_picture_parse.clicked.connect(lambda: self._DP_parsePicture())
-        self._DP_xscale.textChanged.connect(lambda: self._DP_optionsChnaged())
-        self._DP_yscale.textChanged.connect(lambda: self._DP_optionsChnaged())
-        self._DP_cutMode.currentIndexChanged.connect(lambda: self._DP_optionsChnaged())
-        self._DP_allowDiagonals.stateChanged.connect(lambda: self._DP_optionsChnaged())
-        self._DP_flipVertically.stateChanged.connect(lambda: self._DP_optionsChnaged())
-        self._DP_flipHorizontally.stateChanged.connect(lambda: self._DP_optionsChnaged())
-        self._DP_prioritizeLeft.stateChanged.connect(lambda: self._DP_optionsChnaged())
+        self._DP_xscale.textChanged.connect(lambda: self._DP_optionsChanged())
+        self._DP_yscale.textChanged.connect(lambda: self._DP_optionsChanged())
+        self._DP_cutMode.currentIndexChanged.connect(lambda: self._DP_optionsChanged())
+        self._DP_allowDiagonals.stateChanged.connect(lambda: self._DP_optionsChanged())
+        self._DP_flipVertically.stateChanged.connect(lambda: self._DP_optionsChanged())
+        self._DP_flipHorizontally.stateChanged.connect(lambda: self._DP_optionsChanged())
+        self._DP_prioritizeLeft.stateChanged.connect(lambda: self._DP_optionsChanged())
 
 
         # SHUTTER
@@ -1828,9 +1831,9 @@ class MicroGui(QtWidgets.QMainWindow):
         # save the filename if everything passes
         self._DP_filename_string = filename
 
-        self._DP_optionsChnaged()
+        self._DP_optionsChanged()
 
-    def _DP_optionsChnaged(self):
+    def _DP_optionsChanged(self):
         if hasattr(self, "_DP_filename_string"):
             self._DP_picture_parse.setStyleSheet("background-color: #FF8800;")
 
@@ -2010,9 +2013,9 @@ class MicroGui(QtWidgets.QMainWindow):
 
         return pDialog
 
-    def finishToneGUI(self):
-        # we cannot set a host because host (parent, self) is in another thread
-        self.informationDialog(message = "Operation Completed!", title = "Done!")
+    operationDone = QtCore.pyqtSignal()
+    def on_operationDone(self):
+        self.informationDialog(message = "Operation Completed!", title = "Done!", host = self)
 
         if self.stageControl.musicProcess and self.stageControl.musicProcess.isAlive():
             try:
