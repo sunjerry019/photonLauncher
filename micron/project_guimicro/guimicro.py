@@ -73,7 +73,7 @@ class MicroGui(QtWidgets.QMainWindow):
     def initUI(self):
         self.setGeometry(50, 50, 800, 700) # x, y, w, h
 
-        moveToCentre(self)
+        # moveToCentre(self)
 
         self.setWindowTitle('Micos Stage Controller MARK II 0.10a')
         self.setWindowIcon(QtGui.QIcon(self.customicon))
@@ -141,6 +141,11 @@ class MicroGui(QtWidgets.QMainWindow):
 
         # Set to the last menu item
         self.showPage(self.main_widget.count() - 1)
+
+        if platform.system() == "Windows":
+            self.resize(self.minimumSizeHint())
+            
+        moveToCentre(self)
 
         # Show actual window
         self.show()
