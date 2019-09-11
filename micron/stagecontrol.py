@@ -65,7 +65,7 @@ class StageControl():
 		self.musicProcess.start()
 
 		if self.GUI_Object:
-			self.GUI_Object.finishToneGUI()
+			self.GUI_Object.operationDone.emit()
 
 		# ARCHIVE CODE
 		# , jukeboxKWArgs = {}
