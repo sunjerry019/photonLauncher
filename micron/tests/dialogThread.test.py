@@ -36,6 +36,8 @@ def informationDialog(message, title = "Information", informativeText = None, ho
     return _msgBox.exec_()
 
 
+
+
 class fenster(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
@@ -54,14 +56,21 @@ class fenster(QtWidgets.QMainWindow):
         self.window_widget.setLayout(self.window_widget_layout)
         self.setCentralWidget(self.window_widget)
 
+        self.wank = QtCore.pyqtSignal()
+        self.wank.connect(lambda: showDialog())
+
     def showThread(self):
-        q = ThreadWithExc(target=self.showDialog)
+        q = ThreadWithExc(target=self._thread)
 
         q.start()
 
-    def showDialog(self):
+    def _thread(self):
         time.sleep(5)
-        return informationDialog(message = "hi")
+
+        self.wank.emit()
+
+    def showDialog(self):
+        informationDialog(message = "hi")
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
