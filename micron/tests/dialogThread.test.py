@@ -57,7 +57,7 @@ class fenster(QtWidgets.QMainWindow):
         self.setCentralWidget(self.window_widget)
 
         self.wank = QtCore.pyqtSignal()
-        self.wank.connect(lambda: showDialog())
+        self.wank.connect(lambda: self.showDialog())
 
     def showThread(self):
         q = ThreadWithExc(target=self._thread)
