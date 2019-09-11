@@ -1060,7 +1060,7 @@ class MicroGui(QtWidgets.QMainWindow):
         _DP_main = QtWidgets.QGroupBox("Parameters")
         _DP_main_layout = QtWidgets.QGridLayout()
 
-        _DP_picture_fn_label = QtWidgets.QLabel("File")
+        _DP_picture_fn_label = QtWidgets.QLabel("BMP File")
         _DP_picture_fn_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self._DP_picture_fn  = QtWidgets.QLineEdit()
         self._DP_picture_fn.setPlaceholderText("File name")
@@ -1234,6 +1234,14 @@ class MicroGui(QtWidgets.QMainWindow):
         self._DP_picture_btn.clicked.connect(lambda: self._DP_getFile())
         self._DP_picture_load.clicked.connect(lambda: self._DP_loadPicture())
         self._DP_picture_parse.clicked.connect(lambda: self._DP_parsePicture())
+        self._DP_xscale.textChanged.connect(lambda: self._DP_optionsChnaged())
+        self._DP_yscale.textChanged.connect(lambda: self._DP_optionsChnaged())
+        self._DP_cutMode.currentIndexChanged.connect(lambda: self._DP_optionsChnaged())
+        self._DP_allowDiagonals.stateChanged.connect(lambda: self._DP_optionsChnaged())
+        self._DP_flipVertically.stateChanged.connect(lambda: self._DP_optionsChnaged())
+        self._DP_flipHorizontally.stateChanged.connect(lambda: self._DP_optionsChnaged())
+        self._DP_prioritizeLeft.stateChanged.connect(lambda: self._DP_optionsChnaged())
+
 
         # SHUTTER
         self._close_shutter.clicked.connect(lambda: self.stageControl.controller.shutter.close())
@@ -1815,6 +1823,12 @@ class MicroGui(QtWidgets.QMainWindow):
         # save the filename if everything passes
         self._DP_filename_string = filename
 
+        self._DP_optionsChnaged()
+
+    def _DP_optionsChnaged(self):
+        if hasattr(self, "_DP_filename_string"):
+            self._DP_picture_parse.setStyleSheet("background-color: #FF8800;")
+
     def _DP_parsePicture(self):
         # _DP_loadPicture has to be run first to do sanity checks
         if not hasattr(self, "_DP_filename_string") or self._DP_filename_string is None or not len(self._DP_filename_string):
@@ -1830,16 +1844,33 @@ class MicroGui(QtWidgets.QMainWindow):
             else:
                 return
 
-        # TODO: Get Options
-        allowDiagonals = True
-        prioritizeLeft = True
+        # Change colour of the Parse button
+        self._DP_picture_parse.setStyleSheet("")
+
+        # Get Options
+        try:
+            xscale = float(self._DP_xscale.text())
+            yscale = float(self._DP_yscale.text())
+            cutMode = self._DP_cutMode.currentIndex()
+            allowDiagonals = not not self._DP_allowDiagonals.checkState()
+            flipVertically = not not self._DP_flipVertically.checkState()
+            flipHorizontally = not not self._DP_flipHorizontally.checkState()
+            prioritizeLeft = not not self._DP_prioritizeLeft.checkState()
+        except Exception as e:
+            return self.criticalDialog(message = "Invalid values", informativeText = "Please double check your parameters.", host = self)
+
 
         # TODO: create the picConv object
         #    def __init__(self, filename, xscale = 1, yscale = 1, cut = 0, allowDiagonals = False, prioritizeLeft = False, flipHorizontally = False, flipVertically = False ,frames = False, simulate = False, simulateDrawing = False, micronInstance = None, shutterTime = 800):
         self.picConv = picConv.PicConv(
             filename = self._DP_filename_string,
+            xscale = xscale,
+            yscale = yscale,
+            cut = cutMode,
             allowDiagonals = allowDiagonals,
             prioritizeLeft = prioritizeLeft,
+            flipHorizontally = flipHorizontally,
+            flipVertically = flipVertically,
             shutterTime = self.stageControl.controller.shutter.duration * 2,
             micronInstance = self.stageControl.controller
         )
