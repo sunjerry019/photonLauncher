@@ -29,8 +29,12 @@ from extraFunctions import query_yes_no as qyn
 
 import datetime
 
+# CUSTOM ERROR FOR PICCONV:
+class ImageError(Exception):
+    pass
+
 class PicConv():
-	def __init__(self, filename, xscale = 1, yscale = 1, cut = 0, allowDiagonals = False, prioritizeLeft = False, flipHorizontally = False, flipVertically = False ,frames = False, simulate = False, simulateDrawing = False, micronInstance = None, shutterTime = 800):
+	def __init__(self, filename, xscale = 1, yscale = 1, cut = 0, allowDiagonals = False, prioritizeLeft = False, flipHorizontally = False, flipVertically = False ,frames = False, simulate = False, simulateDrawing = False, micronInstance = None, shutterTime = 800, GUI_Object = None):
 		# shutterTime in milliseconds
 		# Set micronInstance to False instead of None to prevent using of micron
 
@@ -65,20 +69,38 @@ class PicConv():
 		self.estimatedVelocity = None
 		self.shutterTime = shutterTime / 1000
 
+		self.GUI_Object = GUI_Object
+
 	def convert(self):
 		self.image = Image.open(self.filename)
 
 		# Sanity Checks
 		assert self.image.mode == '1', "Your image has mode {}. Please use a 1-bit indexed (mode 1) image, see https://pillow.readthedocs.io/en/stable/handbook/concepts.html#bands. If using GIMP to convert picture to 1-bit index, ensure 'remove colour from palette' is unchecked. ".format(self.image.mode)
+
 		# Check if size is within limits if talking directly stage
-		# TODO
+		if isinstance(self.controller, micron.Micos):
+			# We just check if its within stage limits
+			shape = (self.image.size[0] * self.scale["x"], self.image.size[1] * self.scale["y"])
+
+			if self.GUI_Object:
+				if abs(shape[0]) > abs(self.controller.stage.xlim[1] - self.controller.stage.xlim[0]) or abs(shape[1]) > abs(self.controller.stage.ylim[1] - self.controller.stage.ylim[0]):
+
+					self.GUI_Object.picConvWarn.emit("Image too big!", "Size ({}, {}) is bigger than stage limits\n\nX = [{}, {}],\nY = [{}, {}]".format(*shape, *self.controller.stage.xlim, *self.controller.stage.ylim))
+
+					raise ImageError("Image too big! Size ({}, {}) is bigger than stage limits -- X = [{}, {}], Y = [{}, {}]".format(*shape, *self.controller.stage.xlim, *self.controller.stage.ylim))
+			else:
+				assert abs(shape[0]) <= abs(self.controller.stage.xlim[1] - self.controller.stage.xlim[0]) and abs(shape[1]) <= abs(self.controller.stage.ylim[1] - self.controller.stage.ylim[0]), "Image too big for stage."
 
 		self.imageArray = np.array(self.image, dtype=int)
+		self.GUI_Object.pDialog.setLabelText("Loaded image into array") if self.GUI_Object else None
+
 		# We flip the image about the horizontal and vertical to match with stage position, if necessary
 		if self.flipVertically:
 			self.imageArray = np.flipud(self.imageArray)
+			self.GUI_Object.pDialog.setLabelText("Flipped image vertically") if self.GUI_Object else None
 		if self.flipHorizontally:
 			self.imageArray = np.fliplr(self.imageArray)
+			self.GUI_Object.pDialog.setLabelText("Flipped image horizontally") if self.GUI_Object else None
 
 
 		# 1 = White
@@ -168,7 +190,11 @@ class PicConv():
 
 		if self.frames:
 			self.resultCount = 0
-			os.system("rm results/*")
+			if platform.system() == "Windows":
+				os.system("del results/*")
+			else:
+				os.system("rm results/*")
+
 			def print_result(self, final = False):
 				# normalize the output
 				# np.savetxt('test.csv', self.output, delimiter=',')
@@ -184,7 +210,7 @@ class PicConv():
 				if not final:
 					_im.save("results/test-{}.png".format(self.resultCount))
 				else:
-					_im.save("test.png")
+					_im.save("picconv_test.png")
 				# https://stackoverflow.com/questions/10965417/how-to-convert-numpy-array-to-pil-image-applying-matplotlib-colormap
 
 				self.resultCount += 1
@@ -200,13 +226,20 @@ class PicConv():
 					_im = Image.fromarray(np.uint8(cm.gist_ncar(_output)*255))
 				except NameError as e:
 					_im = Image.fromarray(np.uint8((_output)*255))
-				_im.save("test.png")
+				_im.save("picconv_test.png")
 				# https://stackoverflow.com/questions/10965417/how-to-convert-numpy-array-to-pil-image-applying-matplotlib-colormap
 
 
 		startPt = (0, 0) if not self.prioritizeLeft else (0, self.shape[1] - 1)
 		lineNo  = 0
 		currLine = []
+
+		totalPtsToCrawl = np.sum(self.imageArray)
+		if self.dontcut:
+			# dontcut is 1 in the array
+			totalPtsToCrawl = self.imageArray.size - totalPtsToCrawl
+
+		crawledPts = 0
 
 		while True:
 			if len(currLine):
@@ -220,18 +253,23 @@ class PicConv():
 				break
 			startPt = nextPt
 
+			self.GUI_Object.pDialog_setLabelText("At point ({1:>3}:{0:>3})".format(*nextPt)) if self.GUI_Object else None
 			print("At point ({1:>3}:{0:>3})".format(*nextPt), end='\r')
 
 			# We first set the cell as visited
 			self.imageArray[startPt] = self.dontcut
 			self.output[startPt] = lineNo
 			currLine.append(startPt)
+			crawledPts += 1
+			ptg = (crawledPts/totalPtsToCrawl) * 100
+			self.GUI_Object.pDialog_setValue(ptg / 2) if self.GUI_Object else None
+
 
 			# We start to crawl from this pixel
 			# For each pixel, we find the closest neighbour in order of priority
 			# and mark as cut
 			while True:
-				print("At point ({:>3}:{:>3})".format(*nextPt), end='\r')
+				print("At point ({:>3}:{:>3}) / ({:.1f}%)".format(*nextPt, ptg), end='\r')
 				# if nextPt[0] < 0 or nextPt[1] < 0:
 				# 	print("")
 				# Used for catching erroronous pixels
@@ -239,9 +277,18 @@ class PicConv():
 				if nextPt is None:
 					break
 
+				# print("{}/{}".format(crawledPts, totalPtsToCrawl))
+
 				self.imageArray[nextPt] = self.dontcut
 				self.output[nextPt] = lineNo
 				currLine.append(nextPt)
+				crawledPts += 1
+				ptg = (crawledPts/totalPtsToCrawl) * 100
+				self.GUI_Object.pDialog_setValue(ptg / 2) if self.GUI_Object else None
+
+				# We print here because we prioritize the progress bar
+				self.GUI_Object.pDialog_setLabelText("At point ({1:>3}:{0:>3})".format(*nextPt)) if self.GUI_Object else None
+
 				if self.frames:
 					print_result(self)
 
@@ -250,7 +297,7 @@ class PicConv():
 		# print(self.imageArray)
 		print("\nDone")
 
-		if self.simulate:
+		if self.simulate and platform.system() == "Linux":
 			os.system("./generateMovie.sh")
 
 	def draw(self, velocity, **kwargs):

@@ -176,3 +176,9 @@ class ThreadWithExc(threading.Thread):
             self.terminateRequested = True
             self.raiseExc(SystemExit)
             self.join()
+
+class DoneObject():
+    def __init__(self):
+        pass
+    def __repr__(self):
+        return "<Done Object>"
