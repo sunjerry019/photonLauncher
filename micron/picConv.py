@@ -430,7 +430,12 @@ class PicConv():
 		# [bool , [(dy, dx), (dy, dx), ...]] where bool = laser on off state (0 = off, 1 = on)
 		self.commands = []
 
+		totalLines = len(self.lines)
+
 		for i, line in enumerate(self.lines):
+			ptg = (i / totalLines) * 100
+			self.GUI_Object.pDialog_setValue(50 + (ptg / 2)) if self.GUI_Object else None
+			self.GUI_Object.pDialog_setLabelText("{} / {} Lines".format(i, totalLines)) if self.GUI_Object else None
 			# line = each segment that doesnt require laser to be closed
 			# Points are in the format (y, x)
 
@@ -489,6 +494,9 @@ class PicConv():
 
 			self.commands.append([1, _l])
 
+		self.GUI_Object.pDialog.setLabelText("Lines Parsed") if self.GUI_Object else None
+		self.GUI_Object.pDialog_setValue(100) if self.GUI_Object else None
+		# Set to 100% here to close the pDialog
 
 	def estimateTime(self, velocity):
 		# You can run self.load to load any pickle files first

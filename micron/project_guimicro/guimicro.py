@@ -1927,7 +1927,7 @@ class MicroGui(QtWidgets.QMainWindow):
         except Exception as e:
             self.logconsole("{}: {}".format(type(e).__name__, e))
 
-        self.pDialog.setTitle("Parsing Lines")
+        self.pDialog.setWindowTitle("Parsing Lines")
         self.pDialog_setLabelText("Parsing Lines")
 
         try:
@@ -1936,7 +1936,6 @@ class MicroGui(QtWidgets.QMainWindow):
             # The error should have been emitted already
             self.logconsole("{}: {}".format(type(e).__name__, e))
             return cancelOperation(self)
-
 
         return self.pDialog.close() if hasattr(self, "pDialog") else None
 
