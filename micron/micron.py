@@ -200,6 +200,8 @@ class Micos():
 			dx = max(self.stage.xlim) - xl/2
 			dy = max(self.stage.ylim) - yl/2
 
+			self.waitClear() # To check if microcontroller is switched on on Windows
+
 			self.stage.setpos(x = dx, y = dy)
 
 			warnings.warn("Stage will not be homed. Proceed with caution., set to ({}, {})".format(dx, dy), RuntimeWarning)
