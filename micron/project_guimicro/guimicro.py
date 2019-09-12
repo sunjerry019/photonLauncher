@@ -43,11 +43,7 @@ import stagecontrol, picConv
 import servos
 from micron import Stage as mstage # for default x and y lims
 
-from extraFunctions import moveToCentre, ThreadWithExc
-
-# CUSTOM ERROR FOR PICCONV:
-class ImageError(Exception):
-    pass
+from extraFunctions import moveToCentre, ThreadWithExc, DoneObject
 
 class MicroGui(QtWidgets.QMainWindow):
     def __init__(self, devMode = False, noHome = False):
@@ -1031,12 +1027,13 @@ class MicroGui(QtWidgets.QMainWindow):
         _drawpic_layout = QtWidgets.QGridLayout()
 
         # INSTRUCTION
-        _DP_instructions = QtWidgets.QGroupBox("Instructions")
-        _DP_instructions_layout = QtWidgets.QVBoxLayout()
+        # _DP_instructions = QtWidgets.QGroupBox("Instructions")
+        # _DP_instructions_layout = QtWidgets.QVBoxLayout()
 
         _DP_instructions_scrollArea = QtWidgets.QScrollArea() # QTextBrowser
         _DP_instructions_label = QtWidgets.QLabel()
         _DP_instructions_string = [
+            "<b style='color: #22F;'>Instructions</b>",
             "'Draw Picture' takes in a 1-bit BMP image and prints it out using the stage.",
             "Each option has some hints on mouseover.",
             "Go through each step <span style='font-family: Menlo, Consolas, monospace;'>[i]</span> sequentially to print the image. Each pixel represents 1 {}m.".format(self.MICROSYMBOL),
@@ -1056,17 +1053,16 @@ class MicroGui(QtWidgets.QMainWindow):
         _DP_instructions_scrollArea.setWidgetResizable(True)
         # https://www.oipapio.com/question-3065786
 
-        _DP_instructions_layout.addWidget(_DP_instructions_scrollArea)
-
-        _DP_instructions.setLayout(_DP_instructions_layout)
+        # _DP_instructions_layout.addWidget(_DP_instructions_scrollArea)
+        # _DP_instructions.setLayout(_DP_instructions_layout)
         # / INSTRUCTIONS
 
         # DRAW PIC INTERFACE
         _DP_main = QtWidgets.QGroupBox("Parameters")
         _DP_main_layout = QtWidgets.QGridLayout()
 
-        _DP_picture_fn_label = QtWidgets.QLabel("BMP File")
-        _DP_picture_fn_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # _DP_picture_fn_label = QtWidgets.QLabel("BMP File")
+        # _DP_picture_fn_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self._DP_picture_fn  = QtWidgets.QLineEdit()
         self._DP_picture_fn.setPlaceholderText("File name")
         self._DP_picture_btn = QtWidgets.QPushButton("Browse...")
@@ -1077,7 +1073,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
         # Options
         # def __init__(self, filename, xscale = 1, yscale = 1, cut = 0, allowDiagonals = False, prioritizeLeft = False, flipHorizontally = False, flipVertically = False ,frames = False, simulate = False, simulateDrawing = False, micronInstance = None, shutterTime = 800)
-        _DP_options = QtWidgets.QGroupBox("Options")
+        _DP_options = QtWidgets.QWidget() # QGroupBox("Options")
         _DP_options_layout = QtWidgets.QGridLayout()
 
         _DP_xscale_label = QtWidgets.QLabel("X-Scale")
@@ -1103,6 +1099,7 @@ class MicroGui(QtWidgets.QMainWindow):
         self._DP_flipVertically = QtWidgets.QCheckBox("Flip Vertically")
         self._DP_flipHorizontally = QtWidgets.QCheckBox("Flip Horizontally")
 
+        self._DP_allowDiagonals.setChecked(True)
         self._DP_allowDiagonals.setToolTip("Diagonal pixels will also be considered adjacent\npixels when parsing the picture into lines.")
         self._DP_flipVertically.setToolTip("Use a simple image to test whether flipping is necessary.\nImage is flipped BEFORE parsing it.")
         self._DP_flipHorizontally.setToolTip("Use a simple image to test whether flipping is necessary.\nImage is flipped BEFORE parsing it.")
@@ -1133,7 +1130,7 @@ class MicroGui(QtWidgets.QMainWindow):
         self._DP_picture_parse = QtWidgets.QPushButton("Parse Picture")
 
         _DP_steps_labels = []
-        for i in range(4):
+        for i in range(3):
             _temp_label = QtWidgets.QLabel("[{}]".format(i + 1))
             _temp_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
             _temp_label.setStyleSheet("font-family: Menlo, Consolas, monospace;")
@@ -1142,17 +1139,15 @@ class MicroGui(QtWidgets.QMainWindow):
         _DP_main_layout.addWidget(self._DP_picture_preview, 0, 0, 1, 5)
 
         _DP_main_layout.addWidget(_DP_steps_labels[0], 1, 0, 1, 1)
-        _DP_main_layout.addWidget(_DP_picture_fn_label, 1, 1, 1, 1)
-        _DP_main_layout.addWidget(self._DP_picture_fn, 1, 2, 1, 2)
-        _DP_main_layout.addWidget(self._DP_picture_btn, 1, 4, 1, 1)
+        # _DP_main_layout.addWidget(_DP_picture_fn_label, 1, 1, 1, 1)
+        _DP_main_layout.addWidget(self._DP_picture_fn, 1, 1, 1, 2)
+        _DP_main_layout.addWidget(self._DP_picture_btn, 1, 3, 1, 1)
+        _DP_main_layout.addWidget(self._DP_picture_load, 1, 4, 1, 1)
 
-        _DP_main_layout.addWidget(_DP_steps_labels[1], 2, 0, 1, 1)
-        _DP_main_layout.addWidget(self._DP_picture_load, 2, 1, 1, 4)
-
-        _DP_main_layout.addWidget(_DP_steps_labels[2], 3, 0, 1, 1)
+        _DP_main_layout.addWidget(_DP_steps_labels[1], 3, 0, 1, 1)
         _DP_main_layout.addWidget(_DP_options, 3, 1, 1, 4)
 
-        _DP_main_layout.addWidget(_DP_steps_labels[3], 4, 0, 1, 1)
+        _DP_main_layout.addWidget(_DP_steps_labels[2], 4, 0, 1, 1)
         _DP_main_layout.addWidget(self._DP_picture_parse, 4, 1, 1, 4)
 
         for i in range(4):
@@ -1161,7 +1156,8 @@ class MicroGui(QtWidgets.QMainWindow):
         _DP_main.setLayout(_DP_main_layout)
         # / DRAW PIC INTERFACE
 
-        _drawpic_layout.addWidget(_DP_instructions, 0, 0)
+        # _drawpic_layout.addWidget(_DP_instructions, 0, 0)
+        _drawpic_layout.addWidget(_DP_instructions_scrollArea, 0, 0)
         _drawpic_layout.addWidget(_DP_main, 0, 1)
 
         _drawpic_layout.setColumnStretch(0, 1)
@@ -1249,6 +1245,9 @@ class MicroGui(QtWidgets.QMainWindow):
         self._DP_flipVertically.stateChanged.connect(lambda: self._DP_optionsChanged())
         self._DP_flipHorizontally.stateChanged.connect(lambda: self._DP_optionsChanged())
         self._DP_prioritizeLeft.stateChanged.connect(lambda: self._DP_optionsChanged())
+        self._DP_picture_fn.textChanged.connect(lambda: self._DP_filenameLineEditChanged())
+
+        self.picConvWarn.connect(self.on_picConvWarn)
 
 
         # SHUTTER
@@ -1774,7 +1773,7 @@ class MicroGui(QtWidgets.QMainWindow):
             # We run some checks here
             try:
                 isValid = self._DP_runChecks(filename)
-            except ImageError as e:
+            except picConv.ImageError as e:
                 isValid = False
                 error = e
 
@@ -1783,21 +1782,21 @@ class MicroGui(QtWidgets.QMainWindow):
 
     def _DP_runChecks(self, filename):
         # Checks if the file exists and is valid
-        # Raises ImageError if there are any errors
+        # Raises picConv.ImageError if there are any errors
 
         if not os.path.isfile(filename):
-            raise ImageError("Path is not file!")
+            raise picConv.ImageError("Path is not file!")
 
         try:
             image = PILImage.open(filename)
         except Exception as e:
-            raise ImageError("({}): {}".format(type(e).__name__, e))
+            raise picConv.ImageError("({}): {}".format(type(e).__name__, e))
 
         if image.format != "BMP":
-            raise ImageError("The selected image is not a valid .bmp file!")
+            raise picConv.ImageError("The selected image is not a valid .bmp file!")
 
         if image.mode != '1':
-            raise ImageError("Your image has mode {}. Please use a 1-bit indexed (mode 1) image, see <a href='https://pillow.readthedocs.io/en/stable/handbook/concepts.html#bands'>https://pillow.readthedocs.io/en/stable/handbook/concepts.html#bands</a>. If using GIMP to convert picture to 1-bit index, ensure 'remove colour from palette' is unchecked. ".format(image.mode))
+            raise picConv.ImageError("Your image has mode {}. Please use a 1-bit indexed (mode 1) image, see <a href='https://pillow.readthedocs.io/en/stable/handbook/concepts.html#bands'>https://pillow.readthedocs.io/en/stable/handbook/concepts.html#bands</a>. If using GIMP to convert picture to 1-bit index, ensure 'remove colour from palette' is unchecked. ".format(image.mode))
 
         # Check size purely based on image and stage size
         # Does not take into account the scaling factor yet
@@ -1806,9 +1805,18 @@ class MicroGui(QtWidgets.QMainWindow):
         ylim = self.stageControl.controller.stage.ylim
 
         if image.size[0] > abs(xlim[1] - xlim[0]) or image.size[1] > abs(ylim[1] - ylim[0]):
-            raise ImageError("Image way too big ._., exceeds stage limits")
+            raise picConv.ImageError("Image way too big ._., exceeds stage limits")
 
         return True
+
+    def _DP_loadPictureIntoPreviewer(self, filename):
+        self._DP_picture_preview_pic = QtGui.QPixmap()
+        if self._DP_picture_preview_pic.load(filename):
+            self._DP_picture_preview_pic = self._DP_picture_preview_pic.scaled(self._DP_picture_preview.size(), QtCore.Qt.KeepAspectRatio)
+            self._DP_picture_preview.setPixmap(self._DP_picture_preview_pic)
+            return DoneObject()
+        else:
+            return self.criticalDialog(message = "Unable to load the selected file into preview", title = "Unable to load file", host = self)
 
     def _DP_loadPicture(self):
         # run tests again
@@ -1817,24 +1825,22 @@ class MicroGui(QtWidgets.QMainWindow):
         try:
             filename = os.path.abspath(os.path.realpath(os.path.expanduser(filename)))
             isValid = self._DP_runChecks(filename)
-        except ImageError as e:
+        except picConv.ImageError as e:
             return self.criticalDialog(message = "You have selected an invalid file", informativeText = "E: {}".format(e), title = "Invalid File", host = self)
 
         # Load picture into previewer
-        self._DP_picture_preview_pic = QtGui.QPixmap()
-        if self._DP_picture_preview_pic.load(filename):
-            self._DP_picture_preview_pic = self._DP_picture_preview_pic.scaled(self._DP_picture_preview.size(), QtCore.Qt.KeepAspectRatio)
-            self._DP_picture_preview.setPixmap(self._DP_picture_preview_pic)
-        else:
-            return self.criticalDialog(message = "Unable to load the selected file into preview", title = "Unable to load file", host = self)
+        x = self._DP_loadPictureIntoPreviewer(filename)
+        if isinstance(x, DoneObject):
+            # save the filename if everything passes
+            self._DP_filename_string = filename
+            self._DP_optionsChanged()
 
-        # save the filename if everything passes
-        self._DP_filename_string = filename
-
-        self._DP_optionsChanged()
+    def _DP_filenameLineEditChanged(self):
+        self._DP_picture_load.setStyleSheet("background-color: #FF8800;")
 
     def _DP_optionsChanged(self):
         if hasattr(self, "_DP_filename_string"):
+            self._DP_picture_load.setStyleSheet("")
             self._DP_picture_parse.setStyleSheet("background-color: #FF8800;")
 
     def _DP_parsePicture(self):
@@ -1880,7 +1886,8 @@ class MicroGui(QtWidgets.QMainWindow):
             flipHorizontally = flipHorizontally,
             flipVertically = flipVertically,
             shutterTime = self.stageControl.controller.shutter.duration * 2,
-            micronInstance = self.stageControl.controller
+            micronInstance = self.stageControl.controller,
+            GUI_Object = self
         )
         # def progressDialog(self, host = None, title = "Progress", labelText = None, cancelButtonText = "Cancel", range = (0, 100)):
         # Should be regenerated every time
@@ -1894,24 +1901,54 @@ class MicroGui(QtWidgets.QMainWindow):
         )
         self.picConv_conversion_thread = ThreadWithExc(target = self._DP_ConvertParseLines)
         self.picConv_conversion_thread.start()
-        pDialog.show()
+        self.pDialog.exec_()
+
+        if hasattr(self, "pDialog"):
+            del self.pDialog
 
     def _DP_ConvertParseLines(self):
         def cancelOperation(self):
-            return
+            return self.pDialog.close() if hasattr(self, "pDialog") else None
 
         self.pDialog.canceled.connect(lambda: cancelOperation(self))
         self.pDialog.setValue(0)
 
         # Redirect output through pDialog.setLabelText()
-
-        self.picConv.convert()
+        try:
+            self.picConv.convert()
+        except Exception as e:
+            # The error should have been emitted already
+            self.logconsole("{}: {}".format(type(e).__name__, e))
+            return cancelOperation(self)
 
         # Show test.png
+        try:
+            self._DP_loadPictureIntoPreviewer("picconv_test.png")
+        except Exception as e:
+            self.logconsole("{}: {}".format(type(e).__name__, e))
 
-        self.picConv.parseLines()
+        self.pDialog.setWindowTitle("Parsing Lines")
+        self.pDialog_setLabelText("Parsing Lines")
 
-        del self.pDialog
+        try:
+            self.picConv.parseLines()
+        except Exception as e:
+            # The error should have been emitted already
+            self.logconsole("{}: {}".format(type(e).__name__, e))
+            return cancelOperation(self)
+
+        return self.pDialog.close() if hasattr(self, "pDialog") else None
+
+    PDIALOG_TIMEOUT = 0.3       # in seconds
+    def pDialog_setValue(self, val):
+        if val == 100 or val == 50 or val == 0 or datetime.datetime.now() > self.lastPDialogUpdate + datetime.timedelta(seconds = self.PDIALOG_TIMEOUT):
+            self.lastPDialogUpdate = datetime.datetime.now()
+            self.pDialog.setValue(val)
+
+    def pDialog_setLabelText(self, text):
+        if datetime.datetime.now() > self.lastPDialogUpdate + datetime.timedelta(seconds = self.PDIALOG_TIMEOUT):
+            self.lastPDialogUpdate = datetime.datetime.now()
+            self.pDialog.setLabelText(text)
 
 # Helper functions
     def setOperationStatus(self, status, printToTerm = True, **printArgs):
@@ -2011,6 +2048,8 @@ class MicroGui(QtWidgets.QMainWindow):
 
         moveToCentre(pDialog)
 
+        self.lastPDialogUpdate = datetime.datetime.now()
+
         return pDialog
 
     operationDone = QtCore.pyqtSignal()
@@ -2022,6 +2061,11 @@ class MicroGui(QtWidgets.QMainWindow):
                 self.stageControl.musicProcess.terminate()
             except Exception as e:
                 self.logconsole("{}: {}".format(type(e).__name__, e))
+
+    picConvWarn = QtCore.pyqtSignal('QString', 'QString')
+    # [str, str]
+    def on_picConvWarn(self, message, error):
+        return self.criticalDialog(message = message, title = "PicConv Error!", informativeText = error, host = self)
 
 # Status Bar
 

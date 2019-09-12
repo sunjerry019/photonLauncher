@@ -17,12 +17,12 @@ from pwmaudio import noALSAerror
 
 class JukeBox():
 
-    def __init__(self, tempo = 300, length = 40, scale = 'cpent', playmusic = False):
+    def __init__(self, tempo = 300, length = 40, scale = 'cpent', profile = 'random', playmusic = False):
         self.scale(scale = scale)
         self.tempo = tempo
         self.length = length
         print("Loading Melodies")
-        self.melodygen(tempo = self.tempo, length = self.length)
+        self.melodygen(tempo = self.tempo, length = self.length, profile = profile)
 
         if playmusic:
             self.playmusic()
