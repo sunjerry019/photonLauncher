@@ -131,8 +131,8 @@ class MicroGui(QtWidgets.QMainWindow):
         self.setCentralWidget(self.window_widget)
 
         self.initSettings()
-        self.initializeDevice()
         self.initEventListeners()
+        self.initializeDevice()
         self.recalculateARValues()
 
         # Set to the last menu item
@@ -311,13 +311,7 @@ class MicroGui(QtWidgets.QMainWindow):
                         # mb.setDetailedText(message)
                         # msgBox.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
 
-                        self.criticalDialog(message = "System has encountered a RuntimeError and will now exit.",
-                            title = "Oh no!",
-                            informativeText = "Error: {}".format(e),
-                            host = self
-                        )
-
-                        os._exit(1)             # For the exit to propogate upwards
+                        self.EL_self_criticalDialog.emit("System has encountered a RuntimeError and will now exit.", "Oh no!", "Error: {}".format(e), True)
 
             # Clean up unneeded settings
 
@@ -1201,6 +1195,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
         # COMMON
         self.operationDone.connect(self.on_operationDone)
+        self.EL_self_criticalDialog.connect(self.on_EL_self_criticalDialog)
 
         # SINGLE RASTER
         self._SR_velocity.textChanged.connect(lambda: self.checkSRValues())
@@ -1960,6 +1955,15 @@ class MicroGui(QtWidgets.QMainWindow):
 
     def logconsole(self, status):
         print("[{}]".format(datetime.datetime.now().time()), status)
+
+    EL_self_criticalDialog = QtCore.pyqtSignal('QString', 'QString', 'QString', 'bool')
+    def on_EL_self_criticalDialog(self, message, title = "Oh no!", informativeText = None, exitAfter = False):
+        ret = self.criticalDialog(message = message, title = title, informativeText = informativeText, host = self)
+
+        if exitAfter:
+            return os._exit(1)             # For the exit to propagate upwards
+        else:
+            return ret
 
     def criticalDialog(self, message, title = "Oh no!", informativeText = None, host = None):
         _msgBox = QtWidgets.QMessageBox(host)
