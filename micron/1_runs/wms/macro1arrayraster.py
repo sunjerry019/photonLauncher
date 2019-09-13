@@ -15,7 +15,7 @@ xgap = 30
 ygap = 30
 
 for i in velocities:
-	s.singleraster(velocity = i, xDist = size[0], yDist = size[1], rasterSettings = {"direction": "y", "step": 2}, returnToOrigin = True)
+	s.singleraster(velocity = i, xDist = size[0], yDist = size[1], rasterSettings = {"direction": "y", "step": 2}, returnToOrigin = True, quietLog = True)
 	s.controller.setvel(1000)
 	s.controller.rmove(x = xgap + size[0], y = 0)
 	print(i,"um/s speed done")

@@ -45,6 +45,9 @@ from micron import Stage as mstage # for default x and y lims
 
 from extraFunctions import moveToCentre, ThreadWithExc, DoneObject
 
+if platform.system() == "Windows":
+    from pycaw.pycaw import AudioUtilities, ISimpleAudioVolume
+
 class MicroGui(QtWidgets.QMainWindow):
     def __init__(self, devMode = False, noHome = False):
         super().__init__()
