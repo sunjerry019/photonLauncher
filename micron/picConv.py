@@ -336,21 +336,21 @@ class PicConv():
 				self.estimateTime(velocity = velocity)
 
 			deltaTime = datetime.timedelta(seconds = self.estimatedTime)
-			if self.GUI_Object:
-				self.GUI_Object.setOperationStatus("Given {} sec / shutter movement:\nEstimated time required  \t {}".format(self.shutterTime, deltaTime))
-			else:
+			if not self.GUI_Object:
 				print("Given {} sec / shutter movement:\nEstimated time required  \t {}".format(self.shutterTime, deltaTime))
 				if not qyn("This is the (0,0) of the image. Confirm?"):
 					print("Exiting...")
 					sys.exit(1)
 
 			now = datetime.datetime.now()
-			print("Printing starting now \t {}".format(now.strftime('%Y-%m-%d %H:%M:%S')))
-
 			finish = now + deltaTime
 
-			print("Given {} sec / shutter movement:\nEstimated time required  \t {}".format(self.shutterTime, deltaTime))
-			print("Esimated to finish at \t {}".format(finish.strftime('%Y-%m-%d %H:%M:%S')))
+			if self.GUI_Object:
+				self.GUI_Object.setOperationStatus("Given {} sec / shutter movement:\nEstimated time required  \t {}, Est End = {}".format(self.shutterTime, deltaTime, finish))
+			else:
+				print("Printing starting now \t {}".format(now.strftime('%Y-%m-%d %H:%M:%S')))
+				print("Given {} sec / shutter movement:\nEstimated time required  \t {}".format(self.shutterTime, deltaTime))
+				print("Esimated to finish at \t {}".format(finish.strftime('%Y-%m-%d %H:%M:%S')))
 
 		# SVGCODE
 		svgLine = ["M 0,0"]
@@ -367,8 +367,11 @@ class PicConv():
 			self.controller.setvel(velocity)
 
 		# then we print
-		for cmd in self.commands:
-			print(cmd)
+		totalLines = len(self.commands)
+		for i, cmd in enumerate(self.commands):
+			if not self.GUI_Object:
+				print(cmd, "{}/{}".format(i + 1, totalLines))
+
 			state  = cmd[0] 	# laser on state
 			rmoves = cmd[1]
 
