@@ -1135,6 +1135,8 @@ class MicroGui(QtWidgets.QMainWindow):
         _DP_velocity_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self._DP_velocity = QtWidgets.QLineEdit("100")
         self._DP_velocity.setValidator(QtGui.QDoubleValidator(0,10000, 12))
+
+        self._DP_picture_estimateTime = QtWidgets.QPushButton("Estimate Time")
         self._DP_picture_draw = QtWidgets.QPushButton("Draw")
 
         _DP_steps_labels = []
@@ -1163,8 +1165,10 @@ class MicroGui(QtWidgets.QMainWindow):
 
         _DP_main_layout.addWidget(_DP_steps_labels[5], 5, 0, 1, 1)
         _DP_main_layout.addWidget(_DP_velocity_label, 5, 1, 1, 1)
-        _DP_main_layout.addWidget(self._DP_velocity, 5, 2, 1, 2)
-        _DP_main_layout.addWidget(self._DP_picture_draw, 5, 4, 1, 1)
+        _DP_main_layout.addWidget(self._DP_velocity, 5, 2, 1, 3)
+
+        _DP_main_layout.addWidget(self._DP_picture_estimateTime, 6, 0, 1, 2)
+        _DP_main_layout.addWidget(self._DP_picture_draw, 6, 2, 1, 3)
 
         _DP_main_layout.setColumnStretch(0, 1)
         for i in range(1, 4):
@@ -1259,6 +1263,7 @@ class MicroGui(QtWidgets.QMainWindow):
         self._DP_picture_btn.clicked.connect(lambda: self._DP_getFile())
         self._DP_picture_load.clicked.connect(lambda: self._DP_loadPicture())
         self._DP_picture_parse.clicked.connect(lambda: self._DP_parsePicture())
+        self._DP_picture_estimateTime.clicked.connect(lambda: self._DP_drawPicture(estimateOnly = True))
         self._DP_picture_draw.clicked.connect(lambda: self._DP_drawPicture())
         self._DP_xscale.textChanged.connect(lambda: self._DP_optionsChanged())
         self._DP_yscale.textChanged.connect(lambda: self._DP_optionsChanged())
@@ -1977,19 +1982,10 @@ class MicroGui(QtWidgets.QMainWindow):
         except Exception as e:
             self.logconsole("{}: {}".format(type(e).__name__, e))
 
-        print("OK")
-
         while datetime.datetime.now() < self.lastPDialogUpdate + datetime.timedelta(seconds = self.PDIALOG_TIMEOUT):
             time.sleep(self.PDIALOG_TIMEOUT)
         self.pDialog.setWindowTitle("Parsing Lines")
-
-        print("OK 1.5")
-
-        while datetime.datetime.now() < self.lastPDialogUpdate + datetime.timedelta(seconds = self.PDIALOG_TIMEOUT):
-            time.sleep(self.PDIALOG_TIMEOUT)
         self.pDialog_setLabelText("Parsing Lines")
-
-        print("Ok2")
 
         try:
             self.picConv.parseLines()
@@ -1998,15 +1994,13 @@ class MicroGui(QtWidgets.QMainWindow):
             self.logconsole("{}: {}".format(type(e).__name__, e))
             return cancelOperation(self)
 
-        print("Ok3")
-
         # Change Colour of Draw
         self._DP_picture_draw.setStyleSheet("background-color: #FF8800;")
         self._DP_optionsChangedFlag = False
 
         return self.pDialog.close() if hasattr(self, "pDialog") else None
 
-    def _DP_drawPicture(self):
+    def _DP_drawPicture(self, estimateOnly = False):
         # Check if loaded
         if not hasattr(self, "_DP_filename_string") or self._DP_filename_string is None or not len(self._DP_filename_string):
             return self.criticalDialog(message = "Image not loaded!", informativeText = "Please load the image first before parsing and drawing. Filename not captured", title = "Image not loaded!", host = self)
@@ -2025,38 +2019,69 @@ class MicroGui(QtWidgets.QMainWindow):
                 return
 
         # Check if enough space
-        size = self.picConv.image.size # (width, height)
-        fx = self.stageControl.controller.stage.x + self.picConv.scale["x"] * size[0]
-        fy = self.stageControl.controller.stage.y + self.picConv.scale["y"] * size[1]
+        if not estimateOnly:
+            size = self.picConv.image.size # (width, height)
+            fx = self.stageControl.controller.stage.x + self.picConv.scale["x"] * size[0]
+            fy = self.stageControl.controller.stage.y + self.picConv.scale["y"] * size[1]
 
-        xlim = sorted(self.stageControl.controller.stage.xlim)
-        ylim = sorted(self.stageControl.controller.stage.ylim)
+            xlim = sorted(self.stageControl.controller.stage.xlim)
+            ylim = sorted(self.stageControl.controller.stage.ylim)
 
-        xcond = xlim[0] <= fx <= xlim[1]
-        ycond = ylim[0] <= fy <= ylim[1]
+            xcond = xlim[0] <= fx <= xlim[1]
+            ycond = ylim[0] <= fy <= ylim[1]
 
-        if not xcond and not ycond:
-            return self.criticalDialog(message = "Image too large!", informativeText = "At the current position, printing the picture will exceed stage limits in both the x and y direction\n\nStage Limits = x[{}, {}], y[{}, {}]\nImage Size = ({}, {})\nCurrent Stage Position = ({}, {})".format(*xlim, *ylim, *size, *self.stageControl.controller.stage.position), title = "Image too large!", host = self)
-        elif not xcond:
-            return self.criticalDialog(message = "Image too large!", informativeText = "At the current position, printing the picture will exceed stage limits in the x direction\n\nStage Limits = x[{}, {}]\nImage Size = ({}, {})\nCurrent Stage Position = ({}, {})".format(*xlim, *size, *self.stageControl.controller.stage.position), title = "Image too large!", host = self)
-        elif not ycond:
-            return self.criticalDialog(message = "Image too large!", informativeText = "At the current position, printing the picture will exceed stage limits in the y direction\n\nStage Limits = y[{}, {}]\nImage Size = ({}, {})\nCurrent Stage Position = ({}, {})".format(*ylim, *size, *self.stageControl.controller.stage.position), title = "Image too large!", host = self)
+            if not xcond and not ycond:
+                return self.criticalDialog(message = "Image too large!", informativeText = "At the current position, printing the picture will exceed stage limits in both the x and y direction\n\nStage Limits = x[{}, {}], y[{}, {}]\nImage Size = ({}, {})\nCurrent Stage Position = ({}, {})".format(*xlim, *ylim, *size, *self.stageControl.controller.stage.position), title = "Image too large!", host = self)
+            elif not xcond:
+                return self.criticalDialog(message = "Image too large!", informativeText = "At the current position, printing the picture will exceed stage limits in the x direction\n\nStage Limits = x[{}, {}]\nImage Size = ({}, {})\nCurrent Stage Position = ({}, {})".format(*xlim, *size, *self.stageControl.controller.stage.position), title = "Image too large!", host = self)
+            elif not ycond:
+                return self.criticalDialog(message = "Image too large!", informativeText = "At the current position, printing the picture will exceed stage limits in the y direction\n\nStage Limits = y[{}, {}]\nImage Size = ({}, {})\nCurrent Stage Position = ({}, {})".format(*ylim, *size, *self.stageControl.controller.stage.position), title = "Image too large!", host = self)
         # / Check space
 
-        # alert confirm user has moved to (0,0)
-        # We don't bother if the user changed the filename without loading, we just let them know what image will be drawn.
-        ret = self.unsavedQuestionDialog(message = "Start drawing?", title = "Draw Picture",informativeText = "Using {}\n\nThis point has been taken as the (0, 0) of the image. This usually the top left.\n\nDraw to proceed.\nCancel to go back and change stage position.".format(self._DP_filename_string), host = self, buttons = {
-            QtWidgets.QMessageBox.Save    : "Draw"
-        }, noDiscard = True)
+        # Check the velocity
+        vel = self._DP_velocity.text()
+        try:
+            vel = float(vel)
+        except Exception as e:
+            return self.criticalDialog(message = "Input Error", informativeText = "Unable to parse velocity into float. (Got {})".format(vel), title = "Input Error", host = self)
 
-        if ret == QtWidgets.QMessageBox.Save:
-            pass
+        if not estimateOnly:
+            # alert confirm user has moved to (0,0)
+            # We don't bother if the user changed the filename without loading, we just let them know what image will be drawn.
+            ret = self.unsavedQuestionDialog(message = "Start drawing?", title = "Draw Picture",informativeText = "Using {}\n\nThis point has been taken as the (0, 0) of the image. This usually the top left.\n\nDraw to proceed.\nCancel to go back and change stage position.".format(self._DP_filename_string), host = self, buttons = {
+                QtWidgets.QMessageBox.Save : "Draw"
+            }, noDiscard = True)
+
+            if ret is not QtWidgets.QMessageBox.Save:
+                return
+
+            # Here we start to draw
+            self.setStartButtonsEnabled(False)
+            self.setOperationStatus("Starting Draw Picture...")
+            q = ThreadWithExc(target = self._picConv_draw, args=(vel,))
+            q.start()
         else:
-            return
+            td = datetime.timedelta(seconds = self.picConv.estimateTime(velocity = vel))
+            return self.informationDialog(message = "The picture will take approximately {}.".format(td), title = "Estimated Time", host = self)
+
+    def _picConv_draw(self, velocity):
+        try:
+            # Errors are supposed to be emitted directly
+            self.picConv.draw(velocity = velocity)
+        except Exception as e:
+            self.setOperationStatus("Error Occurred. {}".format(e))
+            if self.devMode:
+                raise
+        else:
+            # If no error
+            self.setOperationStatus("Ready.")
+        finally:
+            # Always run
+            self.setStartButtonsEnabled(True)
 
     PDIALOG_TIMEOUT = 0.5       # in seconds
     def pDialog_setValue(self, val):
-        print("SETTING VALUE:         ", val)
+        # print("SETTING VALUE:         ", val)
         if val == 100 or val == 50 or val == 0 or datetime.datetime.now() > self.lastPDialogUpdate + datetime.timedelta(seconds = self.PDIALOG_TIMEOUT):
             self.lastPDialogUpdate = datetime.datetime.now()
             self.pDialog.setValue(val)
