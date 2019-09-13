@@ -57,6 +57,8 @@ class MicroGui(QtWidgets.QMainWindow):
 
         self.customicon = os.path.join(base_dir, 'icons', 'guimicro.svg')
 
+        self._DP_optionsChangedFlag = False
+
         # symboldefs
         self.MICROSYMBOL = u"\u00B5"
 
@@ -1062,7 +1064,8 @@ class MicroGui(QtWidgets.QMainWindow):
         self._DP_picture_btn = QtWidgets.QPushButton("Browse...")
         self._DP_picture_load = QtWidgets.QPushButton("Load")
 
-        self._DP_picture_preview = QtWidgets.QLabel()
+        self._DP_picture_preview = QtWidgets.QLabel("<i>Preview Here</i>")
+        self._DP_picture_preview.setStyleSheet("color: #777;")
         self._DP_picture_preview.setAlignment(QtCore.Qt.AlignCenter)
 
         # Options
@@ -1120,42 +1123,62 @@ class MicroGui(QtWidgets.QMainWindow):
         _DP_options.setLayout(_DP_options_layout)
         # / Options
 
-
         self._DP_picture_parse = QtWidgets.QPushButton("Parse Picture")
 
+        _DP_moveToZero = QtWidgets.QLabel('Move to (0, 0) of the image using "Stage Movement"')
+        _DP_moveToZero.setWordWrap(True)
+
+        _DP_velocity_label = QtWidgets.QLabel("Velocity ({}m/s)".format(self.MICROSYMBOL))
+        _DP_velocity_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self._DP_velocity = QtWidgets.QLineEdit("100")
+        self._DP_velocity.setValidator(QtGui.QDoubleValidator(0,10000, 12))
+        self._DP_picture_draw = QtWidgets.QPushButton("Draw")
+
         _DP_steps_labels = []
-        for i in range(3):
+        for i in range(6):
             _temp_label = QtWidgets.QLabel("[{}]".format(i + 1))
             _temp_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
             _temp_label.setStyleSheet("font-family: Menlo, Consolas, monospace;")
             _DP_steps_labels.append(_temp_label)
 
-        _DP_main_layout.addWidget(self._DP_picture_preview, 0, 0, 1, 5)
-
-        _DP_main_layout.addWidget(_DP_steps_labels[0], 1, 0, 1, 1)
+        _DP_main_layout.addWidget(_DP_steps_labels[0], 0, 0, 1, 1)
         # _DP_main_layout.addWidget(_DP_picture_fn_label, 1, 1, 1, 1)
-        _DP_main_layout.addWidget(self._DP_picture_fn, 1, 1, 1, 2)
-        _DP_main_layout.addWidget(self._DP_picture_btn, 1, 3, 1, 1)
-        _DP_main_layout.addWidget(self._DP_picture_load, 1, 4, 1, 1)
+        _DP_main_layout.addWidget(self._DP_picture_fn, 0, 1, 1, 3)
+        _DP_main_layout.addWidget(self._DP_picture_btn, 0, 4, 1, 1)
 
-        _DP_main_layout.addWidget(_DP_steps_labels[1], 3, 0, 1, 1)
-        _DP_main_layout.addWidget(_DP_options, 3, 1, 1, 4)
+        _DP_main_layout.addWidget(_DP_steps_labels[1], 1, 0, 1, 1)
+        _DP_main_layout.addWidget(self._DP_picture_load, 1, 1, 1, 4)
 
-        _DP_main_layout.addWidget(_DP_steps_labels[2], 4, 0, 1, 1)
-        _DP_main_layout.addWidget(self._DP_picture_parse, 4, 1, 1, 4)
+        _DP_main_layout.addWidget(_DP_steps_labels[2], 2, 0, 1, 1)
+        _DP_main_layout.addWidget(_DP_options, 2, 1, 1, 4)
 
-        for i in range(4):
-            _DP_main_layout.setColumnStretch(i, 1)
+        _DP_main_layout.addWidget(_DP_steps_labels[3], 3, 0, 1, 1)
+        _DP_main_layout.addWidget(self._DP_picture_parse, 3, 1, 1, 4)
+
+        _DP_main_layout.addWidget(_DP_steps_labels[4], 4, 0, 1, 1)
+        _DP_main_layout.addWidget(_DP_moveToZero, 4, 1, 1, 4)
+
+        _DP_main_layout.addWidget(_DP_steps_labels[5], 5, 0, 1, 1)
+        _DP_main_layout.addWidget(_DP_velocity_label, 5, 1, 1, 1)
+        _DP_main_layout.addWidget(self._DP_velocity, 5, 2, 1, 2)
+        _DP_main_layout.addWidget(self._DP_picture_draw, 5, 4, 1, 1)
+
+        _DP_main_layout.setColumnStretch(0, 1)
+        for i in range(1, 4):
+            _DP_main_layout.setColumnStretch(i, 2)
 
         _DP_main.setLayout(_DP_main_layout)
         # / DRAW PIC INTERFACE
 
         # _drawpic_layout.addWidget(_DP_instructions, 0, 0)
-        _drawpic_layout.addWidget(_DP_instructions_scrollArea, 0, 0)
-        _drawpic_layout.addWidget(_DP_main, 0, 1)
+        _drawpic_layout.addWidget(self._DP_picture_preview, 0, 0, 1, 1)
+        _drawpic_layout.addWidget(_DP_instructions_scrollArea, 1, 0, 1, 1)
+        _drawpic_layout.addWidget(_DP_main, 0, 1, 2, 1)
 
         _drawpic_layout.setColumnStretch(0, 1)
         _drawpic_layout.setColumnStretch(1, 1)
+        _drawpic_layout.setRowStretch(0, 1)
+        _drawpic_layout.setRowStretch(1, 1)
 
         return _drawpic_layout
 
@@ -1233,6 +1256,7 @@ class MicroGui(QtWidgets.QMainWindow):
         self._DP_picture_btn.clicked.connect(lambda: self._DP_getFile())
         self._DP_picture_load.clicked.connect(lambda: self._DP_loadPicture())
         self._DP_picture_parse.clicked.connect(lambda: self._DP_parsePicture())
+        self._DP_picture_draw.clicked.connect(lambda: self._DP_drawPicture())
         self._DP_xscale.textChanged.connect(lambda: self._DP_optionsChanged())
         self._DP_yscale.textChanged.connect(lambda: self._DP_optionsChanged())
         self._DP_cutMode.currentIndexChanged.connect(lambda: self._DP_optionsChanged())
@@ -1317,6 +1341,9 @@ class MicroGui(QtWidgets.QMainWindow):
 
                     if evtkey == QtCore.Qt.Key_Right:
                         self.cardinalMoveStage(self.RIGHT)
+
+        # TODO: Catching alert sound
+        # if isintance(evt, QtGui.QAccessibleEvent)
 
         # return QtWidgets.QWidget.eventFilter(self, source, evt)
         return super(QtWidgets.QWidget, self).eventFilter(source, evt)
@@ -1761,6 +1788,8 @@ class MicroGui(QtWidgets.QMainWindow):
 
             if (self._DP_FileDialog.exec_()):
                 filename = self._DP_FileDialog.selectedFiles()[0]
+                filename = os.path.abspath(os.path.realpath(os.path.expanduser(filename)))
+                # Running this before loadPicture is so that windows gives the same file path url
             else:
                 return
             # else (i.e. the user cancelled) we just ignore and act as though nothing happened
@@ -1835,6 +1864,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
     def _DP_optionsChanged(self):
         if hasattr(self, "_DP_filename_string"):
+            self._DP_optionsChangedFlag = True
             self._DP_picture_load.setStyleSheet("")
             self._DP_picture_parse.setStyleSheet("background-color: #FF8800;")
 
@@ -1846,7 +1876,7 @@ class MicroGui(QtWidgets.QMainWindow):
         # Differs from Line edit, prompt to let user know
         lefn =  self._DP_picture_fn.text()
         if self._DP_filename_string != lefn:
-            ret = self.unsavedQuestionDialog(message = "Load new filenames?", title = "Differing filenames",informativeText = "Registered filename differs from the input filename:\n\nREG:{}\nENT:{}\n\nSave to proceed\nDiscard/Cancel to go back".format(self._DP_filename_string, lefn))
+            ret = self.unsavedQuestionDialog(message = "Load new filenames?", title = "Differing filenames",informativeText = "Registered filename differs from the input filename:\n\nREG:{}\nENT:{}\n\nSave to proceed.\nDiscard/Cancel to go back".format(self._DP_filename_string, lefn), host = self)
 
             if ret == QtWidgets.QMessageBox.Save:
                 self._DP_loadPicture()
@@ -1932,9 +1962,61 @@ class MicroGui(QtWidgets.QMainWindow):
             self.logconsole("{}: {}".format(type(e).__name__, e))
             return cancelOperation(self)
 
+        # Change Colour of Draw
+        self._DP_picture_draw.setStyleSheet("background-color: #FF8800;")
+        self._DP_optionsChangedFlag = False
+
         return self.pDialog.close() if hasattr(self, "pDialog") else None
 
-    PDIALOG_TIMEOUT = 0.3       # in seconds
+    def _DP_drawPicture(self):
+        # Check if loaded
+        if not hasattr(self, "_DP_filename_string") or self._DP_filename_string is None or not len(self._DP_filename_string):
+            return self.criticalDialog(message = "Image not loaded!", informativeText = "Please load the image first before parsing and drawing. Filename not captured", title = "Image not loaded!", host = self)
+
+        # Check if parseded
+        if not hasattr(self, "picConv") or not isinstance(self.picConv, picConv.PicConv):
+            return self.criticalDialog(message = "Image not parsed!", informativeText = "Please parse the image first before drawing. Image and options not captured.", title = "Image not parsed!", host = self)
+
+        # Check if options changed
+        if self._DP_optionsChangedFlag:
+            ret = self.unsavedQuestionDialog(message = "Reparse with changed options?", title = "Options Changed",informativeText = "The parsing options have been changed since the last parse.\n\nSave to reparse with new options\nDiscard/Cancel to go back", host = self)
+
+            if ret == QtWidgets.QMessageBox.Save:
+                self._DP_parsePicture()
+            else:
+                return
+
+        # Check if enough space
+        size = self.picConv.image.size # (width, height)
+        fx = self.stageControl.controller.stage.x + self.picConv.scale["x"] * size[0]
+        fy = self.stageControl.controller.stage.y + self.picConv.scale["y"] * size[1]
+
+        xlim = sorted(self.stageControl.controller.stage.xlim)
+        ylim = sorted(self.stageControl.controller.stage.ylim)
+
+        xcond = xlim[0] <= fx <= xlim[1]
+        ycond = ylim[0] <= fy <= ylim[1]
+
+        if not xcond and not ycond:
+            return self.criticalDialog(message = "Image too large!", informativeText = "At the current position, printing the picture will exceed stage limits in both the x and y direction\n\nStage Limits = x[{}, {}], y[{}, {}]\nImage Size = ({}, {})\nCurrent Stage Position = ({}, {})".format(*xlim, *ylim, *size, *self.stageControl.controller.stage.position), title = "Image too large!", host = self)
+        elif not xcond:
+            return self.criticalDialog(message = "Image too large!", informativeText = "At the current position, printing the picture will exceed stage limits in the x direction\n\nStage Limits = x[{}, {}]\nImage Size = ({}, {})\nCurrent Stage Position = ({}, {})".format(*xlim, *size, *self.stageControl.controller.stage.position), title = "Image too large!", host = self)
+        elif not ycond:
+            return self.criticalDialog(message = "Image too large!", informativeText = "At the current position, printing the picture will exceed stage limits in the y direction\n\nStage Limits = y[{}, {}]\nImage Size = ({}, {})\nCurrent Stage Position = ({}, {})".format(*ylim, *size, *self.stageControl.controller.stage.position), title = "Image too large!", host = self)
+        # / Check space
+
+        # alert confirm user has moved to (0,0)
+        # We don't bother if the user changed the filename without loading, we just let them know what image will be drawn.
+        ret = self.unsavedQuestionDialog(message = "Start drawing?", title = "Draw Picture",informativeText = "Using {}\n\nThis point has been taken as the (0, 0) of the image. This usually the top left.\n\nDraw to proceed.\nCancel to go back and change stage position.".format(self._DP_filename_string), host = self, buttons = {
+            QtWidgets.QMessageBox.Save    : "Draw"
+        }, noDiscard = True)
+
+        if ret == QtWidgets.QMessageBox.Save:
+            pass
+        else:
+            return
+
+    PDIALOG_TIMEOUT = 0.5       # in seconds
     def pDialog_setValue(self, val):
         if val == 100 or val == 50 or val == 0 or datetime.datetime.now() > self.lastPDialogUpdate + datetime.timedelta(seconds = self.PDIALOG_TIMEOUT):
             self.lastPDialogUpdate = datetime.datetime.now()
@@ -2009,7 +2091,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
         return _msgBox.exec_()
 
-    def unsavedQuestionDialog(self, message, title = "Unsaved", informativeText = None, host = None):
+    def unsavedQuestionDialog(self, message, title = "Unsaved", informativeText = None, host = None, buttons = {}, noDiscard = False):
         _msgBox = QtWidgets.QMessageBox(host)
         _msgBox.setIcon(QtWidgets.QMessageBox.Question)
         _msgBox.setWindowTitle(title)
@@ -2017,8 +2099,15 @@ class MicroGui(QtWidgets.QMainWindow):
         if informativeText is not None:
             _msgBox.setInformativeText(informativeText)
 
-        _msgBox.setStandardButtons(QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Discard | QtWidgets.QMessageBox.Cancel)
+        if not noDiscard:
+            _msgBox.setStandardButtons(QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Discard | QtWidgets.QMessageBox.Cancel)
+        else:
+            _msgBox.setStandardButtons(QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Cancel)
         _msgBox.setDefaultButton(QtWidgets.QMessageBox.Cancel)
+
+        if buttons and isinstance(buttons, dict):
+            for key, val in buttons.items():
+                _msgBox.button(key).setText(val)
 
         # Get height and width
         _h = _msgBox.height()
