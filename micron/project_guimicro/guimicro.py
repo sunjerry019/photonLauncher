@@ -1125,7 +1125,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
         self._DP_picture_parse = QtWidgets.QPushButton("Parse Picture")
 
-        _DP_moveToZero = QtWidgets.QLabel('Move to (0, 0) of the image using "Stage Movement"')
+        _DP_moveToZero = QtWidgets.QLabel('Move to (0, 0), usually top-left, of the image using "Stage Movement"')
         _DP_moveToZero.setWordWrap(True)
 
         _DP_velocity_label = QtWidgets.QLabel("Velocity ({}m/s)".format(self.MICROSYMBOL))
