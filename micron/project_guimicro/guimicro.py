@@ -2051,12 +2051,12 @@ class MicroGui(QtWidgets.QMainWindow):
             ret = self.unsavedQuestionDialog(message = "Start drawing?", title = "Draw Picture",informativeText = "Using {}\n\nThis point has been taken as the (0, 0) of the image. This usually the top left.\n\nDraw to proceed.\nCancel to go back and change stage position.".format(self._DP_filename_string), host = self, buttons = {
                 QtWidgets.QMessageBox.Save : "Draw"
             }, noDiscard = True)
-            print(ret, QtWidgets.QMessageBox.Save)
-            if ret is not QtWidgets.QMessageBox.Save:
+            if ret != QtWidgets.QMessageBox.Save:
                 return
 
             # Here we start to draw
             self.setStartButtonsEnabled(False)
+            self._DP_picture_draw.setStyleSheet("")
             self.setOperationStatus("Starting Draw Picture...")
             q = ThreadWithExc(target = self._picConv_draw, args=(vel,))
             q.start()
@@ -2067,7 +2067,9 @@ class MicroGui(QtWidgets.QMainWindow):
     def _picConv_draw(self, velocity):
         try:
             # Errors are supposed to be emitted directly
+            self.stageControl.controller.shutter.quietLog = True
             self.picConv.draw(velocity = velocity)
+            self.stageControl.controller.shutter.quietLog = False
             self.stageControl.finishTone()
         except Exception as e:
             self.setOperationStatus("Error Occurred. {}".format(e))
