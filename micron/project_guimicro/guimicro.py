@@ -1349,6 +1349,7 @@ class MicroGui(QtWidgets.QMainWindow):
         return super(QtWidgets.QWidget, self).eventFilter(source, evt)
 
 # Custom functions
+# Stage Movement
     def homeStage(self):
         if not self.devMode:
             self.setOperationStatus("Homing stage...If any error arises, abort immediately with Ctrl + C")
@@ -1413,6 +1414,13 @@ class MicroGui(QtWidgets.QMainWindow):
             self.logconsole(e)
             self.KEYSTROKE_TIMEOUT = 10
 
+# Common
+    def setStartButtonsEnabled(self, state):
+        self._SR_start.setEnabled(state)
+        self._AR_start.setEnabled(state)
+        self._DP_picture_draw.setEnabled(state)
+
+# Single Raster
     def adjustPower(self, direction):
         try:
             assert direction == "+" or direction == "-", "Invalid Direction"
@@ -1440,11 +1448,6 @@ class MicroGui(QtWidgets.QMainWindow):
         self._SR_pow_up.setEnabled(True)
         self._SR_pow_dn.setEnabled(True)
         self.setOperationStatus("Ready.")
-
-    def setStartButtonsEnabled(self, state):
-        self._SR_start.setEnabled(state)
-        self._AR_start.setEnabled(state)
-        self._DP_picture_draw.setEnabled(state)
 
     def checkSRValues(self, startRaster = False):
         _got_error = False
@@ -1566,6 +1569,7 @@ class MicroGui(QtWidgets.QMainWindow):
             # Always run
             self.setStartButtonsEnabled(True)
 
+# Array Raster
     def recalculateARValues(self, startRaster = False):
         _got_error = False
         try:
@@ -1762,6 +1766,7 @@ class MicroGui(QtWidgets.QMainWindow):
         finally:
             self.setStartButtonsEnabled(True)
 
+# Draw Picture
     def _DP_getFile(self):
         # THIS IS PURELY FOR GUI CHOOSE FILE
 
