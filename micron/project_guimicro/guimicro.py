@@ -2051,7 +2051,7 @@ class MicroGui(QtWidgets.QMainWindow):
             ret = self.unsavedQuestionDialog(message = "Start drawing?", title = "Draw Picture",informativeText = "Using {}\n\nThis point has been taken as the (0, 0) of the image. This usually the top left.\n\nDraw to proceed.\nCancel to go back and change stage position.".format(self._DP_filename_string), host = self, buttons = {
                 QtWidgets.QMessageBox.Save : "Draw"
             }, noDiscard = True)
-
+            print(ret, QtWidgets.QMessageBox.Save)
             if ret is not QtWidgets.QMessageBox.Save:
                 return
 
@@ -2068,6 +2068,7 @@ class MicroGui(QtWidgets.QMainWindow):
         try:
             # Errors are supposed to be emitted directly
             self.picConv.draw(velocity = velocity)
+            self.stageControl.finishTone()
         except Exception as e:
             self.setOperationStatus("Error Occurred. {}".format(e))
             if self.devMode:
