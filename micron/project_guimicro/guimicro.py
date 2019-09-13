@@ -1977,8 +1977,19 @@ class MicroGui(QtWidgets.QMainWindow):
         except Exception as e:
             self.logconsole("{}: {}".format(type(e).__name__, e))
 
+        print("OK")
+
+        while datetime.datetime.now() < self.lastPDialogUpdate + datetime.timedelta(seconds = self.PDIALOG_TIMEOUT):
+            time.sleep(self.PDIALOG_TIMEOUT)
         self.pDialog.setWindowTitle("Parsing Lines")
+
+        print("OK 1.5")
+
+        while datetime.datetime.now() < self.lastPDialogUpdate + datetime.timedelta(seconds = self.PDIALOG_TIMEOUT):
+            time.sleep(self.PDIALOG_TIMEOUT)
         self.pDialog_setLabelText("Parsing Lines")
+
+        print("Ok2")
 
         try:
             self.picConv.parseLines()
@@ -1986,6 +1997,8 @@ class MicroGui(QtWidgets.QMainWindow):
             # The error should have been emitted already
             self.logconsole("{}: {}".format(type(e).__name__, e))
             return cancelOperation(self)
+
+        print("Ok3")
 
         # Change Colour of Draw
         self._DP_picture_draw.setStyleSheet("background-color: #FF8800;")
@@ -2043,9 +2056,13 @@ class MicroGui(QtWidgets.QMainWindow):
 
     PDIALOG_TIMEOUT = 0.5       # in seconds
     def pDialog_setValue(self, val):
+        print("SETTING VALUE:         ", val)
         if val == 100 or val == 50 or val == 0 or datetime.datetime.now() > self.lastPDialogUpdate + datetime.timedelta(seconds = self.PDIALOG_TIMEOUT):
             self.lastPDialogUpdate = datetime.datetime.now()
             self.pDialog.setValue(val)
+        elif val == 100:
+            time.sleep(PDIALOG_TIMEOUT)
+            self.pDialog_setValue(val)
 
     def pDialog_setLabelText(self, text):
         if datetime.datetime.now() > self.lastPDialogUpdate + datetime.timedelta(seconds = self.PDIALOG_TIMEOUT):
