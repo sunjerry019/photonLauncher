@@ -310,36 +310,39 @@ class PicConv():
 		gotController = isinstance(self.controller, micron.Micos)
 
 		if gotController:
-			self.controller.setvel(self.fast_velocity)
+			if not self.GUI_Object:
+				self.controller.setvel(self.fast_velocity)
 
-			self.controller.shutter.close()
+				self.controller.shutter.close()
 
-			xlim = abs(self.controller.stage.xlim[1] - self.controller.stage.xlim[0])
-			ylim = abs(self.controller.stage.ylim[1] - self.controller.stage.ylim[0])
+				xlim = abs(self.controller.stage.xlim[1] - self.controller.stage.xlim[0])
+				ylim = abs(self.controller.stage.ylim[1] - self.controller.stage.ylim[0])
 
-			try:
-				assert self.shape[0] < ylim, "Image exceed y-limit"
-				assert self.shape[1] < xlim, "Image exceed x-limit"
-			except AssertionError as e:
-				raise AssertionError(e)
-			except Exception as e:
-				raise RuntimeError("Did you forget to load self.shape in form of y, x? Error: {}".format(e))
+				try:
+					assert self.shape[0] < ylim, "Image exceed y-limit"
+					assert self.shape[1] < xlim, "Image exceed x-limit"
+				except AssertionError as e:
+					raise AssertionError(e)
+				except Exception as e:
+					raise RuntimeError("Did you forget to load self.shape in form of y, x? Error: {}".format(e))
 
-			# do a rmove to the (0,0) of the image and let the user move the sample to match the (0,0) point
-			# checking if the image will exceed limits
-			dy, dx = self.shape[0] / 2, self.shape[1] / 2
-			self.controller.rmove(x = dx * self.scale["x"], y = dy * self.scale["y"])
+				# do a rmove to the (0,0) of the image and let the user move the sample to match the (0,0) point
+				# checking if the image will exceed limits
+				dy, dx = self.shape[0] / 2, self.shape[1] / 2
+				self.controller.rmove(x = dx * self.scale["x"], y = dy * self.scale["y"])
 
 			# Estimate time if not yet estimated
 			if self.estimatedTime is None or velocity != self.estimatedVelocity:
 				self.estimateTime(velocity = velocity)
 
 			deltaTime = datetime.timedelta(seconds = self.estimatedTime)
-			print("Given {} sec / shutter movement:\nEstimated time required  \t {}".format(self.shutterTime, deltaTime))
-
-			if not qyn("This is the (0,0) of the image. Confirm?"):
-				print("Exiting...")
-				sys.exit(1)
+			if self.GUI_Object:
+				self.GUI_Object.setOperationStatus("Given {} sec / shutter movement:\nEstimated time required  \t {}".format(self.shutterTime, deltaTime))
+			else:
+				print("Given {} sec / shutter movement:\nEstimated time required  \t {}".format(self.shutterTime, deltaTime))
+				if not qyn("This is the (0,0) of the image. Confirm?"):
+					print("Exiting...")
+					sys.exit(1)
 
 			now = datetime.datetime.now()
 			print("Printing starting now \t {}".format(now.strftime('%Y-%m-%d %H:%M:%S')))
@@ -494,7 +497,7 @@ class PicConv():
 
 			self.commands.append([1, _l])
 
-		self.GUI_Object.pDialog.setLabelText("Lines Parsed") if self.GUI_Object else None
+		self.GUI_Object.pDialog_setLabelText("Lines Parsed") if self.GUI_Object else None
 		self.GUI_Object.pDialog_setValue(100) if self.GUI_Object else None
 		# Set to 100% here to close the pDialog
 
