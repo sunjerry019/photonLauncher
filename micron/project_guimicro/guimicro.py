@@ -76,7 +76,7 @@ class MicroGui(QtWidgets.QMainWindow):
 
         # moveToCentre(self)
 
-        self.setWindowTitle('Micos Stage Controller MARK II 0.10a')
+        self.setWindowTitle('Micos Stage Controller MARK II 0.15b')
         self.setWindowIcon(QtGui.QIcon(self.customicon))
 
         # Essentially the steps for the gui works like this
@@ -138,6 +138,7 @@ class MicroGui(QtWidgets.QMainWindow):
         self.initSettings()
         self.initEventListeners()
         self.initializeDevice()
+        self.winAudioSetMuted(False)
         self.recalculateARValues()
 
         # Set to the last menu item
@@ -1436,7 +1437,7 @@ class MicroGui(QtWidgets.QMainWindow):
         if self.pycaw_sess is None:
             return
 
-        return self.pycaw_vol.SetMasterVolume(1, None) if state else self.pycaw_vol.SetMasterVolume(0, None)
+        return self.pycaw_vol.SetMasterVolume(0, None) if state else self.pycaw_vol.SetMasterVolume(1, None)
 
 # Single Raster
     def adjustPower(self, direction):
