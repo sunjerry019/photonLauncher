@@ -1444,6 +1444,7 @@ class MicroGui(QtWidgets.QMainWindow):
     def setStartButtonsEnabled(self, state):
         self._SR_start.setEnabled(state)
         self._AR_start.setEnabled(state)
+        self._DP_picture_draw.setEnabled(state)
 
     def checkSRValues(self, startRaster = False):
         _got_error = False
