@@ -463,7 +463,6 @@ class MicroGui(QtWidgets.QMainWindow):
             self.updatePositionDisplay()
 
 # Shutter Control layout
-
     @make_widget_from_layout
     def create_shutter_control(self, widget):
         _shutter_layout = QtWidgets.QGridLayout()
@@ -1423,6 +1422,22 @@ class MicroGui(QtWidgets.QMainWindow):
         self._AR_start.setEnabled(state)
         self._DP_picture_draw.setEnabled(state)
 
+    def winAudioSetMuted(self, state):
+        if not hasattr(self, "pycaw_sess"):
+            if platform.system() == "Windows":
+                sessions = AudioUtilities.GetAllSessions()
+                for session in sessions:
+                    if session.Process and session.Process.name() == "python.exe":
+                        self.pycaw_sess = session
+                        self.pycaw_vol = self.pycaw_sess._ctl.QueryInterface(ISimpleAudioVolume)
+            else:
+                self.pycaw_sess = None
+
+        if self.pycaw_sess is None:
+            return
+
+        return self.pycaw_vol.SetMasterVolume(1, None) if state else self.pycaw_vol.SetMasterVolume(0, None)
+
 # Single Raster
     def adjustPower(self, direction):
         try:
@@ -2076,7 +2091,11 @@ class MicroGui(QtWidgets.QMainWindow):
 
         _msgBox.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
 
-        return _msgBox.exec_()
+        self.winAudioSetMuted(True)
+        ret = _msgBox.exec_()
+        self.winAudioSetMuted(False)
+
+        return ret
 
     def informationDialog(self, message, title = "Information", informativeText = None, host = None):
         _msgBox = QtWidgets.QMessageBox(host)
@@ -2098,7 +2117,11 @@ class MicroGui(QtWidgets.QMainWindow):
 
         # _msgBox.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
 
-        return _msgBox.exec_()
+        self.winAudioSetMuted(True)
+        ret = _msgBox.exec_()
+        self.winAudioSetMuted(False)
+
+        return ret
 
     def unsavedQuestionDialog(self, message, title = "Unsaved", informativeText = None, host = None, buttons = {}, noDiscard = False):
         _msgBox = QtWidgets.QMessageBox(host)
@@ -2130,7 +2153,11 @@ class MicroGui(QtWidgets.QMainWindow):
 
         # _msgBox.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
 
-        return _msgBox.exec_()
+        self.winAudioSetMuted(True)
+        ret = _msgBox.exec_()
+        self.winAudioSetMuted(False)
+
+        return ret
 
     # https://doc.qt.io/qt-5/qprogressdialog.html
     def progressDialog(self, host = None, title = "Progress", labelText = None, cancelButtonText = "Cancel", range = (0, 100)):
