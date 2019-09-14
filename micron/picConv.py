@@ -518,6 +518,10 @@ class PicConv():
 
 		assert isinstance(velocity, (int, float)), "velocity must be int or float"
 
+		# Obtain shuttertime if running in GUI mode
+		if self.GUI_Object:
+			self.shutterTime = self.GUI_Object.stageControl.controller.shutter.duration
+
 		totalTIme = 0
 
 		# do a rmove to the first point of self.lines from (0,0) of the image
