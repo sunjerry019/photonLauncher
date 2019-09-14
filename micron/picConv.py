@@ -346,7 +346,8 @@ class PicConv():
 			finish = now + deltaTime
 
 			if self.GUI_Object:
-				self.GUI_Object.setOperationStatus("Given {} sec / shutter movement:\nEstimated time required  \t {}, Est End = {}".format(self.shutterTime, deltaTime, finish))
+				self.OP_Status = "Given {} sec / shutter movement:\nEstimated time required  \t {}, Est End = {}.".format(self.shutterTime, deltaTime, finish)
+				self.GUI_Object.setOperationStatus(self.OP_Status)
 			else:
 				print("Printing starting now \t {}".format(now.strftime('%Y-%m-%d %H:%M:%S')))
 				print("Given {} sec / shutter movement:\nEstimated time required  \t {}".format(self.shutterTime, deltaTime))
@@ -371,6 +372,8 @@ class PicConv():
 		for i, cmd in enumerate(self.commands):
 			if not self.GUI_Object:
 				print(cmd, "{}/{}".format(i + 1, totalLines))
+			else:
+				self.GUI_Object.setOperationStatus(self.OP_Status + "\nAt Segment {}/{}".format(i + 1, totalLines))
 
 			state  = cmd[0] 	# laser on state
 			rmoves = cmd[1]
