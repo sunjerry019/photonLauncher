@@ -523,7 +523,7 @@ class PicConv():
 
 		# Obtain shuttertime if running in GUI mode
 		if self.GUI_Object:
-			self.shutterTime = self.GUI_Object.stageControl.controller.shutter.duration
+			self.shutterTime = self.GUI_Object.stageControl.controller.shutter.duration / 1000
 
 		totalTIme = 0
 
