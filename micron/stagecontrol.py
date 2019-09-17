@@ -297,36 +297,36 @@ class StageControl():
 		yone = self.controller.stage.y
 
 		moal = []
-		a = 0
-		for b in range(1, ncols * nrows + 1):
-			nthsquare = []
+		for i in range(nrows):
+			for j in range(ncols):
+				nthsquare = []
+				axe = xone + j * (xDist + xGap)
+				why = yone + i * (yDist + yGap)
 
-			a += 1 if b % ncols == 0 else 0
-			axe = xone + (b % ncols) * (xDist + xGap)
-			why = yone + a * (yDist + yGap)
+				# gui combobox setting: velocity is True, power is False
+				if x_isVel and y_isVel:
+					speed = (inivel + i * yincrement) + xincrement * j
+					powa = inipower
 
-			# gui combobox setting: velocity is True, power is False
-			if x_isVel and y_isVel:
-				speed = (inivel + a * yincrement) + xincrement * (b % ncols)
-				powa = inipower
+				elif x_isVel and not y_isVel:
+					speed = inivel + xincrement * j
+					powa = inipower + yincrement * i
 
-			elif x_isVel and not y_isVel:
-				speed = inivel + xincrement * (b % ncols)
-				powa = inipower + yincrement * a
+				elif not x_isVel and not y_isVel:
+					speed = inivel
+					powa = (inivel + i * yincrement) + xincrement * j
 
-			elif not x_isVel and not y_isVel:
-				speed = inivel
-				powa = (inivel + a * yincrement) + xincrement * (b % ncols)
+				elif not x_isVel and y_isVel:
+					speed = inivel + yincrement * i
+					powa = inipower + xincrement * j
 
-			elif not x_isVel and y_isVel:
-				speed = inivel + yincrement * a
-				powa = inipower + xincrement * (b % ncols)
+				startpos = (axe , why)
+				speedpowa = [speed, powa]
+				nthsquare.append(startpos)
+				nthsquare.append(speedpowa)
+				moal.append(nthsquare)
 
-			startpos = (axe , why)
-			speedpowa = [speed, powa]
-			nthsquare.append(startpos)
-			nthsquare.append(speedpowa)
-			moal.append(nthsquare)
+		print(moal)
 
 		#TODO! have a countdown for all rastering and run timer in separate thread
 		# Estimate time
