@@ -34,7 +34,7 @@ class ImageError(Exception):
     pass
 
 class PicConv():
-	def __init__(self, filename, xscale = 1, yscale = 1, cut = 0, allowDiagonals = False, prioritizeLeft = False, flipHorizontally = False, flipVertically = False ,frames = False, simulate = False, simulateDrawing = False, micronInstance = None, shutterTime = 800, GUI_Object = None):
+	def __init__(self, filename, xscale = 1, yscale = 1, cut = 0, allowDiagonals = False, prioritizeLeft = False, flipHorizontally = False, flipVertically = False ,frames = False, simulate = False, simulateDrawing = False, micronInstance = None, shutterTime = 800, GUI_Object = None, takeoverControl = False):
 		# shutterTime in milliseconds
 		# Set micronInstance to False instead of None to prevent using of micron
 
@@ -58,6 +58,8 @@ class PicConv():
 		self.simulateDrawing = simulateDrawing
 
 		self.controller = micronInstance
+
+		self.takeoverControl = takeoverControl
 
 		print("Using '{}' at scale {}".format(self.filename, self.scale))
 		print("Cutting {} parts".format(["Black", "White"][self.cut]))
@@ -310,7 +312,7 @@ class PicConv():
 		gotController = isinstance(self.controller, micron.Micos)
 
 		if gotController:
-			if not self.GUI_Object:
+			if not self.GUI_Object or not self.takeoverControl:
 				self.controller.setvel(self.fast_velocity)
 
 				self.controller.shutter.close()
@@ -336,7 +338,7 @@ class PicConv():
 				self.estimateTime(velocity = velocity)
 
 			deltaTime = datetime.timedelta(seconds = self.estimatedTime)
-			if not self.GUI_Object:
+			if not self.GUI_Object or not self.takeoverControl:
 				print("Given {} sec / shutter movement:\nEstimated time required  \t {}".format(self.shutterTime, deltaTime))
 				if not qyn("This is the (0,0) of the image. Confirm?"):
 					print("Exiting...")

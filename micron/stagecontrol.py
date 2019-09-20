@@ -333,25 +333,25 @@ class StageControl():
 
 		totaltime = 0
 
-		firstsq = True
-		for n, square in enumerate(moal):
-			subtotaltime = 0 if firstsq else micron.Micos.getDeltaTime(x = xGap + xDist, y = 0, velocity = 500)
-			firstsq = False
+		# firstsq = True
+		# for n, square in enumerate(moal):
+		# 	subtotaltime = 0 if firstsq else micron.Micos.getDeltaTime(x = xGap + xDist, y = 0, velocity = 500)
+		# 	firstsq = False
 
-			if not (n + 1) % ncols:
-				micron.Micos.getDeltaTime(x = -ncols * (xGap + xDist), y = yDist + yGap, velocity = 500)
+		# 	if not (n + 1) % ncols:
+		# 		micron.Micos.getDeltaTime(x = -ncols * (xGap + xDist), y = yDist + yGap, velocity = 500)
 
-			rasvelocity = square[1][0]
-			subtotaltime += self.singleraster(velocity = square[1][0], xDist = xDist, yDist = yDist, rasterSettings = rasterSettings, returnToOrigin = True, onlyEstimate = True)
-			totaltime += subtotaltime
+		# 	rasvelocity = square[1][0]
+		# 	subtotaltime += self.singleraster(velocity = square[1][0], xDist = xDist, yDist = yDist, rasterSettings = rasterSettings, returnToOrigin = True, onlyEstimate = True)
+		# 	totaltime += subtotaltime
 
-		_deltaTime = datetime.timedelta(seconds = totaltime)
-		doneTime = datetime.datetime.now() + _deltaTime
+		# _deltaTime = datetime.timedelta(seconds = totaltime)
+		# doneTime = datetime.datetime.now() + _deltaTime
 
-		estTimeString = "Est time = {} Est Done = {}".format(_deltaTime, doneTime.strftime('%Y-%m-%d %H:%M:%S'))
+		# estTimeString = "Est time = {} Est Done = {}".format(_deltaTime, doneTime.strftime('%Y-%m-%d %H:%M:%S'))
 
-		self.logconsole(estTimeString)
-
+		# self.logconsole(estTimeString)
+		estTimeString=""
 		oX, oY = self.controller.stage.x, self.controller.stage.y
 
 		# actual rastering
