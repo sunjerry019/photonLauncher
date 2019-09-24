@@ -24,10 +24,9 @@ _ESTIMATEONLY = False
 # 0 = lines, 1 = Top, 2 = Bottom Right, 3 = Bottom Left
 
 mic = micron.Micos(
-    shutterAbsolute = False,
+    shutterAbsolute = True,
     noHome = True,
     shutter_channel = servos.Servo.LEFTCH,
-
     stageConfig = {
                 "xlim" : [-10000,0],
                 "ylim" : [-10000,0],
@@ -46,7 +45,7 @@ testPic = picConv.PicConv(
     flipVertically = True,
     # simulateDrawing= True,
 )
-
+testPic.fast_velocity=200
 if not _ESTIMATEONLY:
     xl = abs(testPic.controller.stage.xlim[1] - testPic.controller.stage.xlim[0])
     yl = abs(testPic.controller.stage.ylim[1] - testPic.controller.stage.ylim[0])
@@ -70,7 +69,7 @@ for i in range(6,7):
         testPic.convert()
         testPic.parseLines()
         if not _ESTIMATEONLY:
-            testPic.draw(velocity = _VELOCITIES[i])
+            testPic.draw(_VELOCITIES[i])
             cX, cY = testPic.controller.stage.x, testPic.controller.stage.y
             dx, dy = cX - oX, cY - oY
             testPic.controller.shutter.close()

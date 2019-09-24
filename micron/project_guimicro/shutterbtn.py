@@ -27,7 +27,7 @@ class Butt(QWidget):
         self.top = 10
         self.width = 500
         self.height = 500
-        self.shutter = servos.Shutter(absoluteMode = True, channel = servos.Servo.RIGHTCH)
+        self.shutter = servos.Shutter(absoluteMode = True, channel = servos.Servo.LEFTCH)
         self.isOpen = False
 
         self.initUI()

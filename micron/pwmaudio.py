@@ -63,7 +63,7 @@ class Pulsegen(SignalGenerator):
     PANLEFT = -1
     PANRIGHT = 1
 
-    def __init__(self, duty, polarity = True, freq = 50, duration = 400, pan = -1, **kwargs):
+    def __init__(self, duty, polarity = True, freq = 51, duration = 400, pan = -1, **kwargs):
         super().__init__(**kwargs)
         self.freq = freq
         self.duty = duty

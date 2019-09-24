@@ -88,7 +88,7 @@ class Shutter(Servo):
             # return self.homeclose()
             return
 
-        self.absolute(0.15) if self.absoluteMode else self.absolute(0.09, duration = self.NONABSOLUTE_DURATION)
+        self.absolute(0.10) if self.absoluteMode else self.absolute(0.09, duration = self.NONABSOLUTE_DURATION)
         self.isOpen = False
 
         if shutter_state_label is None and self.GUI_Object is not None:
@@ -112,7 +112,7 @@ class Shutter(Servo):
             # self.open()
             return
 
-        self.absolute(0.1) if self.absoluteMode else self.absolute(0.06, duration = self.NONABSOLUTE_DURATION)
+        self.absolute(0.07) if self.absoluteMode else self.absolute(0.06, duration = self.NONABSOLUTE_DURATION)
         self.isOpen = True
 
         if shutter_state_label is None and self.GUI_Object is not None:
