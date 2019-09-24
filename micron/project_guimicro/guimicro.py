@@ -2082,7 +2082,7 @@ class MicroGui(QtWidgets.QMainWindow):
             # Always run
             self.setStartButtonsEnabled(True)
 
-    PDIALOG_TIMEOUT = 0.5       # in seconds
+    PDIALOG_TIMEOUT = 1       # in seconds
     def pDialog_setValue(self, val):
         # print("SETTING VALUE:         ", val)
         if val == 100 or val == 50 or val == 0 or datetime.datetime.now() > self.lastPDialogUpdate + datetime.timedelta(seconds = self.PDIALOG_TIMEOUT):

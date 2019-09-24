@@ -18,13 +18,13 @@ import datetime
 
 # PURELY FOR THE RUDOLPH
 
-_MAINFILENAME = "mondrian/mondrian-fib-{}.bmp"
-_VELOCITIES = [50, 50, 10, 10]
+_MAINFILENAME = "map-sections/{}.bmp"
+_VELOCITIES = [50, 30, 50, 30, 50, 30, 30]
 _ESTIMATEONLY = False
 # 0 = lines, 1 = Top, 2 = Bottom Right, 3 = Bottom Left
 
 mic = micron.Micos(
-    shutterAbsolute = False,
+    shutterAbsolute = True,
     noHome = True,
     shutter_channel = servos.Servo.LEFTCH,
     stageConfig = {
@@ -38,14 +38,14 @@ testPic = picConv.PicConv(
     allowDiagonals = True,
     prioritizeLeft = True,
     shutterTime = servos.Shutter.DEFAULT_DURATION,
-    yscale = 1,
-    xscale = 1,
+    yscale = 0.5,
+    xscale = 0.5,
     micronInstance = mic,
     takeoverControl = True,
     flipVertically = True,
     # simulateDrawing= True,
 )
-
+testPic.fast_velocity=200
 if not _ESTIMATEONLY:
     xl = abs(testPic.controller.stage.xlim[1] - testPic.controller.stage.xlim[0])
     yl = abs(testPic.controller.stage.ylim[1] - testPic.controller.stage.ylim[0])
@@ -61,20 +61,21 @@ if not _ESTIMATEONLY:
     testPic.fast_velocity = 100
 
 
-for i in range(4):
-    testPic.controller.shutter.homeclose()
-    testPic.controller.shutter.close()
-    testPic.filename = _MAINFILENAME.format(i)
-    testPic.convert()
-    testPic.parseLines()
-    if not _ESTIMATEONLY:
-        testPic.draw(velocity = _VELOCITIES[i])
-        cX, cY = testPic.controller.stage.x, testPic.controller.stage.y
-        dx, dy = cX - oX, cY - oY
+for i in range(6,7):
+    if not i == 0:
+        testPic.controller.shutter.homeclose()
         testPic.controller.shutter.close()
-        testPic.controller.setvel(100)
-        testPic.controller.rmove(x = -dx, y = -dy)
-        while not qyn("Next?"):
-            pass
-    else:
-        print(datetime.timedelta(seconds = testPic.estimateTime(velocity = _VELOCITIES[i])))
+        testPic.filename = _MAINFILENAME.format(i)
+        testPic.convert()
+        testPic.parseLines()
+        if not _ESTIMATEONLY:
+            testPic.draw(_VELOCITIES[i])
+            cX, cY = testPic.controller.stage.x, testPic.controller.stage.y
+            dx, dy = cX - oX, cY - oY
+            testPic.controller.shutter.close()
+            testPic.controller.setvel(100)
+            testPic.controller.rmove(x = -dx, y = -dy)
+            while not qyn("Next?"):
+                pass
+        else:
+            print(datetime.timedelta(seconds = testPic.estimateTime(velocity = _VELOCITIES[i])))
