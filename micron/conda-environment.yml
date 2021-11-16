@@ -1,0 +1,20 @@
+name: photonLauncher
+channels:
+    - conda-forge
+    - defaults
+dependencies:
+    - python>=3.4
+    - numpy
+    - scipy
+    - pyserial>=3.5
+    - Pillow
+    - svgwrite
+    - pyaudio
+    - pydub
+    - pip
+    - pip:
+        - playsound
+        - pycaw
+        - random2
+        - pyqt5
+        - matplotlib>=3.4.2
