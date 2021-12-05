@@ -15,15 +15,6 @@ Some documentation may be unavailable, and we apologise for the inconvenience. C
 
 **Documentation for individual scripts / experiments can be found in their respective folders.**
 
-Use
-```python
-# sys.path.insert(0, '../helpers/')
-base_dir = os.path.dirname(os.path.realpath(__file__))
-root_dir = os.path.abspath(os.path.join(base_dir, "..", "helpers"))
-sys.path.insert(0, root_dir)
-```
-to access libraries in ```helpers```.
-
 ## Supported equipment
 
 Location | Equipment name
@@ -44,8 +35,6 @@ Feel free to add an issue or a pull request. Our emails are open.
 The repository is now mainly maintained by ```sunjerry019```, with help from ```starryblack```. Any queries may be directed to ```sunjerry019 [at] gmail [dot] com```.
 
 The official email contact for Hwa Chong Photonics is ```photonics@hci.edu.sg```. Alternatively, drop us an email at ```hwachong.photonics@gmail.com```
-
-Note: naming conventions are still fairly inconsistent, expect them to change.
 
 ## Labs
 
