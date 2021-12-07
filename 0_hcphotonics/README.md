@@ -9,6 +9,8 @@
 
 Github repo for the Photonics Lab at Hwa Chong Institution. A collection of scripts that control equipment, as well as administrative and housekeeping tools.
 
+Python functions have been moved into the 'hcphotonics' library. 
+
 Some documentation may be unavailable, and we apologise for the inconvenience. Contact the authors for additional information.
 
 **Documentation for individual scripts / experiments can be found in their respective folders.**

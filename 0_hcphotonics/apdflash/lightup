@@ -1,2 +1,0 @@
-#!/bin/bash
-mpiexec -hosts 192.168.2.188,192.168.2.194 -n 2 python $1 $2 $3 $4 $5

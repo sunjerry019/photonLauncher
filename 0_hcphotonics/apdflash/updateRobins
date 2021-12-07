@@ -1,5 +1,0 @@
-#!/bin/bash
-
-cd /home/robin/photonLauncher ; git pull origin master >> /dev/null
-ssh robin@192.168.2.194 'cd /home/robin/photonLauncher; git pull origin master' >> /dev/null
-

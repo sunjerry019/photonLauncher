@@ -1,3 +1,0 @@
-format=epscairo
-xlabel=t@level (ns)
-ylabel="Two-photon coincidence events"
