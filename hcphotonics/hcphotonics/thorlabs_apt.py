@@ -7,7 +7,9 @@ import serial
 import struct
 
 class ThorlabsApt():
-    def __init__(self):
+    def __init__(self, config_path = "./thorlabs_apt.conf"):
+
+        self.config_path = config_path
         self.initConstants()
         self.initSerial()
     def initConstants(self):
@@ -17,7 +19,7 @@ class ThorlabsApt():
         self.const['ROTSCALE'] = 3600/2.16
     def initSerial(self):
         cfg = {}
-        with open('./thorlabs-apt.conf') as f:
+        with open(self.config_path) as f:
             x = f.read()
             if (len(x) == 0):
                 pass

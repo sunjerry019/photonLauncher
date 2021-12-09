@@ -76,7 +76,7 @@ class thorControl():
 
 	def start(self):
 		comm = MPI.COMM_WORLD
-		m = thorlabs_apt()
+		m = thorlabs_apt("thorlabs_apt.conf")
 		x = self.deg / self.step
 		x = int(x)
 		self.data = {}
