@@ -1,2 +1,0 @@
-ssh 192.168.2.194 'cd photonLauncher/apdflash; python scarecrowMotor.py 8333'
-python cartoonHeart.py -5 -1666 18000
