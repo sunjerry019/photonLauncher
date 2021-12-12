@@ -15,11 +15,11 @@ def check_dir(directory):
 def main():
     parser = argparse.ArgumentParser(description="apd_counter.py: Uses ./getresponse to get photon counts per second from APDs. Default time per bin is 100ms.")
     parser.add_argument('total', metavar='n', type=int, help="Number of readings to record photon counts from APDs. Set to -1 to keep running until Ctrl-C is pressed.")
-    parser.add_argument('--t', metavar='intTime', type=int, default=100, help='Time per bin in ms')
-    parser.add_argument('-p', dest = 'plot', action = 'store_true', help = 'Use this flag to enable live plotting')
+    parser.add_argument('-t', '--time_bin', metavar='intTime', type=int, default=100, help='Time per bin in ms')
+    parser.add_argument('-p', '--plot', action = 'store_true', help = 'Use this flag to enable live plotting')
     args = parser.parse_args()
 
-    a = ApdCounter(args.t, args.total, args.plot)
+    a = ApdCounter(args.time_bin, args.total, args.plot)
 
 class ApdCounter():
     def __init__(self, intTime, t, plot = False):

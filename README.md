@@ -9,7 +9,7 @@
 
 Github repository for the collection of scripts that we have made in this neverending journey of scientific exploration. Scripts include equipment control, as well as administrative and housekeeping tools.
 
-As of 05/2019, some scripts specific to the Hwa Chong Photonics Lab has been moved to the ```hc_photonics``` folder. They are probably still working, but have not been used since end 2016.
+As of 05/2019, some scripts specific to the Hwa Chong Photonics Lab has been moved to the ```hcphotonics``` folder. This includes  a Python library for some of our implemented interfaces. They are probably still working, but have not been used since end 2016.
 
 Some documentation may be unavailable, and we apologise for the inconvenience. Contact the authors for additional information.
 
@@ -33,10 +33,6 @@ Location | Equipment name
 Feel free to add an issue or a pull request. Our emails are open.
 
 The repository is now mainly maintained by ```sunjerry019```, with help from ```starryblack```. Any queries may be directed to ```sunjerry019 [at] gmail [dot] com```.
-
-The official email contact for Hwa Chong Photonics is ```photonics@hci.edu.sg```. Alternatively, drop us an email at ```hwachong.photonics@gmail.com```
-
-Note: naming conventions are still fairly inconsistent, expect them to change.
 
 ## Labs
 
