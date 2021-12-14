@@ -6,7 +6,6 @@ Uses MPI to communicate across two different raspis. One of them records counts 
 Other dependencies:
 paramiko
 mpi4py
-rpiDBUploader
 """
 
 
@@ -21,7 +20,6 @@ import os, sys
 import json
 import tarfile
 import paramiko
-from rpiDBUploader import rpiDBUploader
 
 from hcphotonics.thorlabs_apt import thorlabs_apt
 
@@ -124,8 +122,6 @@ def main(kwargs):
 			os.remove(os.path.join(timestamp,i))
 		os.rmdir(timestamp)
 
-		ssh = rpiDBUploader("apdflash{}.tar.gz".format(timestamp), "apdflash")
-		ssh.upload()
 
 	elif rank == 1:
 		print ("motorised stage control")

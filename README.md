@@ -21,7 +21,7 @@ Some documentation may be unavailable, and we apologise for the inconvenience. C
 Location | Equipment name
 --- | ---
 ```micron/``` | Micos SMC Basic Microcontroller  (This is old)
-```oceanoptics/get/icecube.py```| OceanOptics Spectrometer, USB2000, USB4000 and Spectra Series
+```oceanoptics/oceanoptics.py```| OceanOptics Spectrometer, USB2000, USB4000 and Spectra Series
 ```hcphotonics.lecroy``` | Oscilloscope, Lecroy 9384TM (this is ancient)
 ```hcphotonics.thorlabs_apt```| Thorlabs TDC01 Controller Cube (CR1-Z7, MTS50-Z8)
 ```hcphotonics/usbcounter```| Avalanche Photon Detectors (built at NUS)
