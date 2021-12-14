@@ -163,10 +163,7 @@ Example script in which two different Raspis each control different equipment, o
 
 Feel free to add an issue or a pull request. Our emails are open.
 
-Our official email contact is ```photonics@hci.edu.sg```. Alternatively, drop us an email at ```hwachong.photonics@gmail.com```
-
 Note: naming conventions are still fairly inconsistent, expect them to change.
-
 
 
 ## hcphotonics.temp_humid

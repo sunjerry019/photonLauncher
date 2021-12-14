@@ -14,6 +14,7 @@ setup(name='hcphotonics',
           'pyserial',
           'python-usbtmc',
           'Gnuplot',
+          'libusb1'
     ]   
 )
 
